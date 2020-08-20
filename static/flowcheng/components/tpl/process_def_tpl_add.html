@@ -1,0 +1,47 @@
+<div class="layui-tpl-container">
+    <div class="layui-form p-form">
+        <div class="layui-form-item new_flow_cheng">
+            <label class="layui-form-label"><span style="color: red;">*</span>流程名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="processName" placeholder="请输入流程名称" class="layui-input">
+            </div>
+        </div>
+        <!-- 提交按钮 -->
+        <!-- 取消按钮 -->
+        <div class="layui-form-item" style="text-align: center;">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="processSave">保存</button>
+            <button class="layui-btn layui-btn-primary" lay-submit lay-filter="popProcessCancle">取消</button>
+        </div>
+    </div>
+</div>
+<style>
+    .layui-layer-page {
+        /* position:absolute !important;
+        top:50%!important;  
+        left:50% !important; 
+        transform:translateX(-50%) translateY(-50%) !important; 
+        transform:translateX(-50%) translateY(-50%) !important; */
+        position:absolute !important; 
+            top:0 !important; 
+            right:0 !important; 
+            bottom:0 !important; 
+            left:0 !important; 
+            margin:auto !important;
+    }
+    .layui-layer-page {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .layui-layer-page .layui-layer-title {
+        height: 55px !important;
+        margin-bottom: 20px !important;
+    }
+    .layui-layer-page .layui-layer-btn {
+        padding: 0 0 10px 0 !important;
+        margin: 20px !important;
+    }
+    .new_flow_cheng .layui-input-block{
+        padding-right: 20px !important ;
+    }
+</style>

@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title> </title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="login.css" />
+	</head>
+
+	<body>
+		<div id="login">
+			<div class="login-body">
+				<div class="login_img"></div>
+				<div class="companyName">
+					中汽研汽车检验中心（天津）有限公司
+				</div>
+				<div class="engName">
+					CATARC Automotive Test Center（Tianjin）CO..LTD.
+				</div>
+				<div class="login_ipt mui-input-row">
+					<input type="text" id="name" class="mui-input mui-input-clear" placeholder="请输入账号"/>
+					<span class="icon user-icon"></span>
+				</div>
+				<div class="login_ipt mui-input-row mui-password">
+					<input type="password" class="mui-input-password" id="password" placeholder="请输入密码"/>
+					<span class="icon password-icon"></span>
+				</div>
+				<div class="login_btn">
+					<button class="mui-btn" type="button" data-loading-text="验证中.." data-loading-icon="mui-spinner mui-spinner-custom">登&nbsp;录</button>
+				</div>
+			</div>
+			<div class="footer">
+				<div class="companyName bottom">
+					国家轿车质量监督检验中心<br>
+					国家智能网联汽车质量监督检验中心（天津）
+				</div>
+				<div class="companyEngName bottom">
+					National Passenger Car Quality Supervision and Inspection center<br>
+					National Intelligent & Connected Vehicle Quality Supervision and Inspection center(Tianjin)
+				</div>
+			</div>
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/app.js"></script>
+		<script src="../../js/common.js"></script>
+		<script type="text/javascript">
+
+
+
+			mui.init();
+			mui.plusReady(function() {
+				// 固定页面初始高度，设置最小高度为550px
+				document.querySelector('#login').style.height = (window.innerHeight > 550 ? window.innerHeight : 550) + 'px';
+				plus.storage.setItem('loginFlag','1'); //设置登录页打开的标志,避免重复
+				var uname = document.querySelector('#name');
+				var psw = document.querySelector('#password');
+				uname.value = base.getUserInfo().account || '';
+				mui('.login_btn').on('tap','button',function(){
+
+					// 点击登录时，不要弹出输入法
+					base.blur();
+					if(uname.value==''||psw.value==''){
+						mui.toast('用户名、密码为必填！');
+						return;
+					}
+					mui(this).button('loading');
+					var cancelLoad = function() {
+						mui(this).button('reset');
+					}.bind(this);
+					base.get('/api/login',{username:uname.value,password:psw.value},
+						function(res){
+							//success,记得存储用户信息
+							plus.storage.setItem('userInfo',JSON.stringify(res.data));
+							//plus.navigator.removeAllCookie();
+							//plus.navigator.setCookie(base.config.url,"JSESSIONID="+res.data.sessionId)
+							//暂时不判断,不管登录成功与否,都跳转
+	// 							mui.openWindow({
+	// 								url: 'index.html',
+	// 								id: 'index.html'
+	// 							});
+							cancelLoad();
+							var self = plus.webview.currentWebview();
+							setTimeout(function() {
+								mui("#login").button('reset');
+								plus.storage.setItem('loginFlag','0');
+								plus.webview.close(self);
+							}, 300)
+							//plus.webview.currentWebview().opener().reload();
+							var wins = plus.webview.all();
+							for(var i in wins){
+								if(wins[i].id!=plus.webview.currentWebview().id)
+									wins[i].reload();
+							}
+						},
+						function(res){
+							cancelLoad();
+							mui.toast('登录失败');
+						}
+					);
+				});
+			});
+			var back__first = null;
+			mui.back = function() {
+				// 操作是否退出程序
+				if(!back__first) {
+					back__first = new Date().getTime();
+					mui.toast('再按一次退出应用');
+					setTimeout(function() {
+						back__first = null;
+					}, 2000);
+				} else {
+					if(new Date().getTime() - back__first < 2000) {
+						plus.runtime.quit();
+					}
+				}
+			};
+		</script>
+	</body>
+
+</html>

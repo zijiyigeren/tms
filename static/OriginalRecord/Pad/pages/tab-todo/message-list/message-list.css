@@ -1,0 +1,4 @@
+/* 覆盖列表样式 */
+.list-item .list-content div p {
+	font-size: 14px;
+}

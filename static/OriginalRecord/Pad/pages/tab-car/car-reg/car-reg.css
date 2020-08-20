@@ -1,0 +1,42 @@
+/* 完成按钮 */
+#finish-btn-wrapper {
+	padding: 0 10px;
+	margin-bottom: 20px;
+}
+#finish-btn {
+	width: 100%;
+	height: 45px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #3e80cb;
+	border: 0;
+	border-radius: 2px;
+	color: #fff;
+	font-size: 15px;
+}
+#finish-btn:active {
+	background: #059;
+}
+#icon-btn-check {
+	background-image: url(../../../res/common/btn-check.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 27px 27px;
+	margin-right: 4.5px;
+	width: 27px;
+	height: 27px;
+}
+#barcode-btn {
+	position: absolute;
+	top: 8px;
+	right: 6px;
+}
+#barcode-btn::before {
+	font-size: 22px;
+}
+
+/* 覆盖车位输入框的样式 */
+.form .mui-input-row label ~ input[readonly] {
+	background: #fff;
+}

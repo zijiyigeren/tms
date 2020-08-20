@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link rel="shortcut icon" href="../../res/gif/1.gif" />
+	<link rel="stylesheet" href="../../../css/mui.min.css">
+	<link rel="stylesheet" href="../../../css/mui.picker.all.css">
+	<link rel="stylesheet" href="../../../css/reset.css">
+	<link rel="stylesheet" href="../../../css/app.css">
+	<link rel="stylesheet" href="../../../css/icons-extra.css">
+	<link rel="stylesheet" href="../../../components/list/list.css">
+	<link rel="stylesheet" href="../../../components/form/form.css">
+	<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+	<link rel="stylesheet" href="car-reg.css">
+</head>
+<body>
+
+	<!-- 页面 -->
+	<div id="app" v-cloak>
+
+		<!-- 滚动容器 -->
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+
+				<!-- 滚动内容 -->
+				<div>
+
+					<!-- 套用list样式 -->
+					<div class="list">
+						<div class="list-item">
+							<div class="list-head">
+								<span>车辆信息</span>
+							</div>
+							<div class="list-content">
+
+								<!-- 表单1 -->
+								<div class="form">
+									<div class="mui-input-row">
+										<label>送检单位：</label>
+										<input type="text" class="mui-input-clear" v-model="carInfo.comeCompany">
+									</div>
+									<div class="mui-input-row">
+										<label>车型：</label>
+										<input type="text" class="mui-input-clear" v-model="carInfo.model">
+									</div>
+									<div class="mui-input-row">
+										<label>VIN码：</label>
+										<input type="text" class="mui-input-clear" v-model="carInfo.vin">
+									</div>
+									<div class="mui-input-row">
+										<label>保密级别：</label>
+										<div class="select-wrapper">
+											<select v-model="carInfo.leveal" required>
+												<option value="" disabled>请选择</option>
+												<option v-for="(item, index) of securityLevelList" :key="index" :value="item">{{item}}</option>
+											</select>
+											<span class="icon-arrow-down"></span>
+										</div>
+									</div>
+									<div class="mui-input-row">
+										<label>检验类型：</label>
+										<div class="select-wrapper">
+											<select v-model="carInfo.checkType" required>
+												<option value="" disabled>请选择</option>
+												<option v-for="(item, index) of checkTypeList" :key="index" :value="item">{{item}}</option>
+											</select>
+											<span class="icon-arrow-down"></span>
+										</div>
+									</div>
+									<div class="mui-input-row">
+										<label>里程表读数：</label>
+										<input type="text" class="mui-input-clear" v-model="carInfo.lichengbiao">
+									</div>
+									<div class="mui-input-row">
+										<label>条形码：</label>
+										<div class="input-scan-wrapper">
+											<input type="text" class="input-scan" v-model="carInfo.barcode">
+											<span class="icon-scan" @tap="onScanTap()"></span>
+										</div>
+									</div>
+								</div>
+								<!-- 表单1结束 -->
+
+							</div>
+						</div>
+						<div class="list-item">
+							<div class="list-head">
+								<span>基本信息</span>
+							</div>
+							<div class="list-content">
+
+								<!-- 表单2 -->
+								<div class="form">
+									<div class="mui-input-row">
+										<label>送样人：</label>
+										<input type="text" class="mui-input-clear" v-model="carInfo.comePeople">
+									</div>
+									<div class="mui-input-row">
+										<label>联系电话：</label>
+										<input type="text" class="mui-input-clear" v-model="carInfo.contract">
+									</div>
+									<div class="mui-input-row">
+										<label>送样日期：</label>
+										<div class="input-date-wrapper">
+											<input type="text" class="input-date" v-model="carInfo.comeDate" @tap="selectDate()" readonly>
+											<span class="icon-calendar"></span>
+										</div>
+									</div>
+									<div class="mui-input-row">
+										<label>收样人：</label>
+										<input type="text" class="mui-input-clear" v-model="carInfo.incomePeople">
+									</div>
+									<div class="mui-input-row">
+										<label>车位：</label>
+										<input type="text" :data-placeid="carInfo.bbplaceid" v-model="place" @tap="onSelectParkingLotTap()" readonly>
+									</div>
+									<div class="mui-input-row">
+										<label>环保留样：</label>
+										<div class="select-wrapper">
+											<select v-model="carInfo.envSample" required>
+												<option v-for="(item, index) of envSampleList" :key="index" :value="item[0]">{{item[1]}}</option>
+											</select>
+											<span class="icon-arrow-down"></span>
+										</div>
+									</div>
+								</div>
+								<!-- 表单2结束 -->
+
+							</div>
+						</div>
+					</div>
+
+					<!-- 完成按钮 -->
+					<div id="finish-btn-wrapper">
+						<button id="finish-btn" @click="onFinishBtnTap">
+							<span id="icon-btn-check"></span>
+							<span>完成</span>
+						</button>
+					</div>
+					<!-- 完成按钮结束 -->
+
+				</div>
+				<!-- 滚动内容结束 -->
+
+			</div>
+		</div>
+		<!-- 滚动容器结束 -->
+
+	</div>
+	<!-- 页面结束 -->
+
+	<script src="../../../js/mui.min.js"></script>
+	<script src="../../../js/mui.picker.min.js"></script>
+	<script src="../../../js/vue.js"></script>
+	<script src="../../../js/config.js"></script>
+	<script src="../../../js/app.js"></script>
+	<script src="../../../js/webviews.js"></script>
+	<script src="../../../components/scroller/scroller.js"></script>
+	<script src="car-reg.js"></script>
+</body>
+</html>

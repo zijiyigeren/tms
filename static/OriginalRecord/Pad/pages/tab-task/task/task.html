@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link rel="shortcut icon" href="../../res/gif/1.gif" />
+	<link rel="stylesheet" href="../../../css/mui.min.css">
+	<link rel="stylesheet" href="../../../css/reset.css">
+	<link rel="stylesheet" href="../../../css/app.css">
+	<link rel="stylesheet" href="../../../components/search/search-bar-with-year.css">
+	<link rel="stylesheet" href="../../../components/list/list.css">
+	<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+	<link rel="stylesheet" href="task.css">
+</head>
+<body>
+
+	<!-- 页面 -->
+	<div id="app" v-cloak>
+
+		<!-- 搜索栏 -->
+		<form class="search-bar-with-year" action="javascript:void(0);">
+			<div>
+				<div class="select-wrapper">
+					<select>
+						<option value="taskCode">任务号</option>
+						<option value="sampleName">样品名称</option>
+						<option value="sampleType">规格型号</option>
+						<option value="companyCheck">受检单位</option>
+					</select>
+					<span class="icon-arrow-down"></span>
+				</div>
+				<div class="select-wrapper">
+					<select id="taskSelect" v-model="taskStatus">
+						<option value="">全部</option>
+						<option value="1">已完成</option>
+						<option value="2">未完成</option>
+						
+					</select>
+					<span class="icon-arrow-down"></span>
+				</div>
+				<div class="select-wrapper">
+					<select v-model="searchdate">
+						<option v-for="(item, index) of searchdateOptions" :value="item">{{item}}</option>
+					</select>
+					<span class="icon-arrow-down"></span>
+				</div>
+			</div>
+			<div>
+				<div class="search-wrapper">
+					<input type="text" placeholder="请输入关键字" @keyup.enter="onSearchBtnTap()">
+					<span class="icon-search" @tap="onSearchBtnTap()"></span>
+				</div>
+				<div class="checkbox-wrapper">
+					<span class="checkbox-label">结果中查询</span>
+					<input type="checkbox" v-model="isCheckboxChecked">
+					<span class="icon-check" v-show="!isCheckboxChecked"></span>
+					<span class="icon-check checked" v-show="isCheckboxChecked"></span>
+				</div>
+			</div>
+		</form>
+		<!-- 搜索栏结束 -->
+
+		<!-- 滚动容器 -->
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+
+				<!-- 任务列表 -->
+				<ul id="task-list" class="list">
+					<li
+						class="list-item"
+						v-for="(item, index) of taskList"
+						:key="index"
+						@tap="onItemTap(item)"
+					>
+						<div class="list-head">
+							<div>
+								<span>任务号：</span>
+								<span>{{item.taskCode}}</span>
+							</div>
+						</div>
+						<div class="list-content">
+							<div>
+								<ul>
+									<li>
+										<span>样品名称：</span>
+										<span>{{item.sampleName}}</span>
+									</li>
+									<li>
+										<span>规格型号：</span>
+										<span>{{item.sampleType}}</span>
+									</li>
+									<li>
+										<span>受检单位：</span>
+										<span>{{item.companyCheck}}</span>
+									</li>
+								</ul>
+							</div>
+							<span class="mui-icon mui-icon-arrowright"></span>
+						</div>
+					</li>
+				</ul>
+				<!-- 任务列表结束 -->
+
+			</div>
+		</div>
+		<!-- 滚动容器结束 -->
+
+	</div>
+	<!-- 页面结束 -->
+
+	<script src="../../../js/mui.min.js"></script>
+	<script src="../../../js/vue.js"></script>
+	<script src="../../../js/config.js"></script>
+	<script src="../../../js/app.js"></script>
+	<script src="../../../js/config.js"></script>
+	<script src="../../../js/webviews.js"></script>
+	<script src="../../../components/scroller/scroller.js"></script>
+	<script src="../../../components/search/search.js"></script>
+	<script src="task.js"></script>
+</body>
+</html>

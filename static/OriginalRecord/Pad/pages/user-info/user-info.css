@@ -1,0 +1,200 @@
+html,body{
+	margin: 0;
+	padding: 0;
+	width: 100%;height: 100%;
+}
+header{
+	background: #FFAA00;
+}
+.mui-content{
+	width: 100%;height: 100%;
+	background: #F5F5F5;
+}
+ul,ol,li{
+	margin: 0;
+	padding: 0;
+}
+ul li,ol li{
+	list-style: none;
+}
+img,a,label,span,label,p{
+	display: inline-block;
+}
+input,select,textarea,button{
+	margin: 0;padding: 0;
+}
+
+
+.mui-content {
+	padding-left: 0.3rem;
+	padding-right: 0.3rem;
+	padding-top: 0.4rem;
+	position: relative;
+	background-color: white;
+}
+
+header {
+	background: #3E80CB;
+}
+
+header.mui-bar-nav {
+	background: #3E80CB;
+	color: white;
+	z-index: 0;
+}
+
+.mui-bar .mui-title {
+	color: white;
+	font-family: "microsoft yahei";
+}
+
+.mui-bar a {
+	color: white;
+}
+
+#bg-top {
+	width: 100%;
+	height: 3.5rem;
+	background-image: url(../../res/userInfo/blue.png);
+	background-size: contain;
+	background-repeat: no-repeat;
+
+
+	position: absolute;
+	top: 43px;
+	left: 0;
+	z-index: 1;
+}
+.img-wrapper {
+	z-index: 1;
+	position: relative;
+	top: 50px;
+	text-align: center;
+}
+#imgUpload{
+	width: 2.1rem;
+	height: 2.1rem;
+	border-radius: 50%;
+	box-shadow: 0px 0px 15px rgba(0, 0, 0, .25);
+	background-image: url(../../res/userInfo/touxiang%201.png);
+	background-size: 2.2rem 2.2rem;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
+.name {
+	position: relative;
+	top: 70px;
+	font-family: "microsoft yahei";
+	font-weight: bold;
+}
+
+.work {
+	position: relative;
+	top: 75px;
+	font-family: "microsoft yahei";
+	color: gray;
+}
+
+.msg-chg {
+	width: 100%;
+	height: 3.74rem;
+	margin: 2rem 0 0;
+	background: #FFFFFF;
+	border-radius: 2px;
+}
+
+.msg-chg>ul {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.msg-chg>ul>li {
+	width: 100%;
+	height: 0.96rem;
+	line-height: 0.96rem;
+	border-bottom: 1px solid #DADADA;
+	overflow: hidden;
+	position: relative;
+}
+
+.msg-chg>ul>li>img:first-child {
+	width: 0.58rem;
+	height: 0.58rem;
+	float: left;
+	margin-left: 0.3rem;
+	margin-top: 0.15rem;
+}
+
+.msg-chg>ul>li>span {
+	display: inline-block;
+	width: auto;
+	line-height: 0.96rem;
+	float: left;
+	margin-left: 0.2rem;
+	font-size: 0.34rem;
+	color: #030303;
+}
+
+.msg-chg>ul>li>label {
+	/* color: #0071FF;
+	position: relative;
+	left: 10%; */
+	float: right;
+	width: 65%;
+	color: #0071FF;
+	height: 100%;
+	/* position: relative; */
+	left: 10%;
+}
+
+.msg-chg>ul>li>input {
+	float: right;
+	width: 65%;
+	color: #0071FF;
+	height: 100%;
+	/* position: relative; */
+	left: 10%;
+
+}
+
+/* .msg-chg>ul>li:last-child>span{
+	/* line-height: 0.96rem;
+	margin-left: 0.3rem; */
+display: inline-block;
+width: auto;
+line-height: 0.96rem;
+float: left;
+margin-left: 0.2rem;
+font-size: 0.34rem;
+color: #030303;
+}
+
+*/ .msg-chg>ul>li>img:last-child {
+	width: 0.3rem;
+	height: 0.3rem;
+	float: right;
+	margin-top: 0.3rem;
+	margin-right: 0.3rem;
+}
+
+.msg-chg>ul>li .mui-switch {
+	width: 1.0rem;
+	height: 0.62rem;
+	position: absolute;
+	right: 0.3rem;
+	top: 0.15rem;
+}
+
+.mui-switch .mui-switch-handle {
+	width: 0.6rem;
+	height: 0.56rem;
+	/* transform: translate(0.45rem,0)!important; */
+}
+
+.mui-switch.mui-active {
+	background-color: #3E80CB;
+	border-color: #3E80CB;
+}

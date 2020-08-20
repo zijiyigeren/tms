@@ -1,0 +1,22 @@
+<div class="layui-tpl-container">
+    <div class="layui-form p-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red;">*</span>表单名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="formName" placeholder="请输入表单名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red;">*</span>表单编码</label>
+            <div class="layui-input-block">
+                <input type="text" name="formCode" placeholder="请输入表单编码" class="layui-input">
+            </div>
+        </div>
+        <!-- 提交按钮 -->
+        <!-- 取消按钮 -->
+        <div class="layui-form-item" style="text-align: center;">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="processSave">保存</button>
+            <button class="layui-btn layui-btn-primary" lay-submit lay-filter="popProcessCancle">取消</button>
+        </div>
+    </div>
+</div>

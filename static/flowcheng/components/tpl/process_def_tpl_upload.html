@@ -1,0 +1,153 @@
+<!-- 上传模型 -->
+<div class="layui-tpl-upload" id="process_def_tpl_upload">
+    <div class="layui-form">
+        <div class="layui-form-item form_item_upload">
+            <label class="layui-form-label"><span style="color: red;">*</span>上传模式</label>
+            <div class="layui-input-block">
+                <select name="forceSave" id="upload_mode" lay-filter="upload_mode">
+                    <option value=""></option>
+                    <option value="0">普通上传</option>
+                    <option value="1">强制上传</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item form_item_upload form_item_upfile">
+            <label class="layui-form-label"><span style="color: red;">*</span>模板文件</label>
+            <div class="layui-input-block">
+                <input type="text" name="uploadFile" disabled class="layui-input" id="uploadFileName">
+                <button class="layui-btn layui-btn-normal upload_btn" lay-submit id="upload_file" lay-filter="upload_file">选择</button>
+                <button class="layui-btn layui-btn-danger" lay-submit id="file_delete" lay-filter="file_delete">删除</button>
+            </div>
+        </div>
+        <!-- 提交按钮 -->
+        <!-- 取消按钮 -->
+        <div class="layui-form-item" style="text-align: center;">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="uploadDetermine" id="uploadDetermine">确定</button>
+            <button class="layui-btn layui-btn-primary" lay-submit lay-filter="uploadCancel">取消</button>
+        </div>
+    </div>
+</div>
+<style>
+    .layui-form {
+        padding-top: 15px;
+    }
+    .form_item_upload .layui-input-block{
+        padding-right: 20px !important ;
+    }
+    .form_item_upfile .layui-input-block {
+        display: flex;
+        align-items: center;
+    }
+    .form_item_upfile .layui-input-block .upload_btn {
+        margin: 0 15px !important;
+    }
+    #file_delete{
+        height: 30px !important;
+        line-height: 30px !important;
+        padding: 0 20px !important;
+        margin: 0 !important;
+    }
+</style>
+<script type="text/javascript">
+    layui.use(["jquery", "upload", "form", "layer", "element"], function () {
+        var $ = layui.$,
+            element = layui.element,
+            layer = layui.layer,
+            upload = layui.upload,
+            form = layui.form,
+            admin = layui.admin;
+        //拖拽上传
+        var curWwwPath = window.document.location.href;
+        var pathName = window.document.location.pathname;
+        var pos = curWwwPath.indexOf(pathName);
+        var localhostPath = curWwwPath.substring(0, pos);
+        // localhostPath+'/api/models/uploadJSONFile'
+        var uploadFile = null;
+        var uploadInst = upload.render({
+            elem: '#upload_file',
+            url: '#',
+            method: "post",
+            accept: 'file',
+            auto: false,
+            choose: function(obj){ // 上传前选择回调方法
+                obj.preview(function(index, file, result){
+                    // file 表示文件信息，result 表示文件src地址
+                    let type = file.name.substring((file.name.lastIndexOf("\.")) + 1, file.name.length);
+                    if ( type != 'pdf' && type != 'doc' && type != 'docx' && type != 'xlsx' && type != 'xis' && type != 'zip'&& type != 'rar' && type != 'jpg' && type != 'jpeg' && type != 'png' && type != 'gif'&& type != 'ppt' && type != 'pptx' && type != 'json') {
+                        return layer.msg(
+                            '只支持'+'pdf、doc、docx、xlsx、xis、zip、rar、jpg、jpeg、png、gif、ppt、pptx、json'+'的格式', 
+                            { icon: 5 }
+                        );
+                    } else {
+                        uploadFile = file;
+                        $('#uploadFileName').val(file.name);
+                    }
+                    return false;
+                });
+
+            },
+        });
+                
+        // 上传上传
+        form.on('submit(file_delete)', function() {
+            uploadFile = null;
+            $('#uploadFileName').val('');
+        });
+
+        // 上传模型-确定
+        form.on('submit(uploadDetermine)', function(data) {
+            console.log('上传模型-确定',data);
+            var field = data.field;
+            if(!field.forceSave && field.uploadFile) {
+                return layer.msg('上传模式不能为空，请选择！', {
+                    icon: 5
+                });
+            }
+            if(field.forceSave && !field.uploadFile) {
+                return layer.msg('模板文件不能为空，请选择！', {
+                    icon: 5
+                });
+            }
+            if (!field.forceSave && !field.uploadFile && !uploadFile) {
+                return layer.msg('不能为空，请选择数据！', {
+                    icon: 5
+                });
+            } else {
+                // console.log('field',field);
+                var params = new FormData();
+                params.append('forceSave', field.forceSave);
+                params.append('uploadFile', uploadFile);
+                $.ajax({
+                    type: 'post',
+                    dataType: "json",
+                    data: params,
+                    url: localhostPath+'/api/models/uploadJSONFile',
+                    timeout: 60000,
+                    processData: false,
+                    contentType: false, 
+                    success: function(data){
+                        // console.log('data',data);
+                        if(data.ok) {
+                            return layer.msg('上传成功', {
+                                icon: 1,
+                            });
+                            // admin.closePopupCenter();
+                            layer.close(layer.index);
+                            window.parent.location.reload();
+                        } else {
+                            console.log('data',data);
+                            return layer.msg(data.message, {
+                                icon: 5
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        // 上传模型-取消
+        form.on('submit(uploadCancel)', function() {
+            admin.closePopupCenter();
+        });
+        element.init();
+    });
+</script>

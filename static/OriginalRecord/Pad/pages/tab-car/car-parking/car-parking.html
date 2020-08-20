@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link rel="shortcut icon" href="../../res/gif/1.gif" />
+	<link rel="stylesheet" href="../../../css/mui.min.css">
+	<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+	<link rel="stylesheet" href="car-parking.css">
+</head>
+<body>
+
+	<!-- 页面 -->
+	<div id="app" v-cloak>
+
+		<!-- 车位筛选 -->
+		<div id="parking-lot-filter">
+			<div class="select-wrapper">
+				<select v-model="currentArea">
+					<option :value="null">请选择停车场</option>
+					<option v-for="(item, index) of areaOptions" :key="index" :value="item">{{item.areaCode}}</option>
+				</select>
+				<div class="select-display">
+					{{currentArea ? currentArea.areaCode : '请选择停车场'}}
+				</div>
+				<span class="icon-arrow-down"></span>
+			</div>
+			<div class="select-wrapper">
+				<select v-model="currentRow">
+					<option :value="null">请选择停车场</option>
+					<option v-for="(item, index) of rowOptions" :key="index" :value="item">{{item.lineName}}</option>
+				</select>
+				<div class="select-display">
+					{{currentRow ? currentRow.lineName : '请选择排'}}
+				</div>
+				<span class="icon-arrow-down"></span>
+			</div>
+		</div>
+		<!-- 车位筛选结束 -->
+
+		<!-- 滚动容器 -->
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+
+				<!-- 车位列表 -->
+				<div class="parking-lots-wrapper">
+					<span class="mui-pull-loading mui-icon mui-spinner" v-show="isLoading"></span>
+					<ul id="parking-lots">
+						<li class="parking-lot-wrapper" :class="{'occupied':item.status}" v-for="(item, index) of parkingLots" :key="index" :data-index="item.index" @click="onParkingLotTap(item)">
+							<span class="parking-lot-id" v-if="item.status">{{item.vincode}}</span>
+							<span v-else>&nbsp;</span>
+							<img class="parking-lot-icon" src="../../../res/car/car1.png" alt="" v-if="item.status">
+							<img class="parking-lot-icon" src="../../../res/car/car.png" alt="" v-else>
+							<span class="parking-lot-name" v-if="item.status">{{item.comeCompany}}</span>
+							<span v-else>&nbsp;</span>
+							<span class="parking-lot-index">第{{item.linenumber}}位</span>
+						</li>
+					</ul>
+				</div>
+				<!-- 车位列表结束 -->
+
+			</div>
+		</div>
+		<!-- 滚动容器结束 -->
+
+	</div>
+	<!-- 页面结束 -->
+
+	<script src="../../../js/mui.min.js"></script>
+	<script src="../../../js/app.js"></script>
+	<script src="../../../js/common.js"></script>
+	<script src="../../../js/config.js"></script>
+	<script src="../../../js/vue.js"></script>
+	<script src="../../../components/scroller/scroller.js"></script>
+	<script src="car-parking.js"></script>
+</body>
+</html>

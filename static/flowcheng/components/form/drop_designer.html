@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../../assets/css/gc.spread.sheets.excel2013white.12.0.0.css"/>
+    <style>
+        body{
+            margin: 0;
+        }
+
+    </style>
+
+    <!-- CDN Reference     -->
+    <link rel="icon" type="image/png" href="https://demo.grapecity.com.cn/SpreadJS/TutorialSample/icon.ico" />
+    <link rel=" stylesheet" type="text/css" href="https://cdn.grapecity.com.cn/spreadjs/css/basscss.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.grapecity.com.cn/spreadjs/css/gc.spread.sheets.excel2013white.12.0.6.css" />
+    <link href="../../assets/libs/zTree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.bootcss.com/jqueryui/1.11.0/jquery-ui.css" rel="stylesheet">
+
+    <script type="text/javascript" src="https://cdn.grapecity.com.cn/spreadjs/scripts/gc.spread.sheets.all.12.0.6.min.js"></script>
+    <script type="text/javascript" src="https://cdn.grapecity.com.cn/spreadjs/scripts/resources/zh/gc.spread.sheets.resources.zh.12.0.6.min.js"></script>
+    <script type="text/javascript" src="https://cdn.grapecity.com.cn/spreadjs/scripts/jquery-1.11.1.min.js"></script>
+
+    <script src="https://cdn.bootcss.com/jqueryui/1.11.0/jquery-ui.js"></script>
+
+    <script src="../../assets/libs/zTree/js/jquery.ztree.all.js"></script>
+
+</head>
+<body>
+<button id="save">保存</button><button id="add_ztree">添加树形菜单</button><button id="add_timeseletion">添加日历菜单</button><button id="add_text">添加文本框</button>
+ <button id="add_checkbox">添加单选按钮</button>
+
+<div id="ss" style="width: 99%;">
+
+
+
+</div>
+<!--&lt;!&ndash; jQuery 1.x 版本兼容 IE8 &ndash;&gt;-->
+<!--<script type="text/javascript" src="../../assets/libs/jquery-1.12.4.min.js"></script>-->
+<!--&lt;!&ndash; spreadJS脚本文件 &ndash;&gt;-->
+<!--<script type="text/javascript" src="../../assets/js/gc.spread.sheets.all.12.0.0.min.js"></script>-->
+<!--<script type="text/javascript" src="../../assets/libs/layer/layer.js"></script>-->
+<script>
+
+    //树形菜单的假数据
+    var items = [
+        {
+            id:1,
+            name: "北京", open: true,
+            children: [
+                {id:11,
+                    name: "海淀区",
+                },
+                {id:12,
+                    name: "朝阳区",
+                }
+            ]
+        },
+        {	id:2,
+            name: "上海", open: true,
+            children: [
+                {
+                    id:21,
+                    name: "浦东区",
+                }
+            ]
+        },
+        {	id:3,
+
+            name: "天津",
+        },
+        {	id:4,
+            name: "重庆",
+        },
+        {	id:5,
+            name: "陕西省", open: true,
+            children: [
+                {
+                    id:51,
+                    name: "西安市",
+                    children: [
+                        {
+                            id:511,
+                            name: "雁塔区",
+                        },
+                        {
+                            id:512,
+                            name: "莲湖区",
+                        }
+                    ]
+                },
+                {	id:52,
+                    name: "宝鸡市",
+                }
+            ]
+        },
+    ];
+
+
+    function addCaptionCheckbox(sheet , rowNum , colNum  ){
+        console.log("添加单选按钮---");
+
+        var cellType1 = new GC.Spread.Sheets.CellTypes.CheckBox();
+        cellType1.caption("caption_name");
+        cellType1.textTrue("是");
+        cellType1.textFalse("否");
+        cellType1.textIndeterminate("未选择");
+        cellType1.textAlign(GC.Spread.Sheets.CellTypes.CheckBoxTextAlign.right);
+        cellType1.isThreeState(false);
+        console.log(rowNum,colNum);
+        sheet.setCellType(rowNum, colNum,cellType1,GC.Spread.Sheets.SheetArea.viewport);
+    }
+    //添加树形菜单
+    function addZtree(sheet ,rowNum , colNum) {
+
+        console.log("添加树形菜单---");
+
+        var keyword_null = null, keyword_undefined = undefined;
+        var DefaultDropDownButtonWidth = 17;
+        var ComboTreeCellType = function () { ComboTreeCellType.treeID = 0; };
+        ComboTreeCellType.prototype = new GC.Spread.Sheets.CellTypes.ComboBox();
+        ComboTreeCellType.prototype.createEditorElement = function (context) {
+            var self = this, sheet = context.sheet;
+            var zTree = $('<ul class="ztree"></ul>');
+            self.treeID = "tree" + ComboTreeCellType.treeID++;
+            var setting = {
+                treeId: self.treeID,
+                callback: {
+                    onClick: function (data, treeId, treeNode) {
+                        self.selectedNode = treeNode;
+                        sheet.endEdit();
+                        self.onItemSelect(data,treeId,treeNode);
+                    }
+                }
+            };
+            $.fn.zTree.init(zTree, setting, this.items());
+            var editor = $('<div gcUIElement="ComboTree" style="background-color:white;max-height:400px;border-style:solid;border-width:thin;border-color:black;overflow:scroll"></div>');
+            editor.append(zTree);
+            editor[0].comboBox = zTree[0];
+            return editor[0];
+        };
+
+        ComboTreeCellType.prototype.getEditorValue = function (editorContext, context) {
+            var zTree = editorContext;
+            if (this.selectedNode) {
+                var row = context.row;
+                var col = context.col;
+                var cell = context.sheet.getCell(row,col);
+                cell.tag({id:1,name:this.selectedNode.name});
+                return this.selectedNode.name;
+            }
+            return "";
+        };
+        ComboTreeCellType.prototype.setEditorValue = function (editorContext, value, context) {
+            var treeObj = $.fn.zTree.getZTreeObj(self.treeID);
+            var nodes = treeObj.getNodes();
+            if (value) {
+                var node = this.findNode(nodes, value);
+                if (node) {
+                    treeObj.selectNode(node);
+                    this.selectedNode = node;
+                } else {
+                    treeObj.selectNode(null);
+                }
+            } else {
+                treeObj.selectNode(null);
+            }
+        };
+
+        ComboTreeCellType.prototype.findNode = function (nodes, name) {
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].name === name) {
+                    return nodes[i];
+                }
+                if (nodes[i].children && nodes[i].children.length > 0) {
+                    var node = this.findNode(nodes[i].children, name);
+                    if (node) {
+                        return node;
+                    }
+                }
+            }
+            return null;
+        };
+
+        ComboTreeCellType.prototype.onItemSelect = function (data, treeId, treeNode) {
+             // for(var i=0;i<data.data.length;i++)
+             //     alert(data.data[i].id+'\n'+data.data[i].current_value);
+            // var jsonData = JSON.stringify(data);// 转成JSON格式
+            //  var result = $.parseJSON(data);// 转成JSON对象
+            // alert(result);
+            //  var property = "";
+            //
+            //  var obj = data["data"] ;
+            //  for (var item in data) {
+            //      property += "属性：" + item + "数值：" + data[item] + "\n";
+            //  }
+            //  //console.log(property);
+            //  // for (var item in obj) {
+            //  //      property += "属性：" + item + "数值：" + obj[item] + "\n";
+            // //
+            //  // }
+            console.log(treeNode.name);
+
+
+        };
+
+        ComboTreeCellType.prototype.focus = function (editorContext, context) {
+        };
+        ComboTreeCellType.prototype.selectAll = function (editorContext, context) {
+        };
+        ComboTreeCellType.prototype.activateEditor = function (editorContext, cellStyle, cellRect, context) {
+
+
+        };
+        ComboTreeCellType.prototype.deactivateEditor = function (editorContext, context) {
+        };
+        ComboTreeCellType.prototype.updateEditor = function (editorContext, cellStyle, cellRect, context) {
+            var sheet = editorContext && context && context.sheet;
+            if (!sheet) {
+                return;
+            }
+            var comboBox = editorContext.comboBox;
+            if (cellStyle && comboBox) {
+                var render = sheet._render;
+                // 将 Cell 样式设置给Combo
+            }
+            if (cellRect && comboBox) {
+                var offset = $(editorContext.parentNode).position();
+
+                $(editorContext).width(140);
+                $(editorContext).height(200);
+                return {height:200,width:140};
+            }
+        };
+        ComboTreeCellType.prototype.format = function (value, format, conditionalForeColor, context) {
+            if (!value) {
+                return "";
+            }
+            var self = this, editorValueType = self._editorValueType, items = self._items;
+            if (items) {
+                var count = items.length;
+                if (editorValueType === 0 /* Text */) {
+                }
+                else if (editorValueType === 1 /* Index */) {
+                    var index = parseInt(value);
+                    if (0 <= index && index < count) {
+                        var item = items[index];
+                        if (item !== keyword_undefined && item !== keyword_null) {
+                            value = (item.hasOwnProperty("text") ? item.text : item);
+                        }
+                    }
+                }
+                else if (editorValueType === 2 /* Value */) {
+                    for (var i = 0; i < count; i++) {
+                        var item = items[i];
+                        if (item && item.hasOwnProperty("value") && item.value === value) {
+                            value = item.text;
+                            break;
+                        }
+                    }
+                }
+            }
+            return GC.Spread.Sheets.CellTypes.Base.prototype.format.call(this, value, format, conditionalForeColor);
+        };
+        ComboTreeCellType.prototype.parse = function (text, formatStr, context) {
+            var self = this, editorValueType = self._editorValueType, items = self._items;
+            var parseText = GC.Spread.Sheets.CellTypes.Base.prototype.parse.call(this, text, formatStr);
+            if (items) {
+                var count = items.length;
+                if (editorValueType === 0 /* Text */) {
+                    return parseText;
+                }
+                else if (editorValueType === 1 /* Index */) {
+                    for (var i = 0; i < count; i++) {
+                        var item = items[i];
+                        if ((item && item.hasOwnProperty("text") && item.text === parseText) || (item === parseText)) {
+                            return i;
+                        }
+                    }
+                }
+                else if (editorValueType === 2 /* Value */) {
+                    for (var i = 0; i < count; i++) {
+                        var item = items[i];
+                        if ((item && item.hasOwnProperty("text") && item.text === parseText)) {
+                            return item.value;
+                        }
+                    }
+                }
+            }
+            return parseText;
+        };
+        ComboTreeCellType.prototype.getHitInfo = function (x, y, cellStyle, cellRect, context) {
+            if (!context) {
+                return keyword_null;
+            }
+            var sheetArea = context.sheetArea, sheet = context.sheet;
+            if ((sheetArea === keyword_null || sheetArea === keyword_undefined || sheetArea === 3 /* viewport */) && cellRect) {
+                var x2 = cellRect.x + cellRect.width;
+                var info = { x: x, y: y, row: context.row, col: context.col, cellStyle: cellStyle, cellRect: cellRect, sheetArea: sheetArea, sheet: sheet };
+                if (x2 - DefaultDropDownButtonWidth <= x && x < x2) {
+                    info.isReservedLocation = true;
+                }
+                return info;
+            }
+            return keyword_null;
+        };
+        ComboTreeCellType.prototype.processMouseDown = function (hitInfo) {
+            var sheet = hitInfo.sheet, sheetArea = hitInfo.sheetArea;
+            if ((sheetArea === keyword_null || sheetArea === keyword_undefined || sheetArea === 3 /* viewport */) && hitInfo.isReservedLocation && sheet) {
+                sheet.startEdit();
+            }
+        };
+
+        var comboTreeCellType = new ComboTreeCellType();
+        comboTreeCellType.items(items);
+        sheet.setCellType(rowNum, colNum, comboTreeCellType ,GC.Spread.Sheets.SheetArea.viewport);
+    }
+
+    function  addTimeSelection(sheet , rowNum , colNum  ) {
+
+        console.log("添加日历---");
+        function DatePickerCellType() {
+        }
+        DatePickerCellType.prototype = new GC.Spread.Sheets.CellTypes.Base();
+        DatePickerCellType.prototype.createEditorElement = function () {
+            //Create input presenter.
+            var input = document.createElement("input");
+            return input;
+        };
+        DatePickerCellType.prototype.activateEditor = function (editorContext, cellStyle, cellRect) {
+            //Initialize input editor.
+            if (editorContext) {
+                $editor = $(editorContext);
+                GC.Spread.Sheets.CellTypes.Base.prototype.activateEditor.apply(this, arguments);
+                $editor.datepicker();
+                $editor.css("position", "absolute");
+                $editor.attr("gcUIElement", "gcEditingInput");
+                $(".ui-datepicker").attr("gcUIElement", "gcEditingInput");
+            }
+        };
+        DatePickerCellType.prototype.deactivateEditor = function (editorContext) {
+            //Remove input editor when end editor status.
+            if (editorContext) {
+                var element = editorContext;
+                $(element).datepicker("hide");
+                $(element).datepicker("destroy");
+            }
+            GC.Spread.Sheets.CellTypes.Base.prototype.deactivateEditor.apply(this, arguments)
+        };
+        DatePickerCellType.prototype.setEditorValue = function (editor, value) {
+            //Sync value from Cell value to editor value.
+            $(editor).datepicker("setDate", value);
+        };
+        DatePickerCellType.prototype.getEditorValue = function (editor) {
+            //Sync value from editor value to cell value.
+            return $(editor).datepicker("getDate");
+        };
+        DatePickerCellType.prototype.updateEditor = function (editorContext, cellStyle, cellRect) {
+            if (editorContext) {
+                $editor = $(editorContext);
+                $editor.css("width", cellRect.width - 1);
+                $editor.css("height", cellRect.height - 3);
+            }
+        };
+        sheet.suspendPaint();
+        // sheet.setValue(0, 1, "DatePicker", GC.Spread.Sheets.SheetArea.colHeader);
+        // var range = sheet.getRange(-1, 1, -1 ,1);
+        var range = sheet.getCell(rowNum,colNum);
+        range.cellType(new DatePickerCellType());
+        range.width(100);
+        range.formatter("yyyy年MM月dd日");
+        sheet.resumePaint();
+
+    }
+
+
+    function addCheckboxQ(spread) {
+        var td = document.getElementById("add_checkbox");
+        td.draggable = true;
+        td.addEventListener("dragstart", function (ev) {
+            // 存储相关的拖拽元素
+            dragged = ev.target;
+            // 设置拖拽元素的透明度
+            ev.target.style.opacity = 0.5;
+            console.log("开始拖动 ")
+        }, false);
+        /* 事件在拖拽元素上触发 */
+        document.addEventListener("dragend", function (ev) {
+            // 重设透明度
+            event.target.style.opacity = "";
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragover", function (event) {
+            // 默认情况下是无法允许一个元素放置在另一个元素上的，要放置必须阻止默认行为
+            event.preventDefault();
+            console.log("已经在目标区域 ")
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragenter", function (event) {
+            // 当拖拽元素进入潜在放置区域时，高亮处理
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "purple";
+            }
+
+            console.log("已经触发")
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragleave", function (event) {
+            // 当拖拽元素离开潜在放置区域时重置该目标区域的背景
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "";
+            }
+            console.log("离开目标区域！")
+        }, false);
+
+        /* 松开鼠标，触发 drop */
+        document.addEventListener("drop", function (event) {
+            // 阻止默认行为（drop的默认处理方式是当初链接处理）
+            event.preventDefault();
+            // 把拖拽元素移入目标区域
+            //这里要经过两步处理
+            // 1、先把拖拽元素从原父元素中删除（这步不是必须的）
+            ///2、然后再添加到目标区域
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "";
+                dragged.parentNode.removeChild(dragged);
+                event.target.appendChild(dragged);
+            }
+            //获取拖动物理在屏幕的位置
+            var offsetL = document.getElementById("ss").offsetLeft;
+            var offsetT = document.getElementById("ss").offsetTop;
+            //获取拖动块的值
+            var tab_value = document.getElementById("add_checkbox").innerText
+            console.log(tab_value)
+            var x = event.pageX - offsetL;
+            var y = event.pageY - offsetT;
+            //获取单元格的位置
+            var target = spread.hitTest(x, y);
+            console.log(target)
+            console.log("列： " + target.worksheetHitInfo.col + "行: " + target.worksheetHitInfo.row);
+            var sheet = spread.getActiveSheet();
+            //sheet.setValue(target.worksheetHitInfo.row, target.worksheetHitInfo.col, tab_value);
+            addCaptionCheckbox(sheet,target.worksheetHitInfo.row,target.worksheetHitInfo.col);
+
+            console.log("执行完毕 ")
+        })
+    }
+
+
+
+    function addZtreeQ(spread) {
+        var td = document.getElementById("add_ztree");
+        td.draggable = true;
+        td.addEventListener("dragstart", function (ev) {
+            // 存储相关的拖拽元素
+            dragged = ev.target;
+            // 设置拖拽元素的透明度
+            ev.target.style.opacity = 0.5;
+            console.log("开始拖动 ")
+        }, false);
+        /* 事件在拖拽元素上触发 */
+        document.addEventListener("dragend", function (ev) {
+            // 重设透明度
+            event.target.style.opacity = "";
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragover", function (event) {
+            // 默认情况下是无法允许一个元素放置在另一个元素上的，要放置必须阻止默认行为
+            event.preventDefault();
+            console.log("已经在目标区域 ")
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragenter", function (event) {
+            // 当拖拽元素进入潜在放置区域时，高亮处理
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "purple";
+            }
+
+            console.log("已经触发")
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragleave", function (event) {
+            // 当拖拽元素离开潜在放置区域时重置该目标区域的背景
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "";
+            }
+            console.log("离开目标区域！")
+        }, false);
+
+        /* 松开鼠标，触发 drop */
+        document.addEventListener("drop", function (event) {
+            // 阻止默认行为（drop的默认处理方式是当初链接处理）
+            event.preventDefault();
+            // 把拖拽元素移入目标区域
+            //这里要经过两步处理
+            // 1、先把拖拽元素从原父元素中删除（这步不是必须的）
+            ///2、然后再添加到目标区域
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "";
+                dragged.parentNode.removeChild(dragged);
+                event.target.appendChild(dragged);
+            }
+            //获取拖动物理在屏幕的位置
+            var offsetL = document.getElementById("ss").offsetLeft;
+            var offsetT = document.getElementById("ss").offsetTop;
+            //获取拖动块的值
+            var tab_value = document.getElementById("add_ztree").innerText;
+            console.log(tab_value);
+            var x = event.pageX - offsetL;
+            var y = event.pageY - offsetT;
+            //获取单元格的位置
+            var target = spread.hitTest(x, y);
+            console.log(target);
+            console.log("列： " + target.worksheetHitInfo.col + "行: " + target.worksheetHitInfo.row);
+            var sheet = spread.getActiveSheet();
+            //sheet.setValue(target.worksheetHitInfo.row, target.worksheetHitInfo.col, tab_value);
+            addZtree(sheet,target.worksheetHitInfo.row,target.worksheetHitInfo.col);
+
+            console.log("执行完毕 ")
+        });
+    }
+
+
+    function addTimeSelectionQ(spread){
+        var td = document.getElementById("add_timeseletion");
+
+        td.draggable = true;
+        td.addEventListener("dragstart", function (ev) {
+            // 存储相关的拖拽元素
+            dragged = ev.target;
+            // 设置拖拽元素的透明度
+            ev.target.style.opacity = 0.5;
+            console.log("开始拖动 ")
+        }, false);
+        /* 事件在拖拽元素上触发 */
+        document.addEventListener("dragend", function (ev) {
+            // 重设透明度
+            event.target.style.opacity = "";
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragover", function (event) {
+            // 默认情况下是无法允许一个元素放置在另一个元素上的，要放置必须阻止默认行为
+            event.preventDefault();
+            console.log("已经在目标区域 ")
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragenter", function (event) {
+            // 当拖拽元素进入潜在放置区域时，高亮处理
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "purple";
+            }
+
+            console.log("已经触发")
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragleave", function (event) {
+            // 当拖拽元素离开潜在放置区域时重置该目标区域的背景
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "";
+            }
+            console.log("离开目标区域！")
+        }, false);
+
+        /* 松开鼠标，触发 drop */
+        document.addEventListener("drop", function (event) {
+            // 阻止默认行为（drop的默认处理方式是当初链接处理）
+            event.preventDefault();
+            // 把拖拽元素移入目标区域
+            //这里要经过两步处理
+            // 1、先把拖拽元素从原父元素中删除（这步不是必须的）
+            ///2、然后再添加到目标区域
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "";
+                dragged.parentNode.removeChild(dragged);
+                event.target.appendChild(dragged);
+            }
+            //获取拖动物理在屏幕的位置
+            var offsetL = document.getElementById("ss").offsetLeft;
+            var offsetT = document.getElementById("ss").offsetTop;
+            //获取拖动块的值
+            var tab_value = document.getElementById("add_timeseletion").innerText;
+            console.log(tab_value);
+            var x = event.pageX - offsetL;
+            var y = event.pageY - offsetT;
+            //获取单元格的位置
+            var target = spread.hitTest(x, y);
+            console.log(target);
+            console.log("列： " + target.worksheetHitInfo.col + "行: " + target.worksheetHitInfo.row);
+            var sheet = spread.getActiveSheet();
+            //sheet.setValue(target.worksheetHitInfo.row, target.worksheetHitInfo.col, tab_value);
+            addTimeSelection(sheet,target.worksheetHitInfo.row,target.worksheetHitInfo.col);
+
+            console.log("执行完毕 ")
+        });
+    }
+
+
+    var spread ;
+   window.onload = function () {
+       $("#ss").css('height',window.innerHeight - 100);
+       spread = new GC.Spread.Sheets.Workbook(document.getElementById('ss'), { sheetCount: 1 });
+       spread.options.allowUserDragMerge = true;
+       var activeSheet = spread.getActiveSheet();
+
+       activeSheet.options.selectionBorderColor = 'red';
+       activeSheet.options.selectionBackColor = 'transparent';
+       //注册双击事件，应弹出样式设置弹框
+       activeSheet.bind(GC.Spread.Sheets.Events.CellClick, function (sender, args) {
+
+
+
+           if(args.sheetArea === GC.Spread.Sheets.SheetArea.colHeader){
+               console.log("The column header was clicked.");
+               activeSheet.clickedCellType = 1;
+           }else if(args.sheetArea === GC.Spread.Sheets.SheetArea.rowHeader){
+               console.log("The row header was clicked.");
+               activeSheet.clickedCellType = 2 ;
+           }else if(args.sheetArea === GC.Spread.Sheets.SheetArea.corner){
+               console.log("The corner header was clicked.");
+               activeSheet.clickedCellType = 3 ;
+           }else {
+               activeSheet.clickedCellType = 4;
+               console.log("The cell （"+args.row+" , "+args.col + "） was clicked.");
+           }
+       });
+
+   }
+
+    // $("#add_timeseletion").on('click',function () {
+    //     console.log("add_timeseletion");
+    //     addTimeSelectionQ(spread);
+    //      }
+    // );
+    // $("#add_ztree").on('click',function () {
+    //         console.log("add_ztree");
+    //         addZtreeQ(spread);
+    //     }
+    // );
+    // $("#add_checkbox").on('click',function () {
+    //         console.log("add_checkbox");
+    //          addCheckboxQ(spread);
+    //     }
+    // );
+    // $("#someelement").live('click', function(e) {
+    //     if((!$.browser.msie && e.button == 0) || ($.browser.msie && e.button == 1))
+    //     {
+    //         alert("Left Mouse Button Clicked,//www.jb51.net");
+    //     }else if(e.button == 2) {
+    //         alert("Right Mouse Button Clicked,//www.jb51.net");
+    //     }
+    // });
+    $("#add_timeseletion").on('mousedown', function(e) {
+            console.log("add_timeseletion");
+            addTimeSelectionQ(spread);
+    });
+    $("#add_checkbox").on('mousedown', function(e) {
+            console.log("add_checkbox");
+            addCheckboxQ(spread);
+    });
+
+    $("#add_ztree").on('mousedown', function() {
+            console.log("add_ztree");
+            addZtreeQ(spread);
+    });
+
+
+</script>
+</body>
+</html>

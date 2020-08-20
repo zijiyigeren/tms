@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="spreadjs culture" content="zh-cn" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+		<title></title>
+
+		<link href="../../../res/spread/css/gc.spread.sheets.excel2016colorful.13.1.0.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+
+		<link href="./view.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<div class="spread-container">
+			<header class="mui-bar mui-bar-nav" style="background: #3E80CB; color: white;">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">原始记录查看</h1>
+			</header>
+			<div id="app" class="infoBar">
+				<div>
+					<label style="margin-left: 5px;">任务编号：</label>
+					<label>{{taskContent.taskCode}}</label>
+					<label style="margin-left: 5px;">样品：</label>
+					<label>{{recordInfo.sampleCodeText}}</label>
+					<label style="margin-left: 5px;">配置：</label>
+					<label>{{recordInfo.configName}}</label>
+				</div>
+			</div>
+			<div id="ss" class="container" style="position: absolute;top: 96px;"></div>
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script src="../../../js/common.js"></script>
+		<script type="text/javascript" src="../../../res/spread/scripts/gc.spread.sheets.all.13.1.0.min.js"></script>
+		<script type="text/javascript" src="../../../res/spread/scripts/resources/zh/gc.spread.sheets.resources.zh.13.1.0.min.js"></script>
+		<script type="text/javascript" src="../license.js"></script>
+		<script type="text/javascript" src="../api/recordApi.js"></script>
+		<script src="view.js"></script>
+		<script>
+		</script>
+	</body>
+</html>

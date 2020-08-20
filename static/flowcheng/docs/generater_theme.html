@@ -1,0 +1,185 @@
+<style>
+    .layui-form-pane .layui-form-label {
+        width: 210px;
+        background-color: #f1f1f1;
+        color: #606266;
+        height: 30px;
+        line-height: 12px;
+    }
+    .layui-form-pane .layui-input-block {
+        margin-left: 210px;
+    }
+    .color-demo {
+        height: 24px;
+        width: 50px;
+        border: 1px solid #eee;
+        float: right;
+        margin-top: -28px;
+        margin-right: 1px;
+        background-color: #fff;
+    }
+</style>
+
+<div style="margin: 0 auto; max-width: 600px;">
+    <h2 style="text-align: center;margin-bottom: 25px;margin-top: 30px;">主题文件生成器</h2>
+
+    <div class="layui-form" style="margin-bottom: 15px;text-align: right">
+        <div class="layui-inline">
+            <label class="layui-form-label">验证颜色：</label>
+            <div class="layui-input-inline" id="checkHex">
+                <input type="checkbox" name="checkHex" lay-skin="switch" lay-text="ON|OFF" lay-filter="checkHex">
+            </div>
+        </div>
+    </div>
+
+    <!-- 颜色生成器表单容器 -->
+    <div class="layui-form layui-form-pane" id="formGene"></div>
+
+    <hr>
+    <h2 style="margin-top: 20px;margin-bottom: 15px;">生成结果</h2>
+    <pre class="layui-code" id="themeCode" lay-title="theme.css"></pre>
+
+    <hr>
+    <h2 style="margin-top: 20px;margin-bottom: 15px;">使用方法</h2>
+    <p>将下载好的 css 文件放在项目里面，然后打开 index.html，引入下载的 css 文件即可生效，如果样式有生成的不全的，请联系作者增加。</p>
+    <pre class="layui-code" lay-title="index.html" lay-encode="true">
+<!-- 引入下载的 css，放在所有 css 之后 -->
+<link rel="stylesheet" href="assets/css/theme.css"/></pre>
+
+</div>
+
+<script type="text/javascript" src="/docs/FileSaver.min.js"></script>
+
+<script>
+    layui.use(['form', 'code', 'layer'], function () {
+        var form = layui.form,
+            code = layui.code,
+            layer = layui.layer,
+            $ = layui.$,
+            tpl;
+
+        // 生成表单
+        // 主要参数都在这添加
+        var formData = [{
+                name: '主题色',
+                key: 'theme',
+                value: '#229FFF'
+            }, {
+                name: '鼠标悬浮色',
+                key: 'hover',
+                value: '#55B7FF'
+            }, {
+                name: '鼠标点击色',
+                key: 'active',
+                value: '#096DD9'
+            }, {
+                name: '页面背景色',
+                key: 'background',
+                value: '#F2F6F8'
+            }, {
+                name: '容器背景颜色',
+                key: 'containerBackground',
+                value: '#FFFFFF'
+            }, {
+                name: '<a></a> 标签颜色',
+                key: 'aFont',
+                value: '#188FFF'
+            }, {
+                name: '<a></a> 标签鼠标悬浮颜色',
+                key: 'aFontHover',
+                value: '#40A9FF'
+            }, {
+                name: 'Header 背景颜色',
+                key: 'adminHeader',
+                value: '#37ABFF'
+            }, {
+                name: '侧边栏 当前菜单背景色',
+                key: 'adminSideThis',
+                value: '#4F556E'
+            }],
+            formString = '';
+        for (var i = 0; i < formData.length; i++) {
+            var d = formData[i];
+            formString += '<div class="layui-form-item"><label class="layui-form-label">' + d.name +
+                '</label><div class="layui-input-block"><input name="' + d.key +
+                '" class="layui-input" type="text" value="' + d.value +
+                '" lay-verify="required"><div class="color-demo"></div></div></div>';
+        }
+        formString +=
+            '<div class="layui-form-item"><button class="layui-btn layui-btn-fluid layui-btn-normal" lay-submit lay-filter="form-sub">生成代码</button></div>';
+        formString +=
+            '<div class="layui-form-item"><button class="layui-btn layui-btn-fluid layui-btn-normal" id="btn-down">下载</button></div>';
+        $('#formGene').append(formString);
+
+        // 是否开启验证 16进制颜色值
+        var isVer = false;
+        form.on('switch(checkHex)', function (data) {
+            isVer = data.elem.checked;
+        });
+        $('#checkHex').hover(function () {
+            layer.tips('目前只校验 16进制颜色值，如需 rgb 颜色，请关闭校验！', this, {
+                tips: 1
+            });
+        }, function () {
+            layer.closeAll('tips');
+        });
+
+        // 剔除代码修饰器右上的 关于
+        code({
+            about: false
+        });
+
+        // 初始化隐藏下载按钮
+        $('#btn-down').hide();
+        $('#btn-down').click(function () {
+            var file = new File([tpl], "theme.css", {
+                type: "text/plain;charset=utf-8"
+            });
+            saveAs(file);
+        });
+
+        // 加载模板文件
+        layer.load(1);
+        $.get('docs/theme.tpl', function (data) {
+            tpl = data;
+            layer.closeAll('loading');
+        });
+
+        // 提交，生成样式代码
+        form.on('submit(form-sub)', function (data) {
+            for (var key in data.field) {
+                var colorValue = data.field[key];
+                if (!isVer || /^#[0-9a-fA-F]{3,6}$/.test(colorValue)) {
+                    tpl = tpl.replace(new RegExp('{{' + key + '}}', 'gm'), colorValue);
+                } else {
+                    layer.msg(key + '颜色值输入错误', {
+                        icon: 5
+                    });
+                    return false;
+                }
+            }
+            $('#themeCode').text(tpl);
+            layui.code({
+                elem: '#themeCode',
+                about: false
+            });
+
+            layer.msg('生成完成', {
+                icon: 6
+            });
+            $('#btn-down').show();
+        });
+
+        // input 输入事件，改变颜色框事件
+        $(".layui-form input[type='text']").on('input', function () {
+            var colorValue = $(this).val();
+            if (!isVer || /^#[0-9a-fA-F]{3,6}$/.test(colorValue)) {
+                $(this).parent().find('.color-demo').css('background-color', colorValue);
+            } else {
+                $(this).parent().find('.color-demo').css('background-color', '#fff');
+            }
+        });
+        $(".layui-form input[type='text']").trigger('input'); // 出发 input事件，初始化颜色框的背景色
+
+    });
+</script>

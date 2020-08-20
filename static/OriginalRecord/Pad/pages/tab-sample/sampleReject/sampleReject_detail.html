@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/icons-extra.css">
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../components/list/list.css">
+		<link rel="stylesheet" href="../../../components/form/form.css">
+		<link rel="stylesheet" href="../../../css/commonTable.css" />
+		<link rel="stylesheet" href="../../../css/commonBottomBtns.css" />
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/common.js"></script>
+		<script src="../../../js/config.js"></script>
+		<style type="text/css">
+			.mui-input-group:after{
+				background-color: transparent;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content" v-cloak>
+			<div class="list-item">
+				<div class="list-head">
+					<div class="list-head-left">
+						<span class="list-blue">基本详情</span>
+					</div>
+				</div>
+				<div class="list-content">
+					<form class="form" style="max-height: 250px;overflow-y: auto;">
+						<div class="mui-input-row">
+							<label>到样日期:</label>
+							<input type="text" :value="info.comeDate" readonly="readonly" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>送样公司:</label>
+							<input type="text" :value="info.comeCompany" readonly="readonly" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>名称:</label>
+							<input type="text" :value="info.sampleName" readonly="readonly" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>型号:</label>
+							<input type="text" :value="info.sampleType" readonly="readonly" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>数量:</label>
+							<input type="number" :value="info.typeNumber" readonly="readonly" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>在架:</label>
+							<input type="number" :value="info.onlinenumber" readonly="readonly" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>检验类型:</label>
+							<input type="text" :value="info.checkType" readonly="readonly" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>运单号:</label>
+							<input type="text" :value="info.courierNumber" readonly="readonly" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>任务号:</label>
+							<input type="text" :value="info.taskCode" readonly="readonly" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>相关报告数:</label>
+							<input type="text" :value="info.bgcount" readonly="readonly" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>样件批次:</label>
+							<input type="text" :value="info.code" readonly="readonly" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>送样人:</label>
+							<input type="text" :value="info.contractor" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>联系方式:</label>
+							<input type="text" :value="info.contracttel" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>状态:</label>
+							<input type="text" :value="info.statusName" readonly="readonly">
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="form-title">
+				流转详情
+			</div>
+			<div>
+				<div class="list-item" v-for="i in records" :id="i.id">
+					<div class="list-head">
+						<div class="list-head-left list-blue">
+							<span>样件条形码：</span><label class="">{{i.barcode}}</label>
+						</div>
+					</div>
+					<div class="list-content" v-for="j in i.flowlist" style="margin-bottom:10px; border-bottom: 1px solid #F5F5F5;padding-bottom: 5px;color:#666666;">
+						<div class="list-content-left">
+							<ul>
+								<li>
+									<span>{{j.flowName}}：</span><label>{{j.exetime}}</label>
+								</li>
+								<li><span>相关人：</span><label>{{j.creator}}</label></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<div class="bottom-btns">
+			<div class="bottom-btn bottom-btn-orange" onclick="cancelReject();">
+				<span class="mui-icon mui-icon-close-filled" style="margin-top:-2px;"></span>
+				<span>取消退样</span>
+			</div>
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/mui.picker.min.js"></script>
+		<script src="../../../js/tools/dialog.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script type="text/javascript">
+			var app = new Vue({
+				el:'#app',
+				data:{
+					records:[],
+					info: {  }
+				}
+			});
+			var bookForm = null;
+			var usableTime = []; //存储可预约时间,下拉列表数据
+			var id = 0;
+			var opener = null; //父窗口,退样列表
+
+			mui.init();
+			mui.ready(function(){
+				base.get(Config.urls.component_findUsableTime,{},
+					function(res){
+						usableTime =  res.data;
+					}
+				)
+			});
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				base.initTitleBar(self,'退样样件信息详情');
+				id = self.sampleId;//获得参数
+				base.get(Config.urls.component_findComponentPart,{ cpartId: id },
+					function(res){
+						app.info = res.data.componentPart;
+						base.showLoading({title:'获取流转详情'});
+						base.get(Config.urls.component_findComponentPartFlow,{ cpartId: id },
+							function(res){
+								app.records = res.data;
+							}
+						);
+					}
+				);
+				opener=plus.webview.currentWebview().opener();
+			});
+
+			function cancelReject(){
+				Dialog.confirm({
+					title:'确认取消退样？',
+					onConfirm: function(){
+						base.showLoading({title:'处理中..'});
+						base.get(Config.urls.component_cancleComponentPartBack,
+							{cpartId:id},
+							function(res){
+								mui.toast(res.message);
+								//刷新上一页的列表
+								opener.evalJS("refreshResult();");
+								opener.opener().reload();
+								mui.back();
+							}
+						)
+					}
+				})
+			}
+		</script>
+	</body>
+</html>
+

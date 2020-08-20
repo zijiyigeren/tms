@@ -1,0 +1,139 @@
+/* 搜索栏 */
+.search-bar {
+	height: 45px;
+	padding: 0 15px;
+	/* border-top: 1px solid #eee; */
+	border-bottom: 1px solid #eee;
+	overflow: hidden;
+	background: #fff;
+}
+.search-bar > div {
+	display: flex;
+	height: 100%;
+	justify-content: space-between;
+	align-items: center;
+}
+
+/* 选择框 */
+.search-bar .select-wrapper {
+	position: relative;
+	margin-right: 5px;
+	width: 80px;
+	height: 32px;
+	background: #fff;
+}
+.search-bar .select-wrapper select {
+	position: absolute;
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0 0 0 5px;
+	border: 0;
+	outline: none;
+	background: transparent;
+	font-size: 14px;
+}
+.search-bar .select-wrapper .icon-arrow-down {
+	position: absolute;
+	top: 6px;
+	right: 0;
+	width: 20px;
+	height: 20px;
+	background-image: url(../../res/common/arrow-down.png);
+	background-size: 20px 20px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+/* 搜索框 */
+.search-bar .search-wrapper {
+	display: flex;
+	flex: 1;
+	height: 32px;
+	border: 1px solid #3e80cb;
+	border-radius: 16px;
+	overflow: hidden;
+}
+.search-bar .search-wrapper input[type=text] {
+	width: 100%;
+	height: 30px;
+	padding: 0 10px;
+	border: 0;
+	outline: none;
+	font-size: 15px;
+	line-height: 30px;
+}
+.search-bar .search-wrapper input[type=text]::-webkit-input-placeholder {
+	color: #999;
+}
+.search-bar .search-wrapper .icon-search {
+	display: flex;
+	width: 40px;
+	height: 30px;
+	background-image: url(../../res/common/search.png);
+	background-size: 20px 20px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+/* 复选框 */
+.search-bar .checkbox-wrapper {
+	position: relative;
+	display: flex;
+	margin-left: 5px;
+	height: 32px;
+	align-items: center;
+}
+.search-bar .checkbox-wrapper .checkbox-label {
+	height: 32px;
+	line-height: 32px;
+	font-size: 15px;
+}
+.search-bar .checkbox-wrapper input[type=checkbox] {
+	-webkit-appearance: none;
+	position: absolute;
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	outline: none;
+	background: transparent;
+}
+.search-bar .checkbox-wrapper .icon-check {
+	width: 16px;
+	height: 16px;
+	margin-left: 5px;
+	border: 1px solid #ccc;
+	border-radius: 1px;
+	overflow: hidden;
+}
+.search-bar .checkbox-wrapper .icon-check.checked {
+	border: 0;
+	background-image: url(../../res/common/checkbox1.png);
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.search-bar-top + .mui-scroll-wrapper{
+	top: 89px;
+}
+.search-bar .mui-checkbox label{
+    padding-right: 20px;
+	padding-left: 5px;
+}
+.search-bar .mui-checkbox input[type=checkbox]{
+	position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 25px;
+    height: 20px;
+}
+.search-bar .mui-checkbox input[type=checkbox]:before {
+	content: '\e413'!important;
+	font-size: 18px;
+}
+.search-bar .mui-checkbox-square input[type=checkbox]:checked:before{
+	content: '\e443'!important;
+}

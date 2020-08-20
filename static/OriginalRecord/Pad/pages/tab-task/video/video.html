@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link rel="shortcut icon" href="../../res/gif/1.gif" />
+	<link rel="stylesheet" href="../../../css/mui.min.css">
+	<link rel="stylesheet" href="../../../css/reset.css">
+	<link rel="stylesheet" href="../../../css/app.css">
+	<link rel="stylesheet" href="../../../components/list/list.css">
+	<link rel="stylesheet" href="../../../components/form/form.css">
+	<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+	<link rel="stylesheet" href="video.css">
+</head>
+<body>
+
+	<!-- 页面 -->
+	<div id="app" v-cloak>
+
+		<!-- 滚动容器 -->
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+
+				<!-- 滚动内容 -->
+				<div>
+
+					<!-- 报告列表 -->
+					<ul class="list">
+						<li class="list-item" v-for="(item, index) of list" :key="index">
+							<div class="list-head">
+								<span>视频信息</span>
+							</div>
+							<div class="list-content">
+								<div class="form">
+									<div class="mui-input-row">
+										<label>报告编号：</label>
+										<input type="text" readonly="readonly" :value="item.itemsCode">
+									</div>
+									<div class="mui-input-row radio-group-row">
+										<label>视频状态：</label>
+										<div class="radio-group">
+											<div class="radio-wrapper" v-for="(radio, radioIndex) of radioGroup[index]" :key="radioIndex">
+												<input type="radio" :value="radio.value" :name="index" v-model="videoFileNames[index]">
+												<label :for="index">{{radio.key}}</label>
+											</div>
+										</div>
+									</div>
+									<div class="mui-input-row">
+										<label>视频编号：</label>
+										<input type="text" v-model="videoFileNames[index]" class="mui-input-clear" placeholder="">
+									</div>
+								</div>
+							</div>
+						</li>
+					</ul>
+					<!-- 报告列表结束 -->
+
+					<div class="mui-button-row">
+						<button type="button" class="mui-btn mui-btn-primary" @tap="commitInfo();">
+							<img src="../../../res/common/btn-check.png" alt="image" />
+							<span>确认</span>
+						</button>&nbsp;&nbsp;
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 滚动容器结束 -->
+
+	</div>
+	<!-- 页面结束 -->
+
+	<script src="../../../js/mui.min.js"></script>
+	<script src="../../../js/vue.js"></script>
+	<script src="../../../js/config.js"></script>
+	<script src="../../../js/app.js"></script>
+	<script src="../../../js/webviews.js"></script>
+	<script src="../../../components/scroller/scroller.js"></script>
+	<script src="video.js"></script>
+</body>
+</html>

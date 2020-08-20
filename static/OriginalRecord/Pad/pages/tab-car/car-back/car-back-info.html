@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/icons-extra.css">
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../components/list/list.css">
+		<link rel="stylesheet" href="../../../components/form/form.css">
+		<link rel="stylesheet" href="../../../css/commonTable.css" />
+		<link rel="stylesheet" href="../../../css/commonBottomBtns.css" />
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/common.js"></script>
+		<script src="../../../js/config.js"></script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">退样样车信息详情</h1>
+		</header>
+		<div id="app" class="mui-content" v-cloak>
+			<div class="list-item">
+				<div class="list-head">
+					<div class="list-head-left">
+						<span class="list-blue">基本详情</span>
+					</div>
+				</div>
+				<div class="list-content">
+					<form class="form" style="max-height: 250px;overflow-y: scroll;">
+						<div class="mui-input-row">
+							<label>送检单位:</label>
+							<input type="text" :value="info.comeCompany" name=""  placeholder="" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>车型:</label>
+							<input type="text" :value="info.model" name=""  placeholder="" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>VIN码:</label>
+							<input type="text" :value="info.vin" name=""  placeholder="" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>送样人:</label>
+							<input type="text" :value="info.comePeople" name=""  placeholder="" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>送样人电话:</label>
+							<input type="text" :value="info.contract" name=""  placeholder="" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>送样日期:</label>
+							<input type="text" :value="info.comeDate" name=""  placeholder="" readonly="readonly">
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="form-title">
+				流转详情
+			</div>
+			<div>
+				<div v-for="i in records" :id="i.id">
+					<div class="list-item">
+						<div class="list-head">
+							<div class="list-head-left list-blue">
+								<span>出发科室：</span><label>{{i.dept}}</label>
+							</div>
+						</div>
+						<div class="list-content">
+							<div class="list-content-left">
+								<ul>
+									<li>
+										<span>姓名：</span><label>{{i.lypeople}}</label>
+									</li>
+								</ul>
+							</div>
+							<div class="list-content-right">
+								<ul>
+									<li>
+										<span>时间：</span><label>{{i.startDate}}</label>
+									</li>
+								</ul>
+							</div>
+						</div>
+
+					</div>
+					<div class="list-item">
+						<div class="list-head">
+							<div class="list-head-left list-blue">
+								<span>到达科室：</span><label>{{i.receivedept}}</label>
+							</div>
+						</div>
+						<div class="list-content">
+							<div class="list-content-left">
+								<ul>
+									<li>
+										<span>姓名：</span><label>{{i.hypeople}}</label>
+									</li>
+								</ul>
+							</div>
+							<div class="list-content-right">
+								<ul>
+									<li>
+										<span>时间：</span><label>{{i.endDate}}</label>
+									</li>
+								</ul>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="bottom-btns">
+			<div class="bottom-btn bottom-btn-orange" onclick="cancelReject();">
+				<span class="mui-icon mui-icon-close-filled" style="margin-top:-2px;"></span>
+				<span>取消退样</span>
+			</div>
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/mui.picker.min.js"></script>
+		<script src="../../../js/tools/dialog.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var app = new Vue({
+				el:'#app',
+				data:{
+					records:[],
+					info: {  }
+				}
+			});
+			var bookForm = null;
+			var usableTime = []; //存储可预约时间,下拉列表数据
+			var id = 0;
+			var opener = null; //父窗口,退样列表
+
+			mui.init();
+			mui.ready(function(){
+				base.get(Config.urls.component_findUsableTime,{},
+					function(res){
+						usableTime =  res.data;
+					}
+				)
+			});
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				id = self.carloadId;//获得参数
+				base.get(Config.urls.carload_findCarload,{ carloadId: id },
+					function(res){
+						app.info = res.data;
+					//	app.info.status = Config.status[app.info.status];
+						base.showLoading({title:'获取流转详情'});
+						base.get(Config.urls.carload_findCarloadFlow,{ carloadId: id },
+							function(res){
+								app.records = res.data;
+							}
+						);
+					}
+				);
+				opener=plus.webview.currentWebview().opener();
+			});
+
+			function cancelReject(){
+				Dialog.confirm({
+					title:'确认取消退样？',
+					onConfirm: function(){
+						base.showLoading({title:'处理中..'});
+						base.get(Config.urls.carload_cancelCarloadBack,
+							{ carloadId: id },
+							function(res){
+								mui.toast(res.message);
+								opener.opener().reload();
+								//刷新上一页的列表
+								opener.evalJS("refreshResult();");
+								mui.back();
+							}
+						)
+					}
+				})
+			}
+		</script>
+	</body>
+</html>

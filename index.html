@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>天摩所</title>
+    <script type="text/javascript">
+      /*
+      * 功能: 解决ie 浏览器下f5刷新页面 input 内容不清空的问题
+      * */
+      window.addEventListener("load", function () {
+        // alert(navigator.userAgent);
+        var cur = navigator.userAgent;
+        var sstr = '';
+        if (cur.indexOf('Chrome') > -1){
+          sstr = 'Chrome';
+        }else if(cur.indexOf('Firefox') > -1){
+          sstr = 'Firefox';
+        }else if (cur.indexOf('Opera') > -1) {
+          sstr = 'Opera';
+        }else if (cur.indexOf('Safari') > -1) {
+          sstr = 'Safari';
+        }else if (cur.indexOf('Trident/7.0') > -1) {
+          sstr = 'ie';
+          var domList = document.querySelectorAll("input[name=clearInputValue]");
+          for (let i = 0; i < domList.length; i++) {
+            domList[i].value = ''
+          }
+        }
+      });
+
+    </script>
+    <!-- <link rel="stylesheet" href="static/spreadjs/css/gc.spread.sheets.13.1.0.css">
+    <script src="static/spreadjs/scripts/gc.spread.sheets.all.13.1.0.min.js"></script>
+    <script src="static/spreadjs/scripts/interop/gc.spread.excelio.13.1.0.min.js"></script>
+    <script src="static/spreadjs/scripts/interop/gc.spread.sheets.migration.13.1.0.min.js"></script>
+    <script src="static/spreadjs/scripts/interop/vuejs/gc.spread.sheets.vue.13.1.0.min.js"></script>
+    <script src="static/spreadjs/scripts/resources/xh/gc.spread.sheets.resources.zh.13.1.0.min.js"></script> -->
+
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+  
+
+
+</html>

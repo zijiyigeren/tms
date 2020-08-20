@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>原始记录演示</title>
+		<script src="../lib/jquery-2.0.2.min.js"></script>
+		<script src="./lib/vue.js"></script>
+
+		<style>
+			#app input[type="button"] {
+				background-color: #176DC0;
+				font-size: 12px;
+				color: white;
+				min-width: 50px;
+				height: 22px;
+				border: none;
+				border-radius: 3px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<span style="font-size: 18px; font-weight: bold;">模板列表：</span>
+			<input type="button" value="创建" onclick="newTmp()" />
+			<hr style="width: 700px;margin-left: 0;">
+			<ul>
+				<li v-for="i in tmps">
+					<div style="display: flex;">
+						<div style="width: 550px;">{{i.name}}</div>
+						<div>
+							<input type="button" value="编辑" @click="editTmp(i.id)" />
+							<input type="button" value="录入" @click="newRecord(i.id)" />
+						</div>
+					</div>
+				</li>
+			</ul>
+
+			<span style="font-size: 18px; font-weight: bold;">原始记录：</span>
+			<hr style="width: 700px;margin-left: 0;">
+			<ul>
+				<li v-for="i in records">
+					<div style="display: flex;">
+						<div style="width: 550px;">{{i.name}}</div>
+						<div>
+							<input type="button" value="编辑" @click="record(i.id)" />
+							<input type="button" value="查看" @click="view(i.id)" /></div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<script>
+			var tmps = [];
+			var records = [];
+			$(function() {
+				var st = window.localStorage;
+				for (var i = 0, j = st.length; i < j; i++) {
+					var key = st.key(i);
+					if (key.startsWith("tmp")) {
+						var res = JSON.parse(st.getItem(key));
+						tmps.push({
+							id: res.id,
+							name: res.name
+						});
+					} else if (key.startsWith("record")) {
+						var res = JSON.parse(st.getItem(key));
+						if (res.name) {
+							records.push({
+								id: res.id,
+								name: res.name
+							});
+						}
+					}
+				}
+
+				var app = new Vue({
+					el: '#app',
+					data: {
+						taskCode: "MT00001",
+						sampleCode: "2",
+						configName: "低配版",
+						tmps: tmps,
+						records: records
+					}
+				});
+			});
+
+			function newTmp() {
+				window.open("../template/template.html");
+			}
+
+			function editTmp(id) {
+				window.open("../template/template.html?id=" + id);
+			}
+
+			function newRecord(id) {
+				window.open("record/record.html?taskContentId=1&templateId=" + id);
+			}
+
+			function record(id) {
+				window.open("record/record.html?taskContentId=1&id=" + id);
+			}
+
+			function view(id) {
+				window.open("view/view.html?taskContentId=1&id=" + id);
+			}
+			
+			function refreshList(id) {
+				 window.location.reload();
+			}
+		</script>
+	</body>
+</html>

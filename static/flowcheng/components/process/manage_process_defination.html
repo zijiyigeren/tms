@@ -1,0 +1,832 @@
+<!--
+File   : manage_process_defination.html
+Created: Sunday September 30th 2018 1:00:29 pm
+Author : yuchunyu97
+License: MIT License
+
+Copyright (c) 2018 yuchunyu97
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-----
+Last Modified: Thursday November 22nd 2018 3:23:06 pm
+Modified By  : yuchunyu97 at <yuchunyu97@gmail.com>
+-----
+Description: 流程管理 - 流程定义
+-----
+HISTORY:
+-->
+<link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+<link rel="stylesheet" href="../../module/formSelects/formSelects-v4.css"/>
+<link rel="stylesheet" href="../../module/treeSelect/treeSelect.css">
+<!-- 表单辅助方法，用于启动表单时的权限控制和数据获取与提交 -->
+<script src="../../assets/js/ADCFormDesignHelper.js"></script>
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<!-- jQuery 1.x 版本兼容 IE8 -->
+<script type="text/javascript" src="../../assets/libs/jquery-1.12.4.min.js"></script>
+<!-- Q.js 轻量路由框架 -->
+<script type="text/javascript" src="../../assets/libs/q.js"></script>
+<!-- jQuery 轻量级 MVVM 框架 -->
+<script type="text/javascript" src="../../assets/libs/pandyle.min.js"></script>
+<script type="text/javascript" src="../../assets/libs/addtable/addtable.js"></script>
+
+<div class="layui-row layui-col-space15">
+    <!-- 单列普通表格 -->
+    <div class="layui-col-md12">
+        <div class="layui-card p-main">
+            <!-- 卡片容器 -->
+            <div class="layui-card-body">
+                <!-- 数据表格顶部控制栏 -->
+                <div class="layui-form">
+                    <div class="layui-form-item table-top-bar">
+                        <!-- 左侧 -->
+                        <div class="layui-inline">
+                            <div class="layui-inline search-item">
+                                <!-- <i class="layui-icon layui-icon-search"></i> -->
+                                <input type="text" name="inp_search" id="inp_search" placeholder="输入流程名称" class="layui-input">
+                            </div>
+                            <div class="layui-inline">
+                                <button id="btn_search" class="layui-btn layui-btn-sm layui-btn-normal" lay-filter="btn_search" lay-submit>查询</button>
+                            </div>
+                            <div class="layui-inline">
+                                <button id="btn_reset" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_reset" lay-submit>重置</button>
+                            </div>
+                        </div>
+                        <!-- 右侧 -->
+                        <div class="layui-inline layui-pull-right">
+                            <div class="layui-inline">
+                                <button id="upload_model" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="upload_model" lay-submit>
+                                    <i class="layui-icon layui-icon-add-1"></i>上传模型
+                                </button>
+                                <button id="btn_add" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_add" lay-submit>
+                                    <i class="layui-icon layui-icon-add-1"></i>新增流程
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 下部表格容器 -->
+                <table id="tableContent-modelDef" lay-filter="tableContent-modelDef"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+*{
+    margin: 0;
+    padding: 0;
+}
+.layui-row, .layui-col-md12, .p-main, .layui-card-body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.layui-col-space15 {
+    margin: 0 !important;
+}
+.layui-col-md12, .layui-card-body {
+    padding: 0 !important;
+}
+.layui-card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.layui-table-view {
+    flex: 1 !important;
+    overflow: hidden;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    border: none !important;
+}
+.layui-table-view .layui-table-box{
+    flex: 1 !important;
+    overflow-y: auto !important;
+}
+.layui-table-view .layui-table-box .layui-table-header{
+    border-top: 1px solid #e6e6e6;
+    border-left: 1px solid #e6e6e6;
+    border-right: 1px solid #e6e6e6;
+}
+.layui-table-view .layui-table-box .layui-table-body {
+    overflow: hidden !important;
+}
+.layui-table-view .layui-table-box .layui-table-body  .layui-table{
+    border-left: 1px solid #e6e6e6;
+    border-right: 1px solid #e6e6e6;
+}
+.layui-table-view .layui-table-page{
+    padding: 0 !important;
+    border: none !important;
+    margin-top: 20px !important;
+    margin-bottom: 2px !important;
+    height: auto !important;
+}
+.layui-laypage-em, .layui-laypage-curr em {
+    background-color: #fff !important;
+    color: #409EFF !important;
+}
+.table-top-bar {
+    margin-bottom: 20px !important;
+    height: auto !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.layui-inline {
+    margin: 0 !important;
+}
+.layui-form-item:after {
+    content: '' !important;
+    display: none !important;
+    height: auto !important;
+}
+.layui-pull-right {
+    height: 30px !important;
+}
+.layui-pull-right .layui-btn-sm {
+    line-height: 25px !important;
+}
+.layui-btn-normal {
+    height: 30px !important;
+    line-height: 30px !important;
+    background: linear-gradient(90deg, rgba(96, 157, 248, 1), rgba(84, 183, 235, 1)) !important;
+    padding: 0 20px !important;
+    margin: 0 !important;
+}
+.layui-btn-primary {
+    height: 30px !important;
+    line-height: 30px !important;
+    background: #fff !important;
+    padding: 0 20px !important;
+    margin: 0 !important;
+}
+#btn_search {
+    margin: 0 10px !important;
+}
+.table-control-btn {
+    margin-right: 10px !important;
+    color: #409EFF !important;
+    cursor:pointer;
+}
+.table-control-btn-danger {
+    margin: 0 !important;
+    color: red !important;
+}
+#ADCFormDesignHelper-startProcess {
+    padding: 20px;
+    overflow: auto !important;
+}
+#ADCFormDesignHelper-startProcess .formView {
+    width: 100% !important;
+    height: 100% !important;
+}
+#ADCFormDesignHelper-startProcess .formView .adc-form-design-helper{
+    padding: 0 !important;
+    margin: 0 !important;
+}
+#ADCFormDesignHelper-startProcess .formView .adc-form-design-helper table {
+    width: 100% !important;
+}
+#ADCFormDesignHelper-startProcess .formView .adc-form-design-helper table textarea, #ADCFormDesignHelper-startProcess .formView .adc-form-design-helper table select{
+    width: auto !important;
+}
+#ADCFormDesignHelper-startProcess.formView .adc-form-design-helper table input {
+    width: 100% !important;
+}
+</style>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="controlTpl">
+    <a class="table-control-btn" lay-event="export">导出</a>
+    <a class="table-control-btn" lay-event="edit">编辑</a>
+    <a class="table-control-btn" lay-event="publish">发布</a>
+    <a class="table-control-btn" lay-event="start">启动</a>
+    <a class="table-control-btn table-control-btn-danger" lay-event="delete">删除</a>
+</script>
+<script type="text/html" id="control-2">
+    {{d.publishStatus=='1'? '已发布':'未发布'}}
+</script>
+
+<!-- <script src="../../../../src/main.js"></script> -->
+<script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script>
+
+<script>
+    var vm = new Vue({
+        el: '#vue',
+    });
+</script>
+  
+<script>
+    window.UEDITOR_HOME_URL = '../../assets/libs/ueditor_v1.4.3/';
+    //console.log(layui.config)
+    layui.config({
+        base: '../../module/'
+    }).extend({
+        formSelects: 'formSelects/formSelects-v4',
+        treetable: 'treetable-lay/treetable',
+        treeSelect: 'treeSelect/treeSelect',
+    }).use(['index'], function () {
+        var index = layui.index,
+            admin = layui.admin;
+        // 入口文件，统一处理 Ajax 请求
+        // 增加 loading
+        // http://api.jquery.com/jquery.ajax/
+        var reqCount = 0;
+        $.ajaxSetup({
+            headers: {
+                "Authorization": 'Basic JWTJWTJWTJWTJWTJWTJWTJWTJWTJWTJWTJWT'
+            },
+            beforeSend: function (jqXHR, settings) {
+                reqCount++;
+                if (reqCount > 0) admin.showLoading();
+            },
+            complete: function (jqXHR, textStatus) {
+                reqCount--;
+                if (reqCount === 0) admin.removeLoading();
+            }
+        });
+
+        // 初始化
+        index.init(function () {
+            $('.layui-layout-admin').css('visibility', 'visible');
+        });
+    });
+    // 初始化 layui
+    layui.use(['table'], function() {
+        var table = layui.table;
+        var form = layui.form;
+        var config = layui.config;
+        var admin = layui.admin;
+        var upload = layui.upload;
+
+        //用于自定义表单权限配置
+        var privilegeSetting = function(obj) {
+            for (x in obj) {
+                key = x;
+                value = obj[x];
+                // console.log(key);
+                // console.log(value);
+                $("[name='" + key + "']").each(function() {
+                    tagName = $(this)[0].tagName;
+                    type = $(this).attr('type');
+                    if ("0" == value) { //0代表不显示
+                        $(this).attr("style", "display:none;");
+                    } else if ("1" == value) {
+                        $(this).attr("disabled", true);
+                    }
+
+                });
+            }
+        }
+
+        // 渲染表格
+        var renderTable = function(search) {
+            // console.log(search, 'search');
+            var name = '';
+            if(search && search.name){
+                name = search.name;
+            }
+            if (!search) {
+                search = {};
+            }
+            // 渲染表格
+            table.render({
+                elem: '#tableContent-modelDef',
+                id: 'tableContent-modelDef',
+                url: admin.formatUrl('/api/activiti/repository/processes'),
+                // 格式化后台返回的数据
+                parseData: function(res) { //res 即为原始返回的数据
+                    // 返回结果，进行渲染表格
+                    return {
+                        "code": res.respCode, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.count, //解析数据长度
+                        "data": res.data.list //解析数据列表
+                    };
+                },
+                height: 472,
+                cols: [
+                    [{
+                        type: 'numbers'
+                    }, {
+                        field: 'processName',
+                        title: '流程名称',
+                        minWidth: 180
+                    }, {
+                        field: 'processKey',
+                        title: '流程标识'
+                    }, {
+                        field: 'processVersion',
+                        title: '版本号'
+                    }, {
+                        templet: '#control-2',
+                        title: '发布状态'
+                    }, {
+                        field: 'publishTime',
+                        title: '发布时间',
+                        width: 180
+                    }, {
+                        align: 'center',
+                        title: '操作',
+                        width: 280,
+                        templet: '#controlTpl',
+                        unresize: true
+                    }]
+                ],
+                cellMinWidth: 90,
+                page: {
+                    layout: ['count', 'limit', 'prev', 'page', 'next', 'skip']
+                },
+                request: {
+                    name: name,
+                    pageName: 'pageNo',
+                    limitName: 'pageSize'
+                },
+                where: search
+            });
+        }
+
+        // 选人插件
+        // 调用该方法可以调起 iframe 弹窗
+        // 在弹窗内进行人员选择
+        // 该方法接受两个个参数：
+        // 1. 数据对象，所有需要传递到选人弹窗的数据
+        // 2. 回掉函数，会在选完人点击确定的时候将选中的数据以数组的方式回传
+        function personnelSelect(data, callback) {
+            var layerIns100 = layer.open({
+                type: 2,
+                id: 'personnelSelect',
+                title: '请选择',
+                // content: '../tpl/task_personnel_select.html',
+                content: '../tpl/task_personnel_select.html',
+                area: ['96%', '80%'],
+                btn: ['确定', '取消'],
+                yes: function(index, layero) {
+                    var finalData = $('#personnelSelect iframe')[0].contentWindow
+                        .task_personnel_select.finish();
+                    // 获取到数据，执行回掉函数
+                    callback && typeof callback === 'function' && callback(finalData, index);
+                },
+                success: function() {
+                    form.render();
+                    // 执行 iframe 内的方法
+                    $('#personnelSelect iframe')[0].contentWindow.task_personnel_select
+                        .init(data);
+                },
+                resize: false
+            });
+        }
+
+        // 初始化，执行一次渲染表格
+        renderTable();
+        // DONE: 侧边栏变化时刷新数据表格
+        // 将 table ID 存入数组
+        layui.admin.addTableCache('tableContent-modelDef');
+
+        // 监听工具条事件
+        // 编辑、发布、启动、删除功能
+        table.on('tool(tableContent-modelDef)', function(obj) {
+            // 获取点击列的数据
+            var data = obj.data;
+            var layEvent = obj.event;
+            // 判断操作类型
+            if(layEvent === 'export') { 
+                // 导出
+                var curWwwPath = window.document.location.href;
+                var pathName = window.document.location.pathname;
+                var pos = curWwwPath.indexOf(pathName);
+                var localhostPath = curWwwPath.substring(0, pos);
+                var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
+                // var url = localhostPath + projectName + "/xxTemplate/xxx.xls";
+                var url = localhostPath + '/api/models/'+data.modelId+'/JSONDownload';
+                window.open(url);
+            }else if (layEvent === 'edit') { 
+                // 编辑
+                var modelId = data.modelId;
+                window.open('../../../modeler.html?modelId=' + modelId);
+            } else if (layEvent === 'delete') {
+                // 删除
+                layer.confirm('确认要删除该流程？', {
+                    icon: 3,
+                    title: '提示'
+                }, function() {
+                    admin.req('/api/models/' + data.modelId, {}, function(data) {
+                        if (data.status) {
+                            layer.msg('删除流程成功！', {
+                                icon: 1
+                            });
+                            table.reload('tableContent-modelDef', {
+                                where: {
+                                    reload: new Date().getTime()
+                                }
+                            });
+                        } else {
+                            return layer.msg(data.reason, {
+                                icon: 5
+                            });
+                        }
+                    }, {
+                        method: 'DELETE'
+                    });
+                });
+            } else if (layEvent === 'publish') {
+                // 发布
+                layer.confirm('确认要发布该流程？', {
+                    icon: 3,
+                    title: '提示'
+                }, function() {
+                    admin.req('/api/models/' + data.modelId + '/deployment', {}, function(data) {
+                        if (data.status) {
+                            layer.msg('流程发布成功！', {
+                                icon: 1
+                            });
+                            table.reload('tableContent-modelDef', {
+                                where: {
+                                    reload: new Date().getTime()
+                                }
+                            });
+                        } else {
+                            return layer.msg(data.reason, {
+                                icon: 5
+                            });
+                        }
+                    }, {
+                        method: 'POST'
+                    });
+                });
+            } else if (layEvent === 'start') {
+                // 启动
+                let than = window;
+                admin.req('/api/activiti/repository/getProcessStartRequestForm', {
+                    processDefinitionId: data.processId
+                }, function(result) {
+                    // console.log(result, '点击启动-数据');
+                    if (result.ok && result.data != null) {
+                        // 如果htmlPath有值，跳转页面
+                        let htmlPath = JSON.parse(result.data.htmlPath);
+                        if(htmlPath && typeof(htmlPath) == "object") {
+                            than.parent.postMessage({data: htmlPath},'*');
+                        } else {
+                            admin.req('/api/form/' + result.data.id, {}, function(response) {
+                                if (response.data.design == 1) {} else {
+                                    // console.log(response, '绑定表单的数据') // 绑定表单的数据
+                                    // console.log(data, '当前流程数据'); // 当前流程数据
+                                    // console.log(result, '点击启动-表单数据'); // 点击启动-表单数据
+                                    var newData = $.extend({}, data, result);
+                                    ADCFormDesignHelper.startProcess(newData, function() {
+                                        table.reload('tableContent-modelDef');
+                                    });
+                                }
+                            });
+                            // if (result.data.id.indexOf('.html') > 0) {
+                            //     console.log('外部表单流程');
+                            //     // 外部表单流程
+                            //     admin.popupCenter({
+                            //         title: '',
+                            //         // path: '../tpl/process_def_tpl_start.html',
+                            //         path: '../tpl/process_def_tpl_start.html',
+                            //         area: ['90%', '90%'],
+                            //         finish: function() {
+                            //             table.reload('tableContent-modelDef');
+                            //         },
+                            //         success: function() {
+                            //             $("#process_def_tpl_start").load(result.data.id);
+                            //             $("#process_id").val(data.processId);
+                            //             $("#process_key").val(data.processKey);
+                            //             $("#isExternalForm").val('1');
+                            //         }
+                            //     });
+                            // } else {
+                            //     console.log('正常流程');
+                            //     // 正常流程
+                            //     admin.req('/api/form/' + result.data.id, {}, function(response) {
+                            //         if (response.data.design == 1) {} else {
+                            //             // console.log(response, '绑定表单的数据') // 绑定表单的数据
+                            //             // console.log(data, '当前流程数据'); // 当前流程数据
+                            //             // console.log(result, '点击启动-表单数据'); // 点击启动-表单数据
+                            //             var newData = $.extend({}, data, result);
+                            //             ADCFormDesignHelper.startProcess(newData, function() {
+                            //                 table.reload('tableContent-modelDef');
+                            //             });
+                            //         }
+                            //     });
+                            // }
+                        }
+                    }else{
+                        layer.msg('请发布后再启动！', {
+                            icon: 5
+                        });
+                    }
+
+                }, {
+                    method: 'POST'
+                });
+
+            }
+        });
+
+        // 上传模型
+        form.on('submit(upload_model)', function() {
+            // layer.open({
+			// 	type : 3,
+            //     title : "上传模型",
+			// 	resize : true,
+			// 	shadeClose : false,
+			// 	shade : 0,
+			// 	maxmin : false,
+			// 	area: ['550px', '210px'],
+			// 	content : '../tpl/process_def_tpl_upload.html',
+			// 	yes:function(index,layero){
+            //         var obj = $(layero).find("iframe")[0].contentWindow;	//obj可以调用子页面的任何方法
+            //         console.log(obj,'obj');
+			// 	}
+			// });
+            admin.popupCenter({
+                title: '上传模型',
+                path: '../tpl/process_def_tpl_upload.html',
+                area: ['550px', '210px'],
+                finish: function() {
+                    table.reload('tableContent-modelDef', {
+                        where: {
+                            reload: new Date().getTime()
+                        }
+                    });
+                },
+                success: function(layero,index) {
+                    form.render();
+                    let up = $(layero.selector).contents().find("#upload_mode").hide();
+                }
+            });
+        });
+
+        // 新增流程
+        form.on('submit(btn_add)', function() {
+            admin.popupCenter({
+                title: '新增流程',
+                path: '../tpl/process_def_tpl_add.html',
+                area: ['450px', '170px'],
+                finish: function() {
+                    table.reload('tableContent-modelDef');
+                },
+                success: function() {
+
+                }
+            });
+        });
+
+        // 保存新增的流程信息
+        form.on('submit(processSave)', function(data) {
+            var field = data.field;
+            // 角色名称不能为空
+            if (field.processName === '') {
+                return layer.msg('流程名称不能为空！', {
+                    icon: 5
+                });
+            }
+            // 发送请求
+            admin.req('/api/activiti/repository/process', field, function(data) {
+                if (data.ok) {
+                    layer.msg('新增流程成功！', {
+                        icon: 1
+                    });
+                    window.open('../../../modeler.html?modelId=' + data.data.modelId);
+                } else {
+                    layer.msg('新增流程失败：' + data.message, {
+                        icon: 5
+                    });
+                }
+                admin.finishPopupCenter();
+            }, {
+                method: 'POST'
+            });
+        });
+
+        // 启动流程
+        form.on('submit(processStart)', function(data) {
+            var field = data.field;
+            var formStr = formToArr();
+            var processId = $("#process_id").val();
+            var processKey = $("#process_key").val();
+            var isExternalForm = $("#isExternalForm").val();
+            var makeupoliet = {
+                processDefinitionId: processId,
+            };
+            if (isExternalForm == '0') {
+                makeupoliet.variables = eval(formStr);
+                makeupoliet.formData = formStr;
+                //R();
+            }
+            // 选人
+            admin.req('/api/activiti-task/existMultiInstance?processDefinitionKey=' + processKey, {},
+                function(res) {
+                    if (res.data) {
+                        // 弹出选人窗口，在回掉函数中获取选中人的数据
+                        personnelSelect({
+                            data: []
+                        }, function(data, index) {
+                            // 获取到选中人的信息
+                            var selectedData = data,
+                                selectedIds = [],
+                                selectedNames = [];
+                            if (data.length === 0) return layer.msg('请选择至少一人', {
+                                icon: 5
+                            });
+                            layer.close(index);
+                            var vars = [];
+                            $.each(data, function(ind, d) {
+                                vars.push(d.id);
+                            });
+                            makeupoliet.variables = [{
+                                name: 'assigneeList',
+                                value: vars
+                            }];
+                            R();
+                        });
+                    } else {
+                        R();
+                    }
+
+                });
+            /*else {
+                admin.req('/api/activiti-task/existMultiInstance?processDefinitionKey=' + processKey, {},
+                    function(res) {
+                        if (res.data) {
+                            // 弹出选人窗口，在回掉函数中获取选中人的数据
+                            personnelSelect({
+                                data: []
+                            }, function(data, index) {
+                                // 获取到选中人的信息
+                                var selectedData = data,
+                                    selectedIds = [],
+                                    selectedNames = [];
+                                if (data.length === 0) return layer.msg('请选择至少一人', {
+                                    icon: 5
+                                });
+                                layer.close(index);
+                                var vars = [];
+                                $.each(data, function(ind, d) {
+                                    vars.push(d.id);
+                                });
+                                makeupoliet.variables = [{
+                                    name: 'assigneeList',
+                                    value: vars
+                                }];
+                                R();
+                            });
+                        } else {
+                            R();
+                        }
+
+                    });
+            }*/
+
+            function R() {
+                layer.confirm('确认要启动该流程？', {
+                    icon: 3,
+                    title: '提示'
+                }, function() {
+                    admin.req('/api/activiti/repository/startProcess', makeupoliet, function(
+                        data) {
+                        if (data.ok) {
+                            layer.msg('流程启动成功！', {
+                                icon: 1
+                            });
+                            table.reload('tableContent-modelDef', {
+                                where: {
+                                    reload: new Date().getTime()
+                                }
+                            });
+                            admin.finishPopupCenter();
+                        } else {
+                            return layer.msg(data.message, {
+                                icon: 5
+                            });
+                        }
+                    }, {
+                        method: 'POST'
+                    });
+                });
+            }
+
+        });
+
+        // 弹出框取消按钮
+        form.on('submit(popProcessCancle)', function() {
+            admin.closePopupCenter();
+        });
+
+        // 表单提交，查询与重置
+        form.on('submit(search)', function(data) {
+            // 获取表单数据
+            var d = data.field;
+            d.account = $.trim(d.account);
+
+            if (d.account === '') {
+                reset();
+            } else {
+                renderTable(d);
+            }
+        });
+
+        form.on('submit(btn_search)', function(data) {
+            renderTable({name: data.field.inp_search});
+        });
+
+        form.on('submit(btn_reset)', function(data) {
+            reset();
+        });
+
+        // 重置查询表单
+        function reset() {
+            $('input[name="inp_search"]').val('');
+            renderTable();
+        }
+
+    });
+    //表单转数组
+    var formToArr = function() {
+        var strRet = "[";
+        $("#process_def_tpl_start :input").each(function(i, input) {
+            var sel = $(input);
+            var catarcplugins = $(input).attr("catarcplugins");
+            var types = $(input).attr("type");
+            //console.log("value="+sel.val()+"   name="+sel.attr("name")+"   type="+sel.attr("type"));
+            //var intputValue = $(input).val();
+            //$(input).attr("value",intputValue);
+            if (i != 0) {
+                strRet += ",";
+            }
+            if (types == "radio") {
+                if ($(input).attr("checked")) {
+                    strRet += "{";
+                    strRet += "'name':'" + $(input).attr("name") + "',";
+                    strRet += "'type':'" + $(input).attr("type") + "',";
+                    strRet += "'value':'" + $(input).val() + "',";
+                    //  strRet+= "'catarcplugins':'"+$(input).attr("id")+"'";
+                    strRet += "'catarcplugins':'checked'";
+
+                    strRet += "}";
+                    /* if('input:radio[name="'+$(input).attr("name")+'"]:checked'){
+                            alert($('input:radio[name="'+$(input).attr("name")+'"]:checked').val());
+                        strRet+= ",'leipiplugins':'checked'";
+                    }  */
+                } else {
+                    strRet += "{";
+                    strRet += "'name':'" + $(input).attr("name") + "',";
+                    strRet += "'type':'" + $(input).attr("type") + "',";
+                    strRet += "'value':'" + $(input).val() + "',";
+                    strRet += "'catarcplugins':'noCheck'";
+                    strRet += "}";
+                }
+            } else if (types == "checkbox") {
+                if ($(input).attr("checked")) {
+                    strRet += "{";
+                    strRet += "'name':'" + $(input).attr("name") + "',";
+                    strRet += "'type':'" + $(input).attr("type") + "',";
+                    strRet += "'value':'" + $(input).val() + "',";
+                    strRet += "'catarcplugins':'checked'";
+                    strRet += "}";
+                    /* if('input:radio[name="'+$(input).attr("name")+'"]:checked'){
+                            alert($('input:radio[name="'+$(input).attr("name")+'"]:checked').val());
+                        strRet+= ",'leipiplugins':'checked'";
+                    }  */
+                } else {
+                    strRet += "{";
+                    strRet += "'name':'" + $(input).attr("name") + "',";
+                    strRet += "'type':'" + $(input).attr("type") + "',";
+                    strRet += "'value':'" + $(input).val() + "',";
+                    strRet += "'catarcplugins':'noCheck'";
+                    strRet += "}";
+                }
+            } else {
+                strRet += "{";
+                strRet += "'name':'" + $(input).attr("name") + "',";
+                strRet += "'type':'" + $(input).attr("type") + "',";
+                strRet += "'value':'" + $(input).val() + "',";
+                strRet += "'catarcplugins':'" + $(input).attr("catarcplugins") + "'";
+                strRet += "}";
+            }
+        });
+        strRet += "]";
+        return strRet;
+    }
+</script>

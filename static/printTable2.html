@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>打印任务单</title>
+  <style type="text/css">
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .noPrint {
+      display: flex;
+      align-items: center;
+    }
+
+    .noPrint input[type='image'] {
+      padding-right: 30px;
+      z-index: 2;
+      outline: none;
+    }
+
+    .noPrint span {
+      margin-left: -30px;
+    }
+
+    @media print {
+      .PageNext {
+        page-break-before: always;
+      }
+
+      .noPrint {
+        display: none;
+      }
+    }
+
+    td {
+      text-align: center;
+      border: 0 solid #000;
+    }
+
+    .td1 {
+      border-left: solid windowtext 1.0pt;
+      border-top: solid windowtext 1.0pt;
+    }
+
+    .td2 {
+      border-right: solid windowtext 1.0pt;
+    }
+
+    .td3 {
+      word-wrap: break-word;
+      border-bottom: solid windowtext 1.0pt;
+    }
+
+    .left {
+      text-align: left;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .td4 {
+      word-wrap: break-word;
+      border-left: solid windowtext 1.0pt;
+    }
+
+    .td5 {
+      word-wrap: break-word;
+      width: 110px;
+    }
+
+    .td6 {
+      word-wrap: break-word;
+      width: 200px;
+    }
+
+    .td7 {
+      word-wrap: break-word;
+      width: 136px;
+    }
+
+    .td8 {
+      word-wrap: break-word;
+      width: 75px;
+    }
+
+    .td9 {
+      word-wrap: break-word;
+      width: 75px;
+    }
+
+    .printstyle {
+      page-break-after: always;
+    }
+  </style>
+  <script src="js/baiduTemplate.js"></script>
+  <script src="js/jquery-3.4.1.min.js"></script>
+
+  <script type="text/javascript">
+
+  </script>
+  <script type="text/javascript">
+    // 接受父页面发来的信息
+    window.addEventListener("message", function (event) {
+      var data = event.data.msg;
+      // console.log(data, 'vue 传入的数据');
+      var htmlstr = baidu.template('tableTemp', data);
+      $('#result').html(htmlstr);
+
+      function afterRender(vue_data) {
+        function checkValue(arr, value) {
+          for (var x in arr) {
+            if (value == arr[x]) {
+              return true;
+            }
+          }
+          return false;
+        }
+
+        var depts = new Array();// 部门
+        var checks = new Array();// 检验项
+
+        var ele = $("#reportdetail");// 最初的循环<tr/>(模板<tr/>)
+        var dName = $("#dName");// 校验部门名字
+        var reportTable = $("#report table");
+        var insertBase = $("#insertBase");
+
+        var inspectContentList = vue_data.inspectContentList;
+        for (var i in inspectContentList) {
+          var obj = new Object();
+          obj.itemsItemSamplesName = inspectContentList[i].samplesName ? inspectContentList[i].samplesName : '0';
+          obj.itemsItemSamplesProperty = inspectContentList[i].samplesProperty ? inspectContentList[i].samplesProperty : '0';
+          obj.itemsItemSamplesModelSpecifications = inspectContentList[i].samplesSpecifications ? inspectContentList[i].samplesSpecifications : '0';
+          obj.itemsItemSamplesManufacturers = inspectContentList[i].samplesManufacturers ? inspectContentList[i].samplesManufacturers : '0';
+          obj.itemsItemSamplesVolume = inspectContentList[i].itemsItemSamplesVolume ? inspectContentList[i].itemsItemSamplesVolume : '0';
+          obj.itemsItmeName = inspectContentList[i].itemsName ? inspectContentList[i].itemsName : '0';
+          obj.itemsTestBasis = inspectContentList[i].itemsBasis ? inspectContentList[i].itemsBasis : '0';
+          obj.itemsReportCode = inspectContentList[i].itemsCode ? inspectContentList[i].itemsCode : '0';
+          obj.itemsFrederickItme = inspectContentList[i].itemsFrederickItme ? inspectContentList[i].itemsFrederickItme : '0';
+
+          var dept = inspectContentList[i].orgName;
+          obj.dept = dept;
+
+          if (!checkValue(depts, dept)) {
+            depts.push(dept);
+          }
+          checks.push(obj);
+        }
+
+        function showAll() {
+          // 外循环 -- 部门
+          for (var x in depts) {
+            showTheInfo(depts[x]);
+          }
+          reportTable.css({display: 'none'});
+        }
+
+        function showTheInfo(selectDept) {
+          var temps = $("#report tr").filter(".abc");
+          for (var cc in temps) {
+            try {
+              temps[cc].parentNode.removeChild(temps[cc]);
+            } catch (e) {
+            }
+          }
+          dName.html(selectDept);
+          var isok = 0;
+          var number = 0;
+          var preNumber = 10;
+          var pageNumber = 1;
+          var pageHight = 720;
+          for (var x in checks) {
+            var deptname = checks[x].dept;// 每条检验项对应的部门
+            if (deptname == selectDept && checks[x].itemsItemSamplesName.length > 0) {
+              var port_num = $("#pageid");// <table/>
+              var isout = false;// 溢出标识符
+              number++;
+              var copyEle = ele.clone(true);// 克隆空<tr/>
+              copyEle.css({display: ''});
+              copyEle.addClass("abc");// 克隆的<tr/>的class类名
+              copyEle.attr({height: '37', id: ''});
+
+              var theText0 = checks[x].itemsItemSamplesName;
+              copyEle.children().eq(0).html(theText0);
+
+              var theText1 = checks[x].itemsItemSamplesProperty;
+              copyEle.children().eq(1).html(theText1);
+
+              var theText2 = checks[x].itemsItemSamplesModelSpecifications;
+              copyEle.children().eq(2).html('<div style="word-wrap:break-word;">' + theText2 + '</div>');
+
+              var theText3 = checks[x].itemsItemSamplesManufacturers;
+              copyEle.children().eq(3).html(theText3);
+
+              var theText4 = checks[x].itemsItemSamplesVolume;
+              copyEle.children().eq(4).html(theText4);
+
+              var text5 = checks[x].itemsFrederickItme;
+              var theText5 = (text5 && text5 != '' ? text5 : checks[x].itemsItmeName);
+              copyEle.children().eq(5).html(theText5);
+
+              var theText6 = checks[x].itemsTestBasis;
+              copyEle.children().eq(6).html(theText6);
+
+              var theText7 = checks[x].itemsReportCode;
+              copyEle.children().eq(7).html(theText7);
+
+              ele.before(copyEle);
+
+              if (port_num.height() > pageHight || (port_num.height() + 20) > pageHight) {
+                console.log(port_num, port_num.height(), '此时table');
+                isout = true;
+                ele.css({display: 'none'});
+
+                var copyElenew = copyEle.clone(true);// copyElenew: 此时已经加工完成且刚好溢出的<tr/>
+                copyEle.remove();
+
+                // var ele_height = pageHight - port_num.height();
+                // var outele = ele.clone(true);// 溢出的<tr/>
+                // outele.css({display: ''});
+                // outele.addClass("abc");
+                // outele.attr({id: '', height: ele_height});
+                // outele.attr({height: ele_height});// ?????
+                // ele.before(outele);
+              }
+
+              // 条目数=允许的preNumber数后 换页
+              if (number == preNumber || isout) {
+                if (isout) {
+                  $("#pageN").html(pageNumber);// 页码的逻辑
+                  $("#pageT").addClass(selectDept);// 页码的逻辑
+
+                  var copyEle1 = reportTable.clone(true);// 满足分页条件的<table/>的拷贝
+                  copyEle1.attr({id: ""});
+                  insertBase.before(copyEle1);
+
+                  number = 0;// 页码的逻辑
+                  pageNumber++;// 页码的逻辑
+
+                  // 触发分页后,清空刚才加工的渲染完成的所有<tr/>
+                  var temps = $('#report table tr').filter('.abc');
+                  for (var cc in temps) {
+                    try {
+                      temps[cc].parentNode.removeChild(temps[cc]);
+                    } catch (e) {
+                    }
+                  }
+                  // ele.css({display: ''});
+
+                  copyElenew.css({display: ''});
+                  ele.before(copyElenew);// 复制页下的子项目样式
+
+                  if (port_num.height() > pageHight) {
+                    alert(port_num.height() + "一个子项目的行数不能超出规范的一页模板的高度！");
+                    break;
+                    return;
+                  } else {
+                    isout = false;
+                  }
+                } else {
+                  var clonele = ele.clone(true);
+                  ele.before(clonele);
+                  clonele.css({display: ''});
+                  clonele.addClass("abc");
+                  ele.css({display: 'none'});
+                  try {
+                    clonele.attr('height', pageHight - port_num.height());
+                  } catch (e) {
+                  }
+
+                  isok++;
+                  if (!checknumber(deptname, isok)) {
+                    $("#pageN").html(pageNumber);
+                    $("#pageT").addClass(selectDept);
+
+                    var copyEle1 = reportTable.clone(true);
+                    insertBase.before(copyEle1);
+
+                    number = 0;
+                    pageNumber++;
+
+                    var temps = $('#report tr').filter('.abc')
+                    for (var cc in temps) {
+                      try {
+                        temps[cc].parentNode.removeChild(temps[cc]);
+                      } catch (e) {
+                      }
+                    }
+                  }
+                }
+              }  // if(number == preNumber)
+            }  // if(deptname == selectDept)
+            else {
+              console.log('ha0');
+            }
+          }  // for
+
+          if ((number < preNumber) && !isout)  //&&!isout
+          {
+            var port_num = $("#pageid");	//report	pageid
+
+            ele.css({display: 'none'});
+            var copyEle = ele.clone(true);
+            copyEle.css({display: ''});
+            copyEle.addClass('abc');
+            copyEle.attr({height: '37', id: ''});
+            ele.before(copyEle);
+            if (port_num.height() > pageHight) {
+              copyEle.remove();
+            } else {
+
+              var num_temp = pageHight;
+
+              var cha = num_temp - port_num.height();
+
+              copyEle.attr({height: cha});
+            }
+          }
+          console.log(isout, '??????');
+          var copyEle2 = reportTable.clone(true);
+          insertBase.before(copyEle2);
+
+          var totalNumberEles = document.getElementsByClassName(selectDept);
+          for (var xx in totalNumberEles) {
+            totalNumberEles[xx].innerText = pageNumber;
+          }
+        }
+
+        function checknumber(dept, num) {
+          var numbe = 0;
+          for (var yy in checks) {
+            if (dept == checks[yy].dept) {
+              numbe++;
+            }//end if
+          }//end for  checks
+          if (numbe / 10 == num) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+
+        function callpage() {
+          var pageall = $(".pageid");
+          var count = parseInt(pageall.length) - 1;
+          for (i = 1; i <= count; i++) {
+            var page_count = pageall[i];
+            var curr_page = page_count.children[0];
+            curr_page.innerHTML = i;
+            var all_page = page_count.children[1];
+            all_page.innerHTML = (pageall.length - 1);
+          }
+        }
+
+        var pagenext = $(".page_table");
+        if (parseInt(pagenext.length) > 2) {
+          for (var j = 2; j < parseInt(pagenext.length); j++) {
+            pagenext[j].addClass("PageNext");
+            alert(pagenext[j].style);
+          }
+        }
+        for (var j = 0; j < pagenext.length - 1; j++) {
+          pagenext[j].addClass("printstyle");
+        }
+        showAll();
+        callpage();
+      }
+
+      afterRender(data);
+    });
+  </script>
+
+</head>
+<body>
+<!-- 模板开始 -->
+<script id="tableTemp" type="text/html">
+
+  
+
+  <div id="report" style="display:block;">
+
+     
+    <table style="table-layout:fixed;" width="950" cellpadding="0" cellspacing="0" id="pageid"
+           class="page_table PageNext">
+     
+      <tr>
+        <% if(tinfo.checkTypeID=='KM'){%>
+        <td height="33" colspan="4" bgcolor="#FFFFFF" class="td1">中汽研汽车检验中心（昆明）有限公司</td>
+        <% } else { %>
+        <td height="33" colspan="4" bgcolor="#FFFFFF" class="td1">中汽研汽车检验中心（天津）有限公司</td>
+        <% } %>
+        
+        <td colspan="4" class="td1 td2">编&nbsp;&nbsp;号：&nbsp;&nbsp;
+          <% if(cccCheckTypeID !=null && cccCheckTypeID.indexOf(tinfo.checkTypeID)>=0){ %>
+          QSOK-0002
+          <% } else { %>
+          QSOK-0001
+          <% } %>
+        </td>
+      </tr>
+
+      <tr>
+        <td height="33" colspan="4" bgcolor="#FFFFFF" class="td1">
+          <div align="center">名称：任务通知单</div>
+        </td>
+        <td bgcolor="#FFFFFF" colspan="4" class="td1 td2">
+          <div align="center" class="pageid">
+            第 <span id="pageN">1</span>&nbsp;页&nbsp;
+            共 <span id="pageT">1</span>&nbsp;页
+          </div>
+        </td>
+      </tr>
+      <tr class="tr_temp">
+        <td width="127" height="33" bgcolor="#FFFFFF" class="td1">任务单编号</td>
+        <td bgcolor="#FFFFFF" width="70" class="td1">&nbsp;<%=tinfo.taskCode%></td>
+        <td bgcolor="#FFFFFF" width="110" class="td1">检验部门</td>
+        <td bgcolor="#FFFFFF" width="161" class="td1">
+          <div id="dName"></div>
+        </td>
+        <td bgcolor="#FFFFFF" width="70" class="td1">任务来源</td>
+        <td bgcolor="#FFFFFF" width="176" class="td1" align="center">&nbsp;<%=resource%></td>
+        <td bgcolor="#FFFFFF" width="106" class="td1">检验性质</td>
+        <td bgcolor="#FFFFFF" width="128" class="td1 td2">&nbsp;<%=typeName%></td>
+      </tr>
+      <tr>
+        <td height="33" bgcolor="#FFFFFF" class="td1">来样方式</td>
+        <td bgcolor="#FFFFFF" class="td1">&nbsp;
+          <% if(tinfo.musterType == 1){ %>
+          送样
+          <% } %>
+          <% if(tinfo.musterType == 2){ %>
+          抽样
+          <% } %>
+        </td>
+        <td bgcolor="#FFFFFF" class="td1">&nbsp;
+          <% if(tinfo.musterType == 1){ %>
+          送样人
+          <% } %>
+          <% if(tinfo.musterType == 2){ %>
+          抽样人
+          <% } %>
+        </td>
+        <td bgcolor="#FFFFFF" class="td1">&nbsp;
+          <%=sendSample%>
+        </td>
+        <td bgcolor="#FFFFFF" class="td1">&nbsp;
+          <% if(tinfo.musterType == 1){ %>
+          送样日期
+          <% } %>
+          <% if(tinfo.musterType == 2){ %>
+          抽样日期
+          <% } %>
+        </td>
+        <td bgcolor="#FFFFFF" class="td1">&nbsp;
+          <% if(tinfo.musterType == 1){ %>
+          <%=tinfo.sampleDate%>
+          <% } %>
+          <% if(tinfo.musterType == 2){ %>
+          <%=muster.musterDate%>
+          <% } %>
+        </td>
+        <td bgcolor="#FFFFFF" class="td1">试毕样品处理</td>
+        <td bgcolor="#FFFFFF" class="td1 td2">&nbsp;
+          <%=sampleBack%>
+        </td>
+      </tr>
+
+      <tr>
+        <td height="33" bgcolor="#FFFFFF" class="td1 td3">样品名称</td>
+        <td bgcolor="#FFFFFF" class="td1 td3">商标</td>
+        <td bgcolor="#FFFFFF" class="td1 td3">规格型号</td>
+        <td bgcolor="#FFFFFF" class="td1 td3">样品生产厂家</td>
+        <td bgcolor="#FFFFFF" class="td1 td3">数量</td>
+        <td bgcolor="#FFFFFF" class="td1 td3">检验项目</td>
+        <td bgcolor="#FFFFFF" class="td1 td3">检验依据</td>
+        <td bgcolor="#FFFFFF" class="td1 td3 td2">检验报告编号</td>
+      </tr>
+      <tr id="reportdetail"><!-- 模板<tr/>元素 -->
+        <td bgcolor="#FFFFFF" class="td4 td5">&nbsp;</td>
+        <td bgcolor="#FFFFFF" class="td4 td8">&nbsp;</td>
+        <td bgcolor="#FFFFFF" class="td4 td5">&nbsp;</td>
+        <td bgcolor="#FFFFFF" class="td4 td6">&nbsp;</td>
+        <td bgcolor="#FFFFFF" class="td4 td9">&nbsp;</td>
+        <td bgcolor="#FFFFFF" class="td4 td7">&nbsp;</td>
+        <td bgcolor="#FFFFFF" class="td4 td5">&nbsp;</td>
+        <td bgcolor="#FFFFFF" class="td4 td2 td5">&nbsp;</td>
+      </tr>
+
+      <% if(cccCheckTypeID !=null && cccCheckTypeID.indexOf(tinfo.checkTypeID)>=0){ %>
+      <tr>
+        <td height="35" bgcolor="#FFFFFF" class="td1">到样日期</td>
+        <td height="35" colspan="3" bgcolor="#FFFFFF" class="td1 left">
+          送样日期<%=tinfo.sampleDate%>
+        </td>
+        <td height="35" bgcolor="#FFFFFF" class="td1">进度要求</td>
+        <td height="35" colspan="7" bgcolor="#FFFFFF" class="td1 td2 left">
+          要求完成时间：请于&nbsp;<%=infor.finishDate%>&nbsp;前完成。
+        </td>
+      </tr>
+      <tr>
+        <td height="35" bgcolor="#FFFFFF" class="td1 ">信息</td>
+        <td height="35" colspan="3" bgcolor="#FFFFFF" class="td1  left ">
+          申请编号：<%=tinfo.checkYear%><br/>
+          申请人：<%=tinfo.companyCheck%><br/>
+          申请人地址：<%=infor.companyCheckAddress%><br/>
+          电话：<%=infor.companyCheckTel%><br/>
+          传真（或邮箱）：<%=infor.companyCheckFax%>&nbsp;&nbsp;
+          邮编：<%=infor.companyCheckPostalCode%>
+        </td>
+        <td height="35" colspan="4" bgcolor="#FFFFFF" class="td1 td2  left">
+          制造商：<%=infor.makeCompany%><br/>
+          制造商地址：<%=infor.makeCompanAddress%><br/>
+          生产厂：<%=infor.produceCompany%><br/>
+          生产厂地址：<%=infor.produceCompanyAddress%>
+        </td>
+      </tr>
+      <% } else { %>
+      <tr>
+        <td height="35" bgcolor="#FFFFFF" class="td1">进度要求</td>
+        <td height="35" colspan="7" bgcolor="#FFFFFF" class="td1 td2 left">
+          要求完成时间：请于&nbsp;<%=infor.finishDate%>&nbsp;前完成。
+        </td>
+      </tr>
+      <tr>
+        <td height="35" rowspan="2" bgcolor="#FFFFFF" class="td1">委托单位信息</td>
+        <td colspan="3" bgcolor="#FFFFFF" class="td1 left">
+          名称：<%=tinfo.companyCheck%><br/>
+          地址：<%=infor.companyCheckAddress%>
+        </td>
+        <td rowspan="2" bgcolor="#FFFFFF" class="td1 ">
+          生产厂家<br/>
+          单位信息
+        </td>
+        <td colspan="3" bgcolor="#FFFFFF" class="td1 td2 left">
+          <!-- □&nbsp;&nbsp;同委托单位<br/> -->
+          名称：<%=infor.produceCompany%><br/>
+          地址：<%=infor.produceCompanyAddress%>
+        </td>
+      </tr>
+      <tr>
+        <td height="35" colspan="3" bgcolor="#FFFFFF" class="td1 left">
+          电话：<%=infor.companyCheckTel%>&nbsp;&nbsp;
+          联系人：<%=infor.principal%><br/>
+          传真（或邮箱）：<%=infor.companyCheckFax%>&nbsp;&nbsp;
+          邮编：<%=infor.companyCheckPostalCode%>
+        </td>
+        <td colspan="3" bgcolor="#FFFFFF" class="td1 td2 left">
+          电话：<%=infor.produceCompanyTel%>&nbsp;&nbsp;
+          联系人：<%=infor.producePeo%><br/>
+          传真(或邮箱)：<%=infor.produceFax%>&nbsp;&nbsp;
+          邮编：<%=infor.produceMail%><br/>
+        </td>
+      </tr>
+      <% } %>
+
+      <tr>
+        <td bgcolor="#FFFFFF" colspan="8" class="td1 td2 td4 left td3">
+          说明：&nbsp;<%=infor.checkRemark2%>
+        </td>
+      </tr>
+      <tr height="56">
+        <td bgcolor="#FFFFFF" colspan="4" class="left">批准：
+          <% if(tinfo.createdate>=20180104){ %>
+          <img src="../docs/sign/ldw.jpg" alt="ldw.jpg" height="26">
+          <% } else { %>
+          <img src="../docs/sign/gmq.jpg" alt="gmq.jpg" height="26">
+          <% } %>
+        </td>
+        <td colspan="2" class="left">制表:
+          <img src="../docs/sign/<%=tinfo.commiterId.trim()%>.jpg" alt="<%=tinfo.commiterId.trim()%>.jpg" height="26">
+        </td>
+        <td colspan="2" class="right">
+          <% if(infor.doDate!=null && infor.doDate.length>0){ %>
+          <%=infor.doDate.substr(0,4)%>年
+          <%=infor.doDate.substr(4,2)%>月
+          <%=infor.doDate.substr(6,2)%>日
+          <% } %>
+        </td>
+      </tr>
+    </table>
+  </div>
+</script>
+<!-- 模板结束 -->
+<div class="noPrint">
+  <input type="image" src="image/printBTN.png" id="btn" alt="打印"/><span>打印</span>
+</div>
+<div id='result'></div>
+<div id="insertBase" class="noPrint"></div>
+</body>
+</html>
+<script>
+  $('#btn').click(function () {
+    window.print()
+  })
+</script>

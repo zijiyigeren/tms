@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/mui.picker.all.css">
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../css/icons-extra.css">
+		<link rel="stylesheet" href="../../../components/list/list.css">
+		<link rel="stylesheet" href="../../../components/form/form.css">
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/common.js"></script>
+		<style>
+			.mui-input-row label~input[type=radio]{
+				 border: 0 !important;
+				 left: 3px!important;
+				 padding-left: 0px;
+				 top: 8px!important;
+			}
+			.mui-input-row label~input[type=radio]:before{
+				font-size:22px;
+			}
+			#radios{
+				display: flex;
+				justify-content: space-around;
+			}
+			.form .mui-input-row .mui-radio label{
+				padding-left: 25px;
+				padding-right: 0px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">退样</h1>
+		</header>
+		<div id="app" class="mui-content" v-cloak>
+			<div class="list-item">
+				<div class="list-head">
+					<div class="list-head-left">
+						<span class="list-blue">退样信息</span>
+					</div>
+				</div>
+				<div class="list-content">
+					<form class="form">
+						<div class="mui-input-row">
+							<label>取样人:</label>
+							<input type="text" v-model="info.outPeople" class="mui-input-clear" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>经办人:</label>
+							<input type="text" v-model="info.operator" class="mui-input-clear" placeholder="请输入姓名">
+						</div>
+						 <div class="mui-input-row" id="radios">
+							<div class="mui-input-row mui-radio mui-left" v-for="(item, index) of carStatus" :key="index">
+								<label>{{item}}</label>
+								<input name="radio1" type="radio" :value="item" v-model="info.sampleStatus">
+							</div>
+						</div>
+						<div class="mui-input-row">
+							<label>样车状态:</label>
+							<input type="text" v-model="info.sampleStatus" class="mui-input-clear" placeholder="请输入..">
+						</div>
+						<div class="mui-input-row">
+							<label>联系方式:</label>
+							<input type="text" v-model="info.contract" class="mui-input-clear" placeholder="请输入..">
+						</div>
+						<div class="mui-input-row">
+							<label>取样日期:</label>
+							<input id="backdate" class="input-calender" type="text" v-model="info.outDate" name="outDate" readonly="readonly"
+							 data-options='{"type":"date"}' @click="base.selectDate('#backdate',info)">
+							<span class="icon-calender"><span>
+						</div>
+						<div class="mui-input-row">
+							<label>处理情况：</label>
+							<input type="text" v-model="info.processcase" class="mui-input-clear" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>备注：</label>
+							<input type="text" v-model="info.bk" class="mui-input-clear" placeholder="">
+						</div>
+
+						<div class="mui-button-row">
+							<button type="button" class="mui-btn mui-btn-primary" onclick="commitInfo();">
+								<img src="../../../res/sampleManagement/btn-check.png" alt="image" />
+								确认退样
+							</button>&nbsp;&nbsp;
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/mui.picker.min.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var app = new Vue({
+				el: '#app',
+				data: {
+					info: {
+						"outPeople": "",//取样人
+						"operator": "",//经办人
+						"sampleStatus": "",//样车状态
+						"contract": "",//联系方式
+						"outDate": "",//取样日期
+						"processcase": "",//处理情况
+						"bk": "",//备注
+						"terminalid":"",
+					},
+					carStatus: []
+				}
+			});
+			var id = 0;
+
+			mui.init();
+			mui.ready(function() {
+				//获取下拉列表信息
+				base.get(Config.urls.carload_initCarloadBack, {}, function(res) {
+					app.carStatus = res.data.sampleStatus.split(',');
+				});
+
+			});
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				id = self.carloadId; //获得参数
+				app.info.terminalid = id;
+
+				var keys = Object.keys(self.data);
+				for (var i = 0; i < keys.length; i++) {
+					var key = keys[i];
+					if (key !== 'terminalid') {
+						app.info[key] = self.data[key] === null ? '' : self.data[key];
+					}
+				}
+			});
+
+
+			function commitInfo() {
+				//console.log(JSON.stringify(app.info))
+				// 				for (var i in app.info) {
+				// 					if (app.info[i] == '' && i != 'backtype2') { //backtype2可以为空
+				// 						mui.toast('请检查必填项！');
+				// 						return;
+				// 					}
+				// 				}
+				base.showLoading({
+					title: '处理中..'
+				});
+				base.post(Config.urls.carload_saveCarloadBack, app.info, function(res) {
+
+					mui.toast(res.message);
+					var self = plus.webview.currentWebview();
+					var carInfo = self.opener();
+					var carloadManagement = carInfo.opener();
+					carloadManagement.reload();
+					carloadManagement.show();
+					carInfo.close();
+					self.close();
+				}, function(error) {
+					mui.toast(error.message);
+				});
+			}
+		</script>
+	</body>
+</html>

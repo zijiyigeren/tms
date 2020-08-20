@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <!-- disable IE compatible view -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" , user-scalable=no" />
+    <title>SpreadJS Demo : 拖拽(Drag & Drop)</title>
+
+    <!-- CDN Reference     -->
+    <link rel="icon" type="image/png" href="https://demo.grapecity.com.cn/SpreadJS/TutorialSample/icon.ico" />
+    <link rel=" stylesheet" type="text/css" href="https://cdn.grapecity.com.cn/spreadjs/css/basscss.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.grapecity.com.cn/spreadjs/css/gc.spread.sheets.excel2013white.12.0.6.css" />
+    <script type="text/javascript" src="https://cdn.grapecity.com.cn/spreadjs/scripts/gc.spread.sheets.all.12.0.6.min.js"></script>
+    <script type="text/javascript" src="https://cdn.grapecity.com.cn/spreadjs/scripts/resources/zh/gc.spread.sheets.resources.zh.12.0.6.min.js"></script>
+    <script type="text/javascript" src="https://cdn.grapecity.com.cn/spreadjs/scripts/jquery-1.11.1.min.js"></script>
+
+
+    <!-- Local Reference
+    <link rel="icon" type="image/png" href="images/icon.ico" />
+    <link rel="stylesheet" type="text/css" href="css/basscss.min.css ">
+    <link rel="stylesheet" type="text/css" href=" css/gc.spread.sheets.excel2013white.12.0.6.css">
+    <script type="text/javascript" src="scripts/gc.spread.sheets.all.12.0.6.min.js"></script>
+    <script type="text/javascript" src="/scripts/gc.spread.sheets.resources.zh.12.0.6.min.js"></script>
+    <script type="text/javascript" src="scripts/jquery-1.11.1.min.js"></script>
+-->
+    <!-- 页面内自定义 CSS-->
+    <style>
+        body {
+        background: rgb(250, 250, 250);
+        color: #333;
+      }
+
+      #ss {
+          border: 1px #ccc solid;
+      }
+
+      .container {
+        width: 60%;
+        background: rgb(250, 250, 250);
+        margin: 0 auto;
+        height: 480px;
+      }
+
+      .full-height {
+        height: 100%;
+      }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="clearfix border-bottom">
+            <div class="col col-8">
+                <h3>SpreadJS Demo : 拖拽(Drag & Drop)</h3>
+            </div>
+            <div class="col col-4 right-align align-middle">
+                <h5>
+                    <ul class="list-reset">
+                        <li class="inline-block mr1"><a class="btn" href="https://www.grapecity.com.cn/developer/spreadjs "
+                                target="_blank ">产品官网</a></li>
+                        <li class="inline-block mr1"><a class="" href="https://gcdn.grapecity.com.cn/showforum-185-1.html "
+                                target="_blank ">论坛求助</a></li>
+                        <li class="inline-block mr1"><a class="" href="https://demo.grapecity.com.cn/SpreadJS/TutorialSample/#/samples "
+                                target="_blank ">更多示例</a></li>
+                    </ul>
+                </h5>
+            </div>
+        </div>
+
+        <div class="full-height clearfix mt2">
+            <div class="col col-4 ">
+                <h4 class="mt0 ">说明</h4>
+                <p>
+                    此示例演示将页面中的元素(button)通过拖拽的方式，将按钮的文字粘贴到 SpreadJS 单元格中。同时可以查看控制台（console）了解事件过程。
+                </p>
+                <h4 class="mt0">步骤</h4>
+                <ul>
+                    <li>拖动下方的按钮到右侧的 SpreadJS 中</li>
+                </ul>
+                <button id="item1">按钮</button>
+                <!--<input type="text" id="item1"/>-->
+            </div>
+            <div class="col col-8 full-height ">
+                <div id="ss" class="full-height"></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript ">
+    var spreadNS = GC.Spread.Sheets;
+    $(document).ready(function () {
+        var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"));
+        var sheet = spread.getActiveSheet();
+        addQ(spread);
+    });
+
+
+    function addQ(spread) {
+        var td = document.getElementById("item1");
+        td.draggable = true;
+        td.addEventListener("dragstart", function (ev) {
+            // 存储相关的拖拽元素
+            dragged = ev.target;
+            // 设置拖拽元素的透明度
+            ev.target.style.opacity = 0.5;
+            console.log("开始拖动 ")
+        }, false);
+        /* 事件在拖拽元素上触发 */
+        document.addEventListener("dragend", function (ev) {
+            // 重设透明度
+            event.target.style.opacity = "";
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragover", function (event) {
+            // 默认情况下是无法允许一个元素放置在另一个元素上的，要放置必须阻止默认行为
+            event.preventDefault();
+            console.log("已经在目标区域 ")
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragenter", function (event) {
+            // 当拖拽元素进入潜在放置区域时，高亮处理
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "purple";
+            }
+
+            console.log("已经触发")
+        }, false);
+
+        /* 事件在目标区域触发 */
+        document.addEventListener("dragleave", function (event) {
+            // 当拖拽元素离开潜在放置区域时重置该目标区域的背景
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "";
+            }
+            console.log("离开目标区域！")
+        }, false);
+
+        /* 松开鼠标，触发 drop */
+        document.addEventListener("drop", function (event) {
+            // 阻止默认行为（drop的默认处理方式是当初链接处理）
+            event.preventDefault();
+            // 把拖拽元素移入目标区域
+            //这里要经过两步处理
+            // 1、先把拖拽元素从原父元素中删除（这步不是必须的）
+            ///2、然后再添加到目标区域
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "";
+                dragged.parentNode.removeChild(dragged);
+                event.target.appendChild(dragged);
+            }
+            //获取拖动物理在屏幕的位置
+            var offsetL = document.getElementById("ss").offsetLeft;
+            var offsetT = document.getElementById("ss").offsetTop;
+            //获取拖动块的值
+            var tab_value = document.getElementById("item1").innerText
+            console.log(tab_value)
+            var x = event.pageX - offsetL;
+            var y = event.pageY - offsetT;
+            //获取单元格的位置
+            var target = spread.hitTest(x, y);
+            console.log(target)
+            console.log("列： " + target.worksheetHitInfo.col + "行: " + target.worksheetHitInfo.row);
+            var sheet = spread.getActiveSheet();
+            sheet.setValue(target.worksheetHitInfo.row, target.worksheetHitInfo.col, tab_value);
+
+            console.log("执行完毕 ")
+        })
+    }
+</script>
+
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../../assets/css/gc.spread.sheets.excel2013white.12.0.0.css"/>
+    <style>
+        body{
+            margin: 0;
+        }
+
+        /*弹出层遮罩*/
+        .layer-mask {
+            display: none;
+            z-index: 999;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            opacity: 0.5;
+        }
+        /*弹出层窗体*/
+        .layer-pop {
+            display: none;
+            z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            width: 400px;
+            height: 300px;
+            background: #fff;
+        }
+        /*关闭按钮*/
+        .layer-close {
+            float: right;
+            width: 24px;
+            height: 24px;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 50%;
+            background: #eee;
+            border: 3px solid #fff;
+            margin-right: -12px;
+            margin-top: -12px;
+        }
+        .layer-close:hover {
+            cursor: pointer;
+            background: #ccc;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<button id="save">保存</button><button id="add_ztree">添加树形菜单</button><button id="set_style">单元格样式</button><button id="add_text">添加文本框</button>
+<div id="ss" style="width: 99%;">
+
+
+    <!-- 弹出层遮罩-->
+    <div class="layer-mask" id="layer-mask"></div>
+    <!-- 弹出层窗体-->
+    <div class="layer-pop" id="layer-pop">
+        <!-- 关闭按钮 -->
+        <div class="layer-close" id="layer-close">×</div>
+        <!-- 内容区域 -->
+        <div class="layer-content" id="layer-content"></div>
+    </div>
+
+    <!-- 设置单元格属性弹层 -->
+    <div class="setstyle" id="setstylelayer" style="display: none;">
+        <h3 style="text-align: center;color: #000;">设置单元格属性</h3>
+        <hr/>
+        <div>
+            &nbsp;<button id="add_singleCheckBox" onclick="show_add_singleCheckBox_layer()">添加单选</button>&nbsp;&nbsp; <button id="decrease_cellWidth">缩窄选中</button>&nbsp;&nbsp;
+
+        </div>
+
+    </div>
+
+
+    <!-- 设置单元格属性弹层 -->
+    <div class="setstyle" id="add_singleCheckBox_layer" style="display: none;">
+        <h3 style="text-align: center;color: #000;">设置单选按钮样式</h3>
+        <hr/>
+        <div>
+            <input id="checkbox_name" type="text">
+
+            <button style="bottom:10px;align-self: center" onclick="close_buttonf()">确定并关闭</button>
+
+        </div>
+
+    </div>
+
+
+
+</div>
+<!-- jQuery 1.x 版本兼容 IE8 -->
+<script type="text/javascript" src="../../assets/libs/jquery-1.12.4.min.js"></script>
+<!-- spreadJS脚本文件 -->
+<script type="text/javascript" src="../../assets/js/gc.spread.sheets.all.12.0.0.min.js"></script>
+<script type="text/javascript" src="../../assets/libs/layer"
+<script>
+
+
+    //------一下为选中的表格属性-------------------------------------------------------------------------------------------
+    var caption_name ;
+
+
+
+
+   $("#save").on('click',function () {
+       var serializationOption = {
+           ignoreFormula: true, // indicate to ignore the style when convert workbook to json, default value is false
+           ignoreStyle: true, // indicate to ignore the formula when convert workbook to json, default value is false
+           rowHeadersAsFrozenColumns: true, // indicate to treat the row headers as frozen columns when convert workbook to json, default value is false
+           columnHeadersAsFrozenRows: true // indicate to treat the column headers as frozen rows when convert workbook to json, default value is false
+       };
+
+       var spread1 = GC.Spread.Sheets.findControl(document.getElementById('ss'));
+       var jsonString = JSON.stringify(spread1.toJSON(serializationOption));
+       console.log(jsonString);
+   });
+
+
+
+
+
+   $("#add_ztree").on('click',function () {
+       alert("add_ztree");
+   });
+
+
+   //add_singleCheckBox
+   // 封装显示弹出层函数
+   function show_add_singleCheckBox_layer(html,width,height,closeCallback){
+
+       $("#layer-mask").show();
+       $("#layer-pop").show();
+       //动态设置弹出层宽度高度
+       $("#layer-pop").css({
+           width: 500,
+           height: 300
+       });
+       //填充弹出层窗体内容
+       $("#layer-content").html($("#add_singleCheckBox_layer").html());
+       //绑定事件，调用hideLayer
+       $("#layer-close").click(function(){
+
+           caption_name = $("#checkbox_name").val() ;
+
+           hideLayer();
+       });
+
+
+   };
+
+
+   function  close_buttonf() {
+
+       caption_name = $("#checkbox_name").val() ;
+       hideLayer();
+   }
+
+
+
+   // 封装显示弹出层函数
+   function showLayer(html,width,height,closeCallback){
+       $("#layer-mask").show();
+       $("#layer-pop").show();
+       //动态设置弹出层宽度高度
+       $("#layer-pop").css({
+           width: width,
+           height: height
+       });
+       //填充弹出层窗体内容
+       $("#layer-content").html(html);
+       //绑定事件，调用hideLayer
+       $("#layer-close").click(function(){
+           hideLayer();
+       });
+   };
+
+   // 封装隐藏弹出层函数
+   function hideLayer(){
+       $("#layer-mask").hide();
+       $("#layer-pop").hide();
+   };
+
+
+   window.onload = function () {
+       $("#ss").css('height',window.innerHeight - 100);
+       var spread = new GC.Spread.Sheets.Workbook(document.getElementById('ss'), { sheetCount: 1 });
+       var activeSheet = spread.getActiveSheet();
+       //允许拖拽合并
+       spread.options.allowUserDragMerge = true;
+       activeSheet.options.selectionBorderColor = 'red';
+       activeSheet.options.selectionBackColor = 'transparent';
+       //注册双击事件，应弹出样式设置弹框
+       activeSheet.bind(GC.Spread.Sheets.Events.CellDoubleClick, function (sender, args) {
+
+           var setstylelayer = $("#setstylelayer").html();
+
+           //填充调色
+           // activeSheet.setValue(1, 1, "caption");
+           // activeSheet.getCell(1, 1).hAlign(GC.Spread.Sheets.HorizontalAlign.center).vAlign(GC.Spread.Sheets.VerticalAlign.center).foreColor("green");
+           showLayer(setstylelayer,500,300);
+
+           var captionCellType = new GC.Spread.Sheets.CellTypes.CheckBox();
+           console.log(caption_name);
+           captionCellType.caption(caption_name);
+           activeSheet.getCell(1, 1).setCellType(captionCellType);
+           activeSheet.getCell(1, 2).hAlign(GC.Spread.Sheets.HorizontalAlign.center).vAlign(GC.Spread.Sheets.VerticalAlign.center);
+
+
+
+
+           console.log("Double clicked column index: " + args.col);
+           console.log("Double clicked row index: " + args.row);
+       });
+
+
+   };
+
+</script>
+</body>
+</html>

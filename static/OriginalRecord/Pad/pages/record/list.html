@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link rel="shortcut icon" href="../../res/gif/1.gif" />
+	<link rel="stylesheet" href="../../css/mui.min.css">
+	<link rel="stylesheet" href="../../css/reset.css">
+	<link rel="stylesheet" href="../../css/app.css">
+	<link rel="stylesheet" href="../../components/search/search-bar.css">
+	<link rel="stylesheet" href="../../components/list/list.css">
+	<link rel="stylesheet" href="../../components/scroller/scroller.css">
+	<link rel="stylesheet" href="../../components/nav-btns/nav-btns.css">
+</head>
+<body>
+
+	<!-- 页面 -->
+	<div id="app" v-cloak>
+		<!-- 滚动容器 -->
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+		<!-- 顶部按钮 -->
+		<ul class="nav-btns">
+			<li v-if="item.show" class="nav-btns-item" v-for="(item, index) of navBtns" :key="index" @tap="onNavBtnTap(item)" >
+				<img class="item-icon" :src="item.icon" width="36px" height="36px" alt="image" />
+				<span class="item-title">{{item.title}}</span>
+			</li>
+		</ul>
+		<!-- 顶部按钮结束 -->
+				<!-- 样车列表 -->
+				<ul class="list">
+					<li class="list-item" v-for="i in recordList" :id="i.id" @tap="goDetail(i.id)">
+						<div class="list-head">
+							<div class="list-head-left">
+								<span class="list-black">原始记录名称：</span><label class="list-blue">{{i.name}}</label>
+							</div>
+						</div>
+						<div class="list-content">
+							<div>
+								<ul>
+									<li><span>样品编码：</span><span>{{i.sampleCode}}</span></li>
+									<li><span>配置名称：</span><span>{{i.configName}}</span></li>
+									<li><span>id：</span><span>{{i.id}}</span></li>
+								</ul>
+							</div>
+							<span class="mui-icon mui-icon-arrowright"></span>
+						</div>
+					</li>
+				</ul>
+				<!-- 样车列表结束 -->
+
+			</div>
+		</div>
+		<!-- 滚动容器结束 -->
+	</div>
+	<!-- 页面结束 -->
+
+	<script src="../../js/mui.min.js"></script>
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/config.js"></script>
+	<script src="../../js/webviews.js"></script>
+	<script src="../../js/app.js"></script>
+	<script src="../../components/scroller/scroller.js"></script>
+	<script src="../../components/search/search.js"></script>
+	<script src="list.js"></script>
+</body>
+</html>

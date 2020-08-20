@@ -1,0 +1,8 @@
+.mui-radio input[type=radio] {
+    position: absolute;
+    top: -15px;
+    right: 0px;
+}
+.mui-checkbox input[type=checkbox]:checked:before, .mui-radio input[type=radio]:checked:before {
+    color: #3e80cb;
+}

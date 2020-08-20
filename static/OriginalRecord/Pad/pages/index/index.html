@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link rel="shortcut icon" href="../../res/gif/1.gif" />
+	<link rel="stylesheet" href="../../css/reset.css">
+	<link rel="stylesheet" href="../../css/app.css">
+	<link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+	<!-- 页面 -->
+	<div id="app" v-cloak>
+
+		<!-- 底部栏 -->
+		<nav class="tab-bar">
+
+			<!-- 如果currentItemIndex等于index，则添加active类 -->
+			<a
+				class="tab-item"
+				v-for="(item, index) of barItems"
+				:key="index"
+				:class="{'active': currentItemIndex === index}"
+				@tap="onTabTap(index)"
+			>
+				<span class="tab-icon"><img :src="item.icon" width="24px" height="24px" alt="image" /></span>
+				<span class="tab-label">{{item.title}}</span>
+			</a>
+		</nav>
+		<!-- 底部栏结束 -->
+
+	</div>
+	<!-- 页面结束 -->
+
+	<script src="../../js/mui.min.js"></script>
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/config.js"></script>
+	<script src="../../js/app.js"></script>
+	<script src="../../js/webviews.js"></script>
+	<script src="../../js/version.js"></script>
+	<script src="index.js"></script>
+</body>
+</html>

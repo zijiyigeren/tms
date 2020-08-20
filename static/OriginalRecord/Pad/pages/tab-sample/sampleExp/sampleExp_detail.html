@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/icons-extra.css">
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../components/search/search-bar.css">
+		<link rel="stylesheet" href="../../../components/list/list.css">
+		<link rel="stylesheet" href="../../../components/form/form.css">
+		<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+		<link rel="stylesheet" href="../../../css/commonTable.css" />
+		<link rel="stylesheet" href="../../../css/commonBottomBtns.css" />
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/common.js"></script>
+		<style>
+			table{
+				text-align: center;
+				border: 1px solid #3E80CB;
+			}
+			table tr.code-green{
+				background: rgba(1,255,149,0.1);
+				color: darkgrey;
+			}
+			table tr.code-disabled{
+				background: rgba(33,33,33,0.1);
+				color: darkgrey;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div id="app" class="mui-content" v-cloak>
+			<div class="list-item">
+				<div class="list-head">
+					<div class="list-head-left">
+						<span class="list-blue">样件信息</span>
+					</div>
+				</div>
+				<div class="list-content">
+					<form class="form">
+						<div class="mui-input-row">
+							<label>样件名称:</label>
+							<input type="text" :value="info.cpart.sampleName" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>型号:</label>
+							<input type="text" :value="info.cpart.sampleType" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>预约科室:</label>
+							<input type="text" :value="info.department.org_name" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>预约人:</label>
+							<input type="text" :value="info.member.name" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>预约个数:</label>
+							<input type="text" :value="info.collectNumber" readonly="readonly">
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="table-area">
+				<table id="sampleTable">
+					<thead>
+						<th class="th-checkbox" style="width:60px;">
+							<div class="mui-checkbox mui-checkbox-square">
+								<input name="searchInResult" value="" type="checkbox" >
+							</div>
+						</th>
+						<th>样件编码</th>
+					</thead>
+					<tbody>
+						<tr v-for="i in codes" :id="i.barcode" v-bind:class="{ 'code-green': i.outStatus=='2', 'code-disabled': (i.outStatus!=null && i.outStatus!='0') }">
+							<td>
+								<div class="mui-checkbox mui-checkbox-square">
+									<input name="searchInResult" value="" type="checkbox" v-bind:disabled=" (i.outStatus!=null && i.outStatus!='0') ">
+								</div>
+							</td>
+							<td>{{i.barcode}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div id="btns" class="bottom-btns">
+			<div class="bottom-btn bottom-btn-orange" onclick="reject();">
+				<img src="../../../res/sampleManagement/btn-reject.png" alt="image" />
+				<span>退库</span>
+			</div>
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script src="../../../js/tools/table.js"></script>
+		<script type="text/javascript">
+			var app = new Vue({
+				el:'#app',
+				data:{
+					info:{ cpart: {}, department:{}, member:{} },
+					codes: []
+				}
+			});
+			var id = 0;
+
+			mui.init();
+			mui.ready(function(){
+
+			});
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				base.initTitleBar(self,'样件出库详情',[{icon:'../../../res/todo/refresh.png',click: getInfo }]);
+				id = self.sampleId;//获得参数
+				getInfo();
+			});
+
+			function getInfo(){
+				base.showLoading();
+				base.get(Config.urls.component_findOrderInfo,{ orderId: id },
+					function(res){
+						app.info = res.data.orderInfo;
+					}
+				);
+				base.get(Config.urls.component_findOrderedComponentPartPlace,{ orderId: id },
+					function(res){
+						console.log(JSON.stringify(res.data))
+						app.codes = res.data.cppList;
+						Table.render({id:'#sampleTable', data: app.codes });
+					}
+				);
+			}
+			function reject(){
+				var res = Table.getSelected('#sampleTable');
+				var codes = [];
+				for(var i in res){
+					codes.push(res[i].data.barcode)
+				}
+				if(codes.length==0){
+					mui.toast('未选择编码');
+					return;
+				}
+				base.showLoading({title:'处理中..'})
+				base.post(Config.urls.component_goBackStore,{barcode:codes.join()},
+					function(res){
+						mui.toast(res.message);
+						var self = plus.webview.currentWebview();
+						self.opener().reload();
+						self.opener().opener().reload();
+						getInfo();
+					}
+				);
+			}
+		</script>
+	</body>
+</html>

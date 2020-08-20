@@ -1,0 +1,152 @@
+body {
+	width: 100%;
+	height: 100%;
+	font-size: 14px;
+	margin: 0;
+	overflow: hidden;
+}
+
+input[type="button"] {
+	cursor: pointer;
+}
+
+.infoBar {
+	display: flex;
+	height: 50px;
+	line-height: 50px;
+	margin-bottom: 5px;
+	background-color: rgb(249, 250, 251);
+	border-bottom: solid 1px #08080814;
+}
+
+.infoBar select {
+	font-size: 14px;
+	border: 1px solid #D7D7D7;
+	border-radius: 3px;
+	height: 25px;
+	min-width: 80px;
+}
+
+.infoBar input[type="button"] {
+	background-color: #176DC0;
+	font-size: 14px;
+	color: white;
+	min-width: 90px;
+	height: 32px;
+	border: none;
+	border-radius: 3px;
+}
+
+#container {
+	position: absolute;
+	height: calc(100% - 55px);
+	width: 100%;
+}
+
+.selectDialogs {
+	margin-top: 10px;
+	text-align: center;
+}
+
+.selectDialogs input[type="button"] {
+	background-color: #176DC0;
+	font-size: 14px;
+	color: white;
+	width: 90px;
+	height: 32px;
+	border: none;
+	border-radius: 2px;
+}
+
+.black_overlay {
+	display: none;
+	position: absolute;
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	background-color: gray;
+	z-index: 1001;
+	-moz-opacity: 0.8;
+	opacity: .80;
+	filter: alpha(opacity=80);
+}
+
+.white_content {
+    display: none;
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    width: 70%;
+    height: 70%;
+    border: 1px solid gray;
+    background-color: white;
+    z-index: 1002;
+    overflow: hidden;
+}
+
+.white_content_small {
+    display: none;
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    width: 40%;
+    height: 50%;
+    border: 16px solid lightblue;
+    background-color: white;
+    z-index: 1002;
+    overflow: hidden;
+}
+
+.pagination>li>a,
+.pagination>li>span {
+	height: 20px;
+}
+
+.dialogClose {
+    cursor: pointer;
+    
+}
+
+.dialogClose img {
+    margin-top: 8px;
+    margin-right:5px;
+}
+
+.dialogTitle {
+    display: flex;
+    height: 35px;
+    line-height: 30px;
+    background-color: #176DC0;
+}
+
+.dialogTitleLeft {
+    text-align: left;
+    cursor: default;
+    float: left;
+    width: 100%;
+    font-size: 14px;
+    color: white;
+}
+.dialogTitleLeft div {
+     margin-top: 4px;
+     margin-left: 5px;
+}
+
+.dialogTitleRight {
+    text-align: right;
+    cursor: default;
+    float: right;
+    width: 100%;
+}
+
+.verificationContent {
+    display: flex;
+    top: 20px;
+    margin-top: 20px;
+    margin-left: 10px;
+}
+
+#alertMessage {
+    margin-left: 20px;
+}

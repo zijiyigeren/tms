@@ -1,0 +1,517 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/mui.picker.all.css">
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../css/icons-extra.css">
+		<link rel="stylesheet" href="../../../components/list/list.css">
+		<link rel="stylesheet" href="../../../components/form/form.css">
+		<link href="../../../css/commonBottomBtns.css" rel="stylesheet" />
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/common.js"></script>
+		<script src="../../../js/config.js"></script>
+		<style type="text/css">
+			.mui-input-group:after {
+				background-color: transparent;
+			}
+
+			#save {
+				display: flex;
+				width: 44px;
+				height: 44px;
+				justify-content: center;
+				align-items: center;
+			}
+
+			#barcode-btn {
+				position: absolute;
+				top: 8px;
+				right: 6px;
+			}
+
+			#barcode-btn::before {
+				font-size: 22px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content" v-cloak>
+			<div class="list-item">
+				<div class="list-head">
+					<div class="list-head-left">
+						<span class="list-blue">基本详情</span>
+					</div>
+				</div>
+				<div class="list-content">
+					<form class="form" style="max-height: 250px;overflow-y: scroll;">
+
+						<div class="mui-input-row">
+							<label>条形码:</label>
+							<input type="text" v-model="info.barcode">
+							<span id="barcode-btn" class="mui-icon-extra mui-icon-extra-sweep" onclick="base.goScan()"></span>
+						</div>
+						<div class="mui-input-row">
+							<label>送检单位:</label>
+							<input type="text" v-model="info.comeCompany" name="" class="mui-input-clear" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>车型:</label>
+							<input type="text" v-model="info.model" name="" class="mui-input-clear" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>VIN码:</label>
+							<input type="text" v-model="info.vin" name="" class="mui-input-clear" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>送样人:</label>
+							<input type="text" v-model="info.comePeople" name="" class="mui-input-clear" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>送样人电话:</label>
+							<input type="text" v-model="info.contract" name="" class="mui-input-clear" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>送样日期:</label>
+							<input type="text" v-model="info.comeDate" name="" class="mui-input-clear" placeholder="">
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="form-title">
+				流转详情
+			</div>
+			<div>
+				<div v-for="i in records" :id="i.id">
+					<div class="list-item">
+						<div class="list-head">
+							<div class="list-head-left list-blue">
+								<span>出发科室：</span><label>{{i.dept}}</label>
+							</div>
+						</div>
+						<div class="list-content">
+							<div class="list-content-left">
+								<ul>
+									<li>
+										<span>姓名：</span><label>{{i.lypeople}}</label>
+									</li>
+								</ul>
+							</div>
+							<div class="list-content-right">
+								<ul>
+									<li>
+										<span>时间：</span><label>{{i.startDate}}</label>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="list-item">
+						<div class="list-head">
+							<div class="list-head-left list-blue">
+								<span>到达科室：</span><label>{{i.receivedept}}</label>
+							</div>
+						</div>
+						<div class="list-content">
+							<div class="list-content-left">
+								<ul>
+									<li>
+										<span>姓名：</span><label>{{i.hypeople}}</label>
+									</li>
+								</ul>
+							</div>
+							<div class="list-content-right">
+								<ul>
+									<li>
+										<span>时间：</span><label>{{i.endDate}}</label>
+									</li>
+								</ul>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="btns" v-if="isDistributor || isOfficeCenter" class="bottom-btns">
+			<div v-if="isDistributor" class="bottom-btn bottom-btn-orange" onclick="reject();">
+				<img src="../../../res/sampleManagement/btn-reject.png" alt="image" />
+				<span>退样</span>
+			</div>
+			<div v-if="isOfficeCenter" class="bottom-btn" onclick="bookCar();">
+				<img src="../../../res/sampleManagement/btn-booking.png" alt="image"/>
+				<span>预约</span>
+			</div>
+		</div>
+		<div id="bookDialog" style="display:none;">
+			<form id="bookForm" class="form" style="max-height: 250px;overflow-y: auto;">
+				<div class="mui-input-row">
+					<label>取样时间</label>
+					<div class="select-wrapper">
+						<select class="mui-btn" v-model="bookInfo.bookTime" required>
+							<option value="0" disabled selected>请选择</option>
+							<option v-for="opt in bookTimeOptions" :value="opt.value" :data-disabled="opt.available === 0">{{opt.range}}</option>
+						</select>
+						<span class="arrow-down-icon"></span>
+					</div>
+				</div>
+				<div class="mui-input-row">
+					<label>待还车</label>
+					<div class="select-wrapper">
+						<select type="number" name="bookNum" class="mui-btn" placeholder="" v-model="bookInfo.restoreNum">
+							<option value="0">0</option>
+							<option v-for="(item, index) of restoreNumOptions" :key='index' :value="item">{{item}}</option>
+						</select>
+						<span class="arrow-down-icon"></span>
+					</div>
+				</div>
+				<div class="mui-input-row">
+					<label>领样人</label>
+					<input type="text" v-model="bookInfo.fetchPeople" class="mui-input-clear" placeholder="">
+				</div>
+			</form>
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/mui.picker.min.js"></script>
+		<script src="../../../js/tools/dialog.js"></script>
+		<script src="../../../js/tools/timeRange.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script type="text/javascript">
+
+			// 存放预约人
+			var bookPeople = '';
+
+			// 存放`findBookCarInfo()`返回的数据
+			var bookCarInfo = {};
+
+			var self = '';
+
+			function bookCar() {
+				Dialog.open({
+					id: "#bookDialog",
+					title: '预约',
+					onConfirm: function(values) { //点击确定按钮时调用,values是所有带有name属性的input的值: value = values[name]
+
+						// 所有input失焦
+						base.blur();
+
+						if (
+							bookForm.bookInfo.bookTime === 0 || bookForm.bookInfo.fetchPeople === ''
+						) {
+							mui.toast('请检查必填项');
+							return false;
+						} else {
+							base.showLoading();
+
+							var bookInfo = {};
+							if (bookCarInfo.bookCar.length > 0) {
+								for (var key in bookCarInfo.bookCar[0]) {
+									bookInfo[key] = bookCarInfo.bookCar[0][key];
+								}
+							}
+							for (var key1 in bookForm.bookInfo) {
+								bookInfo[key1] = bookForm.bookInfo[key1];
+							}
+							if (!bookInfo.bookPeople) {
+								bookInfo.bookPeople = bookPeople;
+							}
+							if (!bookInfo.terminalid) {
+								bookInfo.terminalid = id;
+							}
+
+							saveBookCar(bookInfo);
+							return true; //返回false,对话框不关闭; 返回true或没有return,对话框关闭.
+						}
+					},
+					onLoad: function(doms) { //可选，对话框弹出后调用,可对input dom进行操作: dom = doms[name]
+						bookForm = new Vue({
+							el: '#bookForm',
+							data: {
+								bookInfo: {
+									bookTime: 0,
+									restoreNum: 0,
+									fetchPeople: ''
+								}
+							},
+							computed: {
+								bookTimeOptions: function() {
+									return Object.keys(bookCarInfo.usableTime).map(function(key) {
+										var opt = {};
+										opt.value = Number(key);
+										opt.range = getTimeRange(opt.value);
+										opt.available = bookCarInfo.orderLimitPerHalfour - Number(bookCarInfo.usableTime[key].split(',')[0]);
+										return opt;
+									});
+								},
+								restoreNumOptions: function() {
+									if (this.bookInfo.bookTime !== 0) {
+										var availableNumber = bookCarInfo.restoreLimitPerHalfour - Number(bookCarInfo.usableTime[this.bookInfo.bookTime].split(',')[1]);
+										var options = [];
+										for (var i = 1; i <= availableNumber; i++) {
+											options.push(i);
+										}
+										return options;
+									} else {
+										return [];
+									}
+								}
+							},
+							watch: {
+								'bookInfo.bookTime': function() {
+									this.bookInfo.restoreNum = 0;
+								}
+							},
+							mounted: function() {
+								var options = document.querySelectorAll('option[data-disabled=true]');
+								for (var i = 0; i < options.length; i++) {
+									var item = options[i];
+									item.disabled = 'disabled';
+								}
+							}
+						});
+					}
+				})
+			}
+			var app = new Vue({
+				el: '#app',
+				data: {
+					records: [],
+					info: {},
+					isDistributor: false,
+					isOfficeCenter: false
+				}
+			});
+			var btns = new Vue({
+				el: '#btns',
+				data: {
+					isDistributor: false,
+					isOfficeCenter: false
+				}
+			});
+			var bookForm = null;
+			var id = 0;
+			mui.init();
+			mui.plusReady(function() {
+
+				// 获取当前用户权限
+				btns.isDistributor = app.isDistributor = base.roles.isDistributor();
+				btns.isOfficeCenter = app.isOfficeCenter = base.roles.isOfficeCenter();
+
+				// 获取当前登录的用户名作为预约人
+				bookPeople = JSON.parse(plus.storage.getItem('userInfo')).account;
+
+				self = plus.webview.currentWebview();
+				initTitleBar();
+				id = self.carloadId; //获得参数
+				base.get(Config.urls.carload_findCarload, {
+						carloadId: id
+					},
+					function(res) {
+						app.info = res.data;
+						// app.info.status = Config.status[app.info.status];
+						base.showLoading({
+							title: '获取流转详情'
+						});
+						base.get(Config.urls.carload_findCarloadFlow, {
+								carloadId: id
+							},
+							function(res) {
+								app.records = res.data;
+							}
+						);
+					}
+
+				);
+				findBookCarInfo();
+			});
+
+			function selectDate(self) {
+				var _self = self;
+				if (_self.picker) {
+					_self.picker.show(function(rs) {
+						_self.value = rs.text;
+						_self.picker.dispose();
+						_self.picker = null;
+					});
+				} else {
+					var optionsJson = self.getAttribute('data-options') || '{}';
+					var options = JSON.parse(optionsJson);
+					var id = self.getAttribute('id');
+					/*
+					 * 首次显示时实例化组件
+					 * 示例为了简洁，将 options 放在了按钮的 dom 上
+					 * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
+					 */
+					_self.picker = new mui.DtPicker(options);
+					_self.picker.show(function(rs) {
+						/*
+						 * rs.value 拼合后的 value
+						 * rs.text 拼合后的 text
+						 * rs.y 年，可以通过 rs.y.vaue 和 rs.y.text 获取值和文本
+						 * rs.m 月，用法同年
+						 * rs.d 日，用法同年
+						 * rs.h 时，用法同年
+						 * rs.i 分（minutes 的第二个字母），用法同年
+						 */
+						_self.value = rs.text;
+						/*
+						 * 返回 false 可以阻止选择框的关闭
+						 * return false;
+						 */
+						/*
+						 * 释放组件资源，释放后将将不能再操作组件
+						 * 通常情况下，不需要示放组件，new DtPicker(options) 后，可以一直使用。
+						 * 当前示例，因为内容较多，如不进行资原释放，在某些设备上会较慢。
+						 * 所以每次用完便立即调用 dispose 进行释放，下次用时再创建新实例。
+						 */
+						_self.picker.dispose();
+						_self.picker = null;
+					});
+				}
+			}
+
+			// function reject(id) {
+			// 	Dialog.confirm({
+			// 		title: '提示',
+			// 		msg: '确定退样?',
+			// 		onConfirm: function() { //点击确定按钮时调用,values是所有带有name属性的input的值: value = values[name]
+			//
+			// 			return true; //返回false,对话框不关闭; 返回true或没有return,对话框关闭.
+			// 		}
+			// 	})
+			// }
+
+			function save() {
+				base.post(Config.urls.carload_saveCarload, app.info,
+					function(res) {
+						mui.toast('保存成功');
+						self.opener().reload();
+					},
+					function(error) {
+						mui.toast(error.message);
+					}
+				);
+			}
+
+			// 处理扫码结果
+			function handleScanCode(code) {
+				app.info.barcode = code;
+			}
+
+			function reject() {
+				ifCarloadBack();
+			}
+
+			// 判断是否能退样
+			function ifCarloadBack() {
+				base.get(Config.urls.carload_ifCarloadBack, {
+					carloadId: id
+				}, function(res) {
+					base.blur();
+					mui.openWindow({
+						url: 'carBack.html',
+						id: 'carBack',
+						waiting: {
+							autoShow: false
+						},
+						extras: {
+							carloadId: id,
+							data: res.data
+						}
+					});
+				}, function(error) {
+					mui.toast(error.message);
+				});
+			}
+
+			// 查询某个样车所有可用的查询时间
+			function findBookCarInfo() {
+				base.get(Config.urls.carload_findBookCarInfo, {
+					carloadId: id
+				}, function(res) {
+					bookCarInfo = res.data;
+				}, function(error) {
+					mui.toast(error.message);
+				});
+			}
+
+			// 保存样车预约信息
+			function saveBookCar(bookInfo) {
+				base.post(Config.urls.carload_saveBookCar, bookInfo, function(res) {
+					base.closeLoading();
+					mui.toast(res.message);
+					plus.webview.currentWebview().opener().reload();
+					mui.back();
+				}, function(error) {
+					base.closeLoading();
+					mui.toast(error.message);
+				});
+			}
+
+			// 初始化标题栏
+			function initTitleBar() {
+
+				var titleBar = new plus.nativeObj.View('titleBar', {
+					position: 'absolute',
+					top: '0px',
+					left: '0px',
+					right: '0px',
+					height: '44px',
+					backgroundColor: '#3e80cb',
+				});
+				titleBar.drawText('样车信息详情', {}, {
+					color: '#fff',
+					size: '18px',
+				});
+				self.append(titleBar);
+
+				// 画返回按钮
+				var backBtn = new plus.nativeObj.View('backBtn', {
+					position: 'absolute',
+					top: '0px',
+					left: '0px',
+					width: '44px',
+					height: '44px',
+				});
+				backBtn.drawBitmap('/res/common/back.png', {}, {
+					top: '12px',
+					left: '12px',
+					width: '20px',
+					height: '20px',
+				});
+				backBtn.addEventListener('click', function() {
+					mui.back();
+				});
+				self.append(backBtn);
+
+				// 画保存按钮
+				var saveBtn = new plus.nativeObj.View('saveBtn', {
+					position: 'absolute',
+					top: '0px',
+					left: (window.innerWidth - 44) + 'px',
+					width: '44px',
+					height: '44px',
+				});
+				saveBtn.drawText('保存', {
+					top: '0px',
+					left: '0px',
+					width: '44px',
+					height: '44px',
+				}, {
+					size: '16px',
+					color: '#fff',
+				});
+				saveBtn.addEventListener('click', function() {
+					save();
+				});
+				self.append(saveBtn);
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/mui.picker.all.css">
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../css/icons-extra.css">
+		<link rel="stylesheet" href="../../../components/list/list.css">
+		<link rel="stylesheet" href="../../../components/form/form.css">
+		<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/common.js"></script>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content" v-cloak>
+			<div class="list-item">
+				<div class="list-head">
+					<div class="list-head-left">
+						<span class="list-blue">基本信息</span>
+					</div>
+				</div>
+				<div class="list-content">
+					<form class="form">
+						<div class="mui-input-row">
+							<label>样件名称:</label>
+							<input type="text" v-model="basic.sampleName" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>型号:</label>
+							<input type="text" v-model="basic.sampleType" readonly="readonly">
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="list-item">
+				<div class="list-head">
+					<div class="list-head-left">
+						<span class="list-blue">退样信息</span>
+					</div>
+				</div>
+				<div class="list-content">
+					<form class="form">
+						<div class="mui-input-row">
+							<label>回退类型:</label>
+							<div class="select-wrapper">
+								<select class="mui-btn" v-model="info.backtype" required @change="clearBackType2()">
+									<option value="" disabled selected>请选择</option>
+									<option v-for="(opt,name) in backType" :value="name">{{name}}</option>
+								</select>
+								<span class="icon-arrow-down"></span>
+							</div>
+						</div>
+						<div class="mui-input-row">
+							<label>回退类型2:</label>
+							<div class="select-wrapper">
+								<select class="mui-btn" v-model="info.backtype2" required>
+									<option value="" disabled selected>请选择</option>
+									<option v-for="(opt,index) in backType[info.backtype]" :value="opt">{{opt}}</option>
+								</select>
+								<span class="icon-arrow-down"></span>
+							</div>
+						</div>
+						<div class="mui-input-row">
+							<label>确认人:</label>
+							<input type="text" v-model="info.creator" class="mui-input-clear" placeholder="请输入姓名">
+						</div>
+						<div class="mui-input-row">
+							<label>取样日期:</label>
+							<div class="input-date-wrapper">
+								<input class="input-date" type="text" v-model="info.backdate" @tap="selectDate()" readonly>
+								<span class="icon-calendar"><span>
+							</div>
+						</div>
+						<div class="mui-input-row">
+							<label>确认人电话:</label>
+							<input type="text" v-model="info.tel" class="mui-input-clear" placeholder="请输入..">
+						</div>
+						<div class="mui-input-row">
+							<label>取样人:</label>
+							<input type="text" v-model="info.inpeople" class="mui-input-clear" placeholder="请输入姓名">
+						</div>
+						<div class="mui-input-row">
+							<label>取样公司:</label>
+							<input type="text" v-model="info.emscompany" class="mui-input-clear" placeholder="请输入..">
+						</div>
+						<div class="mui-input-row">
+							<label>取样证件号:</label>
+							<input type="text" v-model="info.cardno" class="mui-input-clear" placeholder="请输入..">
+						</div>
+						<div class="mui-input-row">
+							<label>车牌号:</label>
+							<input type="text" v-model="info.carno" class="mui-input-clear" placeholder="请输入..">
+						</div>
+						<div class="mui-input-row">
+							<label>经手人:</label>
+							<input type="text" v-model="info.handlepeople" class="mui-input-clear" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>样品员:</label>
+							<input type="text" v-model="info.samplepeople" class="mui-input-clear" placeholder="请输入姓名">
+						</div>
+						<div class="mui-input-row">
+							<label>备注（原因）</label>
+							<input type="text" v-model="info.bk" class="mui-input-clear" placeholder="">
+						</div>
+						<div class="mui-button-row">
+							<button type="button" class="mui-btn mui-btn-primary" onclick="commitInfo();">
+								<img src="../../../res/sampleManagement/btn-check.png" alt="image" />
+								确认退样
+							</button>&nbsp;&nbsp;
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/mui.picker.min.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var app = new Vue({
+				el:'#app',
+				data:{
+					basic: {},
+					info: {
+					  "backdate": "",//日期
+					  "backtype": "",//回退类型
+					  "backtype2": "",//回退类型2
+					  "bk": "",//备注（保留原因）
+					  "cardno": "",//取件证件号
+					  "carno": "",//车牌号
+					  "cpartId": "",
+					  "creator": "",//确认人  默认当前登录人
+					  "emscompany": "",//取样公司
+					  "handlepeople": "", //经手人
+					  "inpeople": "",//取样人
+					  //"outid": "",
+					  "samplepeople": "",//样品员
+					  "tel": "",//确认人电话
+					},
+					backType: {}
+				}
+			});
+			var id = 0;
+
+			mui.init();
+			mui.ready(function(){
+				//获取下拉列表信息
+				base.get(Config.urls.component_initComponentPartBack,{},function(res){
+					//app.selects = res.data;
+					app.backType = res.data.backType;
+				});
+
+			});
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				base.initTitleBar(self, '退样');
+				id = self.sampleId;//获得参数
+				app.basic = self.info;
+				app.info.cpartId = id;
+			});
+			function clearBackType2(){
+				app.info.backtype2 = app.backType[app.info.backtype][0] || '';
+			}
+			function commitInfo(){
+				for(var i in app.info){
+					if( app.info[i]=='' && i!='backtype2' ){ //backtype2可以为空
+						mui.toast('请检查必填项！');
+						return;
+					}
+				}
+				base.showLoading({title:'处理中..'});
+				base.post(Config.urls.component_saveComponentPartBack,app.info,function(res){
+					mui.toast(res.message);
+					var self = plus.webview.currentWebview();
+					self.opener().opener().reload();
+					self.opener().reload();
+					mui.back();
+				});
+			}
+			// 打开日期选择器
+			var picker = null;
+			function selectDate() {
+				base.blur();
+				if (!picker) {
+					picker = new mui.DtPicker({
+						type: 'date'
+					});
+				}
+				picker.show(function(rs) {
+					app.info.backdate = rs.text;
+				});
+			}
+		</script>
+	</body>
+</html>

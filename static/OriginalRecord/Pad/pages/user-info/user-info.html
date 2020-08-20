@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link rel="shortcut icon" href="../../res/gif/1.gif" />
+	<link rel="stylesheet" href="../../css/mui.min.css">
+	<link rel="stylesheet" href="../../css/app.css">
+	<link rel="stylesheet" href="user-info.css">
+</head>
+<body>
+
+	<!-- 页面 -->
+	<div id="app" class="mui-content" v-cloak>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">个人设置</h1>
+		</header>
+		<div id="bg-top"></div>
+		<div class="img-wrapper">
+			<span id="imgUpload"></span>
+		</div>
+
+		<div class="name" style="text-align: center;" v-model="name">{{name}}</div>
+		<div class="work" style="text-align: center;" v-model="work">职位</div>
+		<div class="msg-chg">
+			<ul>
+				<li>
+					<img src="../../res/userInfo/ai-phone.png" alt="" />
+					<span>电话:</span>
+					<label v-model="tel" style="vertical-align:middle;display:inline-block;">{{tel}}</label>
+
+				</li>
+				<li>
+					<img src="../../res/userInfo/ceoyouxiangmb.png" alt="" />
+					<span>邮箱:</span>
+					<input v-model="email" readonly="readonly" style=" border-width: 0;color: #0071FF;" :value="email">
+				</li>
+				<li>
+					<img src="../../res/userInfo/xiaoxi.png" alt="" />
+					<span>消息</span>
+					<div :class=" isMessageOn ? 'mui-switch mui-switch-mini mui-active' : 'mui-switch mui-switch-mini' " id="mySwitch">
+						<input type="hidden" name="message" id="message" :value="message" />
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<li id="quit-btn">
+					<img src="../../res/userInfo/tuichu.png" alt="" />
+					<span>退出</span>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!-- 页面结束 -->
+
+	<script src="../../js/mui.min.js"></script>
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/config.js"></script>
+	<script src="../../js/app.js"></script>
+	<script src="user-info.js"></script>
+</body>
+</html>

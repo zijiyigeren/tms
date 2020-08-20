@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <title>原始记录录入</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="../../lib/spread/gc.spread.sheets.excel2013white.13.1.0.css" rel="stylesheet" type="text/css" />
+    <link href="../../common/common.css" rel="stylesheet" type="text/css" />
+    <link href="../../lib/flexigrid/css/flexigrid.css" rel="stylesheet" />
+    <link href="record.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="infoBar">
+        <div class="loading-placeholder background-mask-layer"></div>
+        <span class="loading-placeholder loading-pic"></span>
+        <div id="formRecord">
+            <label style="margin-left: 10px;">任务编号：</label>
+            <label id="taskCode" data-binding="taskCode"></label>
+            <label style="margin-left: 10px;">样品：</label>
+            <select id="sampleCode" data-binding="sampleCode"></select>
+            <label style="margin-left: 10px;">配置：</label>
+            <select id="configName" data-binding="configName"></select>
+        </div>
+        <div style="margin-left: 20px;">
+            <input type="button" value="插入图片" id="btnImageImport" />
+            <input type="button" value="选择设备" id="btnSelectTerminal" />
+            <input type="button" id="btnSave" value="保存" />
+            <input type="file" style="display:none" accept="image/*" id="imageImport" />
+            <span id="successMessage" style="display:none;">保存成功</span>
+        </div>
+
+    </div>
+    <div id="container"></div>
+    <div id="fade" class="black_overlay">
+    </div>
+    <div id="terminalDiv" class="white_content">
+        <div class="dialogTitle">
+            <div class="dialogTitleLeft">
+                <div>
+                    设备选择
+                </div>
+            </div>
+            <div class="dialogTitleRight">
+                <a class="dialogClose" onclick="recordControllerPage.closeDiv('terminalDiv','fade')"><img src="close.png" /></a>
+            </div>
+        </div>
+
+        <div class="infoBar">
+            <div id="terminalSearch">
+                <label style="margin-left: 10px;">设备编号：</label>
+                <input type="text" data-binding="code" />
+                <label style="margin-left: 10px;">设备名称：</label>
+                <input type="text" data-binding="name" />
+                <label style="margin-left: 10px;">设备型号：</label>
+                <input type="text" data-binding="model" />
+            </div>
+            <div style="margin-left: 20px;">
+                <input type="button" id="btnSearch" value="查询" />
+                <input type="button" id="btnReset" value="重置" />
+            </div>
+        </div>
+        <div>
+            <table id="terminalGrid" class="display" style="margin-bottom: 0px;"></table>
+        </div>
+        <div class="selectDialogs">
+            <div style="margin-left: 20px;">
+                <input type="button" id="btnOK" value="确定" />
+                <input type="button" id="btnCancel" value="取消" />
+            </div>
+        </div>
+    </div>
+
+    <div id="verificationDiv" class="white_content">
+        <div class="dialogTitle">
+            <div class="dialogTitleLeft">
+                <div>
+                    信息
+                </div>
+            </div>
+            <div class="dialogTitleRight">
+                <a class="dialogClose" onclick="recordControllerPage.closeDiv('verificationDiv','fade')"><img src="close.png" /></a>
+            </div>
+        </div>
+        <div class="verificationContent">
+            <div><img src="tsIcon1.png" /></div>
+            <div id="alertMessage"></div>
+        </div>
+        <div class="selectDialogs" style="margin-top: 40px;">
+            <div style="margin-left: 20px;">
+                <input type="button" style="width:60px;" id="btnCommit" value="保存" />
+                <input type="button" style="width:60px;margin-left: 20px;" id="btnBack" value="返回" />
+            </div>
+        </div>
+    </div>
+
+
+    <script src="../../lib/spread/gc.spread.sheets.all.13.1.0.min.js" type="text/javascript"></script>
+    <script src="../../lib/spread/resources/zh/gc.spread.sheets.resources.zh.13.1.0.min.js" type="text/javascript"></script>
+    <script src="../../lib/spread/interop/gc.spread.excelio.13.1.0.min.js"></script>
+    <script src="../../lib/spread/license.js"></script>
+    <script src="../../lib/jquery-2.0.2.min.js"></script>
+    <script src="../../lib/flexigrid/js/flexigrid.js"></script>
+    <script src="../lib/util.js"></script>
+    <script src="../api/recordApi.js"></script>
+    <script src="../api/templateApi.js"></script>
+    <script src="./record.js" type="text/javascript"></script>
+</body>
+</html>

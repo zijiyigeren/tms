@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="jquery-easyui-1.7.0/themes/default/easyui.css">
+    <link rel="stylesheet" href="jquery-easyui-1.7.0/themes/icon.css">
+    <style>
+        .panel-body {
+            overflow-y: scroll;
+        }
+
+        .panel{
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<input id="cc" value="01">
+
+<script src="jquery-easyui-1.7.0/jquery.min.js"></script>
+<script src="jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+<script>
+
+    function getActualWidth() {
+        var maxStr = '';
+        var _node = null;
+        var titles = $(".tree-title:visible");
+        console.log(titles);
+        for (var index in titles) {
+            if (titles[index].innerText&&titles[index].innerText.length>maxStr.trim().length) {
+                _node = titles[index];
+                maxStr = titles[index].innerHTML;
+            }
+        }
+        var count = _node.parentElement.children.length - 1;
+        var iconWidth = _node.parentElement.children[0].offsetWidth;
+        var clientWidth = _node.parentElement.offsetWidth;
+        var maxStrWidth = _node.offsetWidth;
+        return maxStrWidth + clientWidth - (clientWidth - (count * iconWidth)) + 20;
+    }
+
+    $("#cc").combotree({
+        url: 'tree_data1.json',
+        method: 'get',
+        onShowPanel: function () {
+            $(this).combobox('panel').width(getActualWidth());
+        },
+        onCollapse:function () {
+            $(this).parent().width(getActualWidth());
+        },
+        onExpand: function () {
+            $(this).parent().width(getActualWidth());
+        }
+    });
+</script>
+</body>
+</html>

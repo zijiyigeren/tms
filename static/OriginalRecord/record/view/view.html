@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="spreadjs culture" content="zh-cn" />
+    <meta charset="utf-8" />
+    <title>原始记录查看</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="../../lib/spread/gc.spread.sheets.excel2013white.13.1.0.css" rel="stylesheet" type="text/css" />
+    <link href="../../common/common.css" rel="stylesheet" type="text/css" />
+    <link href="../lib/alertError.css" rel="stylesheet" />
+    <style>
+        body {
+            width: 100%;
+            height: 100%;
+            font-size: 14px;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .infoBar {
+            height: 50px;
+            line-height: 50px;
+            font-size: 14px;
+            margin-bottom: 5px;
+            background-color: rgb(249,250,251);
+            border-bottom: solid 1px #08080814;
+        }
+
+        #container {
+            position: absolute;
+            top: 55px;
+            height: calc(100% - 55px);
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-placeholder background-mask-layer"></div>
+    <span class="loading-placeholder loading-pic"></span>
+    <div class="infoBar">
+
+        <div>
+            <label style="margin-left: 10px;">任务编号：</label>
+            <label id="taskCode" data-binding="taskCode"></label>
+            <label style="margin-left: 10px;">样品：</label>
+            <label id="taskCode" data-binding="sampleTextValue"></label>
+            <label style="margin-left: 10px;">配置：</label>
+            <label id="taskCode" data-binding="configName"></label>
+        </div>
+    </div>
+    <div id="container"></div>
+
+    <script src="../../lib/spread/gc.spread.sheets.all.13.1.0.min.js" type="text/javascript"></script>
+    <script src="../../lib/spread/resources/zh/gc.spread.sheets.resources.zh.13.1.0.min.js" type="text/javascript"></script>
+    <script src="../../lib/spread/license.js"></script>
+    <script src="../../lib/jquery-2.0.2.min.js" type="text/javascript"></script>
+    <script src="../lib/util.js"></script>
+    <script src="../api/recordApi.js"></script>
+    <script src="../api/templateApi.js"></script>
+    <script src="./view.js" type="text/javascript"></script>
+</body>
+</html>

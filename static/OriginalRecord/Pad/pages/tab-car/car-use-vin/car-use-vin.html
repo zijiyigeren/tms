@@ -1,0 +1,489 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/mui.picker.all.css">
+		<link rel="stylesheet" href="../../../css/icons-extra.css">
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../components/search/search-bar.css">
+		<link rel="stylesheet" href="../../../components/list/list.css">
+		<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+		<link rel="stylesheet" href="../../../components/form/form.css">
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/common.js"></script>
+		<style>
+			.mui-checkbox {
+				display: none;
+			}
+			.use-btn {
+				display: inline-block;
+				padding: 5px 8px;
+				background: #eee;
+				border-radius: 4px;
+			}
+
+			/* 样车流转确认框样式 */
+			#confirm-background {
+				display: none;
+				position: fixed;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				z-index: 10;
+				background: rgba(0, 0, 0, .6);
+			}
+			#confirm {
+				display: none;
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				z-index: 20;
+				width: 80%;
+				height: auto;
+				background: #fff;
+				transform: translateX(-50%) translateY(-50%);
+				padding: 0 10px;
+				border-radius: 4px;
+			}
+			#confirm-title {
+				margin: 10px 0;
+				padding: 5px 0;
+				border-bottom: 1px solid #e9e9e9;
+				font-size: 18px;
+				font-weight: bold;
+				color: #3e80cb;
+			}
+			#confirm-content {
+				margin: 10px 0;
+			}
+			#confirm-content select {
+				padding-left: 6px;
+			}
+			#confirm-btns {
+				margin: 10px 0;
+				display: flex;
+				justify-content: flex-end;
+			}
+			#confirm-btns .mui-btn {
+				width: auto;
+				float: none;
+				margin-left: 10px;
+			}
+			.mui-input-row label~input[readonly].date-input {
+				background: #fff;
+			}
+
+			/* 下拉框 */
+			.mui-input-row label ~ select {
+				/* padding-left: 6px; */
+				height: 40px;
+				-webkit-appearance: none !important;
+			}
+			.select-wrapper {
+				position: relative;
+				float: right;
+				width: 65%;
+				height: 40px;
+				background: #fff;
+			}
+			.select-wrapper select {
+				width: 100% !important;
+				height: 40px;
+				border: 1px solid #e3e3e3;
+				border-radius: 2px;
+				padding-left: 10px;
+				color: #333;
+				background: transparent;
+				z-index: 1;
+			}
+			.arrow-down-icon {
+				position: absolute;
+				top: 0;
+				right: 0;
+				background-image: url(../../res/selectParkingLot/arrow-down.png);
+				background-size: 20px 20px;
+				background-repeat: no-repeat;
+				background-position: center;
+				width: 40px;
+				height: 40px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<!-- 页面 -->
+		<div id="app" class="mui-content" v-cloak>
+			<div class="search-bar search-bar-top">
+				<div>
+					<div class="select-wrapper">
+						<select>
+							<option value="vin">VIN码</option>
+						</select>
+						<span class="icon-arrow-down"></span>
+					</div>
+					<div class="search-wrapper">
+						<input type="text" placeholder="请输入关键字" @keyup.enter="Search.action()">
+						<span class="icon-search" @tap="Search.action()"></span>
+					</div>
+					<div class="mui-checkbox mui-checkbox-square">
+						<label>结果中查询</label>
+						<input name="searchInResult" type="checkbox" >
+					</div>
+				</div>
+			</div>
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul class="list">
+						<li class="list-item" v-for="i in records" :id="i.id">
+								<div class="list-head">
+								<div>
+									<span class="list-black">状态：</span>
+									<span class="list-green">{{i.flowInfo}}</span>
+								</div>
+							</div>
+							<div class="list-content">
+								<div class="list-content-left">
+									<ul>
+										<li><span>车型：</span><label>{{i.model}}</label></li>
+										<li><span>VIN码：</span><labe>{{i.vin}}</label></li>
+									</ul>
+								</div>
+								<span class="use-btn" @tap="onUseBtnTap(i)">流转</span>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- 弹出样车流转确认框 -->
+			<div id="confirm-background">
+				<div id="confirm" class="form" v-cloak>
+					<div id="confirm-title">
+						确认样车流转
+					</div>
+					<div id="confirm-content">
+						<div class="mui-input-row">
+							<label>类型:</label>
+							<div class="select-wrapper">
+								<select id="type-select" class="mui-btn" v-model="type">
+									<option value="departure">出发</option>
+									<option value="arrival">到达</option>
+								</select>
+								<span class="arrow-down-icon"></span>
+							</div>
+						</div>
+						<div v-if="type === 'departure'">
+							<div class="mui-input-row">
+								<label>出发部门:</label>
+								<div class="select-wrapper">
+									<select class="mui-btn" v-model="carFlowInfo.dept">
+										<option value="" disabled>请选择</option>
+										<option v-for="(item, index) of deptOptions" :key="index" :value="item">{{item}}</option>
+									</select>
+									<span class="arrow-down-icon"></span>
+								</div>
+							</div>
+							<div class="mui-input-row">
+								<label>车辆驾驶员:</label>
+								<input type="text" v-model="carFlowInfo.people">
+							</div>
+							<div class="mui-input-row">
+								<label>科室经办人:</label>
+								<input type="text" v-model="carFlowInfo.lypeople" readonly>
+							</div>
+							<div class="mui-input-row">
+								<label>状态描述:</label>
+								<input id="status-input" v-model="carFlowInfo.lstatusdes" type="text">
+							</div>
+							<div class="mui-input-row">
+								<label>出发日期:</label>
+								<input class="date-input" type="text" readonly placeholder="请选择" @click="selectDate('departure')" v-model="carFlowInfo.startDate">
+							</div>
+						</div>
+						<div v-if="type === 'arrival'">
+							<div class="mui-input-row">
+								<label>到达部门:</label>
+								<div class="select-wrapper">
+									<select class="mui-btn" v-model="carFlowInfo.receivedept">
+										<option value="" disabled>请选择</option>
+										<option v-for="(item, index) of receivedeptOptions" :key="index" :value="item">{{item}}</option>
+									</select>
+									<span class="arrow-down-icon"></span>
+								</div>
+							</div>
+							<div class="mui-input-row">
+								<label>车辆驾驶员:</label>
+								<input type="text" v-model="carFlowInfo.inpeople">
+							</div>
+							<div class="mui-input-row">
+								<label>科室经办人:</label>
+								<input type="text" readonly v-model="carFlowInfo.hypeople">
+							</div>
+							<div class="mui-input-row">
+								<label>状态描述:</label>
+								<input id="status-input" type="text" v-model="carFlowInfo.statusdes">
+							</div>
+							<div class="mui-input-row">
+								<label>到达日期:</label>
+								<input class="date-input" type="text" readonly placeholder="请选择" v-model="carFlowInfo.endDate" @click="selectDate('arrival')">
+							</div>
+						</div>
+					</div>
+					<div id="confirm-btns">
+						<button class="mui-btn" type="button" onclick="cancelFlow()">取消</button>
+						<button class="mui-btn mui-btn-primary" type="button" onclick="confirmFlow()">流转</button>
+					</div>
+				</div>
+			</div>
+			<!-- 弹出样车流转确认框结束 -->
+
+		</div>
+		<!-- 页面结束 -->
+
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/mui.picker.min.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script src="../../../components/scroller/scroller.js"></script>
+		<script src="../../../components/search/search.js"></script>
+		<script type="text/javascript">
+			var records = [];
+
+			// 日期选择器
+			var departureDatePicker = null;
+			var arrivalDatePicker = null;
+
+			// 当前用户的中文名
+			var currentUserName = '';
+
+			var app = new Vue({
+				el:'#app',
+				data:{
+					records:records,
+
+					// 输入框切换
+					type: "departure",
+
+					// 要提交的信息
+					carFlowInfo: {
+
+						// 出发信息
+						dept: '', // 出发部门
+						people: '', // 出发车辆驾驶员
+						lypeople: '', // 出发科室经办人
+						lstatusdes: '', // 出发状态描述
+						startDate: '', // 出发时间
+
+						// 到达信息
+						receivedept: '', // 到达部门
+						inpeople: '', // 到达车辆驾驶员
+						hypeople: '', // 到达科室经办人
+						statusdes: '', // 到达状态描述
+						endDate: '' // 到达时间
+					},
+
+					// 当前的流转信息
+					currentCarFlowInfo: {},
+
+					// 出发和到达部门选项
+					deptOptions: [],
+					receivedeptOptions: []
+				},
+				computed:{
+					computedRecords: function() {
+						return this.records.map(function(item) {
+							if (typeof item.bookDate === 'string') {
+								item.bookDate = item.bookDate.replace('_', ' ').replace(/([0-9]{2})([0-9]{2})$/, '$1:$2');
+							} else {
+								item.bookDate = '';
+							}
+							return item;
+						});
+					}
+				}
+			});
+			// 自身webview
+			var self = null;
+			// 滚动组件
+			var scroller = null;
+			mui.init();
+			mui.plusReady(function(){
+				self = plus.webview.currentWebview();
+				base.initTitleBar(self,'VIN码流转');
+
+				// 获取当前用户的中文名
+				currentUserName = JSON.parse(plus.storage.getItem('userInfo')).sampleName;
+
+				// 初始化滚动组件
+				scroller = new Scroller({
+					elem: '.mui-scroll-wrapper',
+					onPullup: function() {
+
+						Search.nextPage(function(res, isEnd) {
+							app.records = app.records.concat(res.data.list);
+							scroller.end(isEnd);
+						});
+					},
+				});
+				base.showLoading();
+				// 初始化搜索组件
+				Search.init({
+					elem: {
+						select: '.select-wrapper:nth-child(1) > select',
+						input: '.search-bar .search-wrapper > input',
+						checkbox: '.search-bar .mui-checkbox > input',
+					},
+					url: Config.urls.carload_findCarloads,
+					search: true,
+					success:function(res, isEnd){
+						app.records = res.data.list;
+						scroller.end(isEnd);
+					}
+				})
+			});
+			// 当点击流转按钮
+			function onUseBtnTap(item) {
+				findCurrentCarLoadFlow(item.vin);
+			}
+
+			//刷新结果,给详情页取消退样成功之后用的
+			function refreshResult(){
+				Search.reload();
+			}
+			// 查找样车最新的流转信息
+			function findCurrentCarLoadFlow(vin) {
+				base.get(Config.urls.carload_findCurrentCarLoadFlowVIN, {
+					vin: vin,
+				}, function(res) {
+					document.querySelector('#confirm-background').style.display = 'block';
+					document.querySelector('#confirm').style.display = 'block';
+					app.deptOptions = res.data.dept.map(function(item) {
+						return item.org_name;
+					});
+					app.receivedeptOptions = res.data.dept.map(function(item) {
+						return item.org_name;
+					});
+
+					// 判断是否有flow数据
+					if (res.data.flow.length > 0) {
+						var flow = res.data.flow[0];
+						app.currentCarFlowInfo = flow;
+						app.carFlowInfo.dept = flow.dept;
+						app.carFlowInfo.people = flow.people;
+						app.carFlowInfo.lypeople = flow.lypeople ? flow.lypeople : currentUserName;
+						app.carFlowInfo.lstatusdes = flow.lstatusdes;
+						app.carFlowInfo.startDate = flow.startDate;
+						app.carFlowInfo.receivedept = flow.receivedept;
+						app.carFlowInfo.inpeople = flow.inpeople;
+						app.carFlowInfo.hypeople = flow.hypeople ? flow.hypeople : currentUserName;
+						app.carFlowInfo.statusdes = flow.statusdes;
+						app.carFlowInfo.endDate = flow.endDate;
+					} else {
+						app.currentCarFlowInfo.terminalid = res.data.terminalid;
+						app.carFlowInfo.lypeople = currentUserName;
+						app.carFlowInfo.hypeople = currentUserName;
+					}
+				}, function(error) {
+					mui.toast(error.message);
+				});
+			}
+
+			// 确认流转
+			function confirmFlow() {
+				if (app.type === 'departure') {
+
+					// 检查必填项
+					if (
+						app.carFlowInfo.dept === '' ||
+						app.carFlowInfo.people === '' ||
+						app.carFlowInfo.lypeople === '' ||
+						app.carFlowInfo.lstatusdes === '' ||
+						app.carFlowInfo.startDate === ''
+					) {
+						mui.toast('请检查必填项！');
+						return;
+					}
+
+					// 覆盖要提交的值
+					app.currentCarFlowInfo.dept = app.carFlowInfo.dept;
+					app.currentCarFlowInfo.people = app.carFlowInfo.people;
+					app.currentCarFlowInfo.lypeople = app.carFlowInfo.lypeople;
+					app.currentCarFlowInfo.lstatusdes = app.carFlowInfo.lstatusdes;
+					app.currentCarFlowInfo.startDate = app.carFlowInfo.startDate;
+					saveCarLoadFlow(app.currentCarFlowInfo);
+				}
+				if (app.type === 'arrival') {
+
+					// 检查必填项
+					if (
+						app.carFlowInfo.receivedept === '' ||
+						app.carFlowInfo.inpeople === '' ||
+						app.carFlowInfo.hypeople === '' ||
+						app.carFlowInfo.statusdes === '' ||
+						app.carFlowInfo.endDate === ''
+					) {
+						mui.toast('请检查必填项！');
+						return;
+					}
+
+					// 覆盖要提交的值
+					app.currentCarFlowInfo.receivedept = app.carFlowInfo.receivedept;
+					app.currentCarFlowInfo.inpeople = app.carFlowInfo.inpeople;
+					app.currentCarFlowInfo.hypeople = app.carFlowInfo.hypeople;
+					app.currentCarFlowInfo.statusdes = app.carFlowInfo.statusdes;
+					app.currentCarFlowInfo.endDate = app.carFlowInfo.endDate;
+					saveCarLoadFlow(app.currentCarFlowInfo);
+				}
+			}
+
+			// 取消确认流转
+			function cancelFlow() {
+				document.querySelector('#confirm-background').style.display = 'none';
+				document.querySelector('#confirm').style.display = 'none';
+				self.reload();
+			}
+
+			// 打开日期选择器
+			function selectDate(type) {
+				if (type === 'departure') {
+					if (!departureDatePicker) {
+						departureDatePicker = new mui.DtPicker({
+							type: 'date'
+						});
+					}
+					departureDatePicker.show(function(rs) {
+						app.carFlowInfo.startDate = rs.text;
+					});
+				}
+				if (type === 'arrival') {
+					if (!arrivalDatePicker) {
+						arrivalDatePicker = new mui.DtPicker({
+							type: 'date'
+						});
+					}
+					arrivalDatePicker.show(function(rs) {
+						app.carFlowInfo.endDate = rs.text;
+					});
+				}
+			}
+
+			// 保存流转信息
+			function saveCarLoadFlow(data) {
+				base.post(Config.urls.carload_saveCarLoadFlow, data, function(res) {
+					mui.toast(res.message);
+					plus.webview.currentWebview().opener().reload();
+					mui.back();
+				}, function(error) {
+					mui.toast(error.message);
+				});
+			}
+		</script>
+	</body>
+</html>

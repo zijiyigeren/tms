@@ -1,0 +1,29 @@
+<div class="layui-tpl-container">
+    <!-- 新增和编辑表单 -->
+    <div class="layui-form p-form">
+        <input type="text" name="parentId" style="display: none;">
+        <input type="text" name="id" style="display: none;">
+        <input type="text" name="type" style="display: none;">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red;">*</span> 目录名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="menuName" placeholder="请输入目录名称" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red;">*</span> 上级菜单</label>
+            <div class="layui-input-block">
+                <input type="text" name="selectFDs" id="selectFDs" lay-filter="selectFDs" placeholder="请选择上级菜单" disabled="disabled" class="layui-input">
+            </div>
+        </div>
+
+        <!-- 提交按钮 -->
+        <!-- 取消按钮 -->
+        <div class="layui-form-item" style="text-align: center;">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="menuSave-menu002">保存</button>
+            <button class="layui-btn layui-btn-primary" lay-submit lay-filter="popmenuCancle">取消</button>
+        </div>
+    </div>
+</div>

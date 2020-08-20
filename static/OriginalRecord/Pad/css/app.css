@@ -1,0 +1,93 @@
+/* 全局样式 */
+body, body * {
+	box-sizing: border-box;
+	font-family: sans-serif;
+	font-size: 16px;
+}
+body {
+	background-color: #efeff4;
+	color: #333;
+}
+header{
+	background: #3E80CB;
+}
+header.mui-bar-nav{
+	background: #3E80CB;
+	color: white;
+}
+header.mui-bar-nav a, header.mui-bar-nav .mui-title{
+	color: white;
+}
+.mui-content{
+	padding-top: 44px;
+}
+/* Vue渲染完成前不要显示 */
+[v-cloak] {
+	display: none;
+}
+
+/* 重置select样式 */
+select {
+	-webkit-appearance: none;
+}
+
+/* 重置input边距 */
+input[type=text] {
+	margin-bottom: 0;
+}
+
+/* 弹出窗口的样式优化 */
+div.mui-popup-input[name=commonDialog] .mui-input-group{
+	margin:0;
+}
+div.mui-popup-input[name=commonDialog] .mui-input-row label{
+	padding: 0px 5px!important;
+}
+div.mui-popup-input[name=commonDialog] .mui-input-row:after {
+	left: 8px;
+	right: 8px;
+}
+div.mui-popup-input[name=commonDialog] input{
+	margin-top: 6px;
+	background: white;
+}
+div.mui-popup-input[name=commonDialog] .mui-input-row .select-wrapper{
+	background: transparent;
+}
+div.mui-popup-input[name=commonDialog] .mui-input-row .select-wrapper select{
+	height:26px;
+	padding: 0;
+	margin-top: 6px;
+}
+
+/* 定义方形的mui 复选框 */
+.mui-checkbox-square input{
+	margin: 5px auto 5px auto;
+	height: 20px!important;
+}
+.mui-checkbox-square input[type=checkbox]:before{
+    content: '\e413'!important;
+	font-size: 20px;
+}
+.mui-checkbox-square input[type=checkbox]:checked:before{
+	content: '\e443'!important;
+}
+
+/* 表单滚动条的样式 */
+.form::-webkit-scrollbar {/*滚动条整体样式*/
+	width: 5px;     /*高宽分别对应横竖滚动条的尺寸*/
+	height: 1px;
+}
+.form::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+	border-radius: 5px;
+	/* -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2); */
+	background: #b8b8b8;
+}
+.form::-webkit-scrollbar-track {/*滚动条里面轨道*/
+	/* -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2); */
+	border-radius: 5px;
+	background: #F5F5F5;
+}
+/* .mui-input-group{
+	-webkit-overflow-scrolling: auto;
+} */

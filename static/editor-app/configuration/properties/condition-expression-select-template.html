@@ -1,0 +1,5 @@
+<script src="editor-app/configuration/properties-condition-expression-select-controller.js" type="text/javascript"></script>
+<div ng-controller="KisBpmConditionExpressionSelectCtrl">
+    <select ng-model="property.value" ng-options="c.condition as c.name for c in conditionItems" ng-change="conditionExpressionChanged()">
+    </select>
+</div>

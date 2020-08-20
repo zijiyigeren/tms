@@ -1,0 +1,96 @@
+<div class="layui-tpl-container layui-form" style="padding-bottom: 60px;">
+    <!-- 选择问题级别 -->
+    <div class="layui-form-item">
+        <label class="layui-form-label">问题级别</label>
+        <div class="layui-input-block problemLevel-loading">
+            <select name="problemLevel" xm-select="problemLevel_pop" xm-select-skin="normal" xm-select-direction="down" xm-select-radio="">
+                <option value="">选择问题级别</option>
+            </select>
+        </div>
+    </div>
+    <!-- 选择问题类别 -->
+    <div class="layui-form-item">
+        <label class="layui-form-label">问题类别</label>
+        <div class="layui-input-block problemCategory-loading">
+            <select name="problemCategory" xm-select="problemCategory_pop" xm-select-skin="normal" xm-select-direction="down" xm-select-radio="">
+                <option value="">选择问题类别</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 问题描述 -->
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">问题描述</label>
+        <div class="layui-input-block">
+            <textarea name="dscription" placeholder="请输入问题描述" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <!-- 发起时间 -->
+    <div class="layui-form-item">
+        <label class="layui-form-label">发起时间</label>
+        <div class="layui-inline">
+            <input type="text" class="layui-input" id="happenTime" name="happenTime" placeholder="请选择发起时间">
+        </div>
+    </div>
+
+    <!-- 解决方案 -->
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">解决方案</label>
+        <div class="layui-input-block">
+            <textarea name="solvePlan" placeholder="请输入解决方案" class="layui-textarea"></textarea>
+        </div>
+    </div>
+
+
+    <!-- 预计解决完成时间 -->
+    <div class="layui-form-item">
+        <label class="layui-form-label">预计解决完成时间</label>
+        <div class="layui-inline">
+            <input type="text" class="layui-input" id="planSolveTime" name="planSolveTime" placeholder="请选择预计解决完成时间">
+        </div>
+    </div>
+    <!-- 实际解决完成时间 -->
+    <div class="layui-form-item">
+        <label class="layui-form-label">实际解决完成时间</label>
+        <div class="layui-inline">
+            <input type="text" class="layui-input" id="actualSolveTime" name="actualSolveTime" placeholder="请选择实际解决完成时间">
+        </div>
+    </div>
+
+    <!-- 遗留问题 -->
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">遗留问题</label>
+        <div class="layui-input-block">
+            <textarea name="leaveProblem" placeholder="请输入遗留问题" class="layui-textarea"></textarea>
+        </div>
+    </div>
+
+    <!-- 提交按钮 -->
+    <!-- 取消按钮 -->
+    <!-- lay-filter还没有改 -->
+    <div class="layui-form-item" style="text-align: center;position: absolute;bottom: 0;left: 0;right: 0;">
+        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="menuSave_user">保存</button>
+        <button class="layui-btn layui-btn-primary" lay-submit lay-filter="menuCancle_user">取消</button>
+    </div>
+</div>
+
+
+<script>
+    layui.use('laydate', function() {
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#planSolveTime' //指定元素
+        });
+        laydate.render({
+            elem: '#happenTime' //指定元素
+        });
+        laydate.render({
+            elem: '#actualSolveTime' //指定元素
+        });
+    });
+</script>

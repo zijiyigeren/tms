@@ -1,0 +1,285 @@
+﻿<!DOCTYPE html>
+<html style="height:100%;width:100%">
+	<head>
+		<title></title>
+		<meta charset="utf-8"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+		<meta name="spreadjs culture" content="zh-cn" />
+
+		
+		<link href="../../assets/css/gc.spread.sheets.excel2013white.12.0.0.css" rel="stylesheet" type="text/css" />
+		<link href="../../assets/libs/zTree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" type="text/css" />
+
+		<script type="text/javascript" src="../../assets/libs/jquery-1.9.0.min.js"></script>
+		<script type="text/javascript" src="../../assets/js/gc.spread.sheets.all.12.0.0.min.js"></script>
+		<script src="../../assets/libs/zTree/js/jquery.ztree.all.js"></script>
+	</head>
+	<body style="height:100%;width:100%;margin:0px;">
+		<div id="ss" style="height:60%;width:100%;"></div>
+	</body>
+   
+</html>
+<script type="text/javascript">
+	var keyword_null = null, keyword_undefined = undefined;
+    var DefaultDropDownButtonWidth = 17;
+	var ComboTreeCellType = function () { ComboTreeCellType.treeID = 0; };
+	ComboTreeCellType.prototype = new GC.Spread.Sheets.CellTypes.ComboBox();
+	ComboTreeCellType.prototype.createEditorElement = function (context) {
+            var self = this, sheet = context.sheet;
+            var zTree = $('<ul class="ztree"></ul>');
+            self.treeID = "tree" + ComboTreeCellType.treeID++;
+            var setting = {
+                treeId: self.treeID,
+                callback: {
+                    onClick: function (data, treeId, treeNode) {
+                        self.selectedNode = treeNode;
+                        sheet.endEdit();
+                        self.onItemSelect(data,treeId,treeNode);
+                    }
+                }
+            };
+            $.fn.zTree.init(zTree, setting, this.items());
+            var editor = $('<div gcUIElement="ComboTree" style="background-color:white;max-height:400px;border-style:solid;border-width:thin;border-color:black;overflow:scroll"></div>');
+            editor.append(zTree);
+            editor[0].comboBox = zTree[0];
+            return editor[0];
+    };
+
+	ComboTreeCellType.prototype.getEditorValue = function (editorContext, context) {
+		var zTree = editorContext;
+		if (this.selectedNode) {
+			var row = context.row;
+			var col = context.col;
+			var cell = context.sheet.getCell(row,col);
+			cell.tag({id:1,name:this.selectedNode.name});
+			return this.selectedNode.name;
+		}
+		return "";
+	};
+	ComboTreeCellType.prototype.setEditorValue = function (editorContext, value, context) {
+		var treeObj = $.fn.zTree.getZTreeObj(self.treeID);
+		var nodes = treeObj.getNodes();
+		if (value) {
+			var node = this.findNode(nodes, value);
+			if (node) {
+				treeObj.selectNode(node);
+				this.selectedNode = node;
+			} else {
+				treeObj.selectNode(null);
+			}
+		} else {
+			treeObj.selectNode(null);
+		}
+	};
+
+	ComboTreeCellType.prototype.findNode = function (nodes, name) {
+		for (var i = 0; i < nodes.length; i++) {
+			if (nodes[i].name === name) {
+				return nodes[i];
+			}
+			if (nodes[i].children && nodes[i].children.length > 0) {
+				var node = this.findNode(nodes[i].children, name);
+				if (node) {
+					return node;
+				}
+			}
+		}
+		return null;
+	};
+
+    ComboTreeCellType.prototype.onItemSelect = function (data, treeId, treeNode) {
+       //  // for(var i=0;i<data.data.length;i++)
+       //  //     alert(data.data[i].id+'\n'+data.data[i].current_value);
+       // // var jsonData = JSON.stringify(data);// 转成JSON格式
+       // //  var result = $.parseJSON(data);// 转成JSON对象
+		// // alert(result);
+       //  var property = "";
+	   //
+       //  var obj = data["data"] ;
+       //  for (var item in data) {
+       //      property += "属性：" + item + "数值：" + data[item] + "\n";
+       //  }
+       //  //console.log(property);
+       //  // for (var item in obj) {
+       //  //      property += "属性：" + item + "数值：" + obj[item] + "\n";
+		// //
+       //  // }
+        console.log(treeNode.name);
+
+
+    };
+
+	ComboTreeCellType.prototype.focus = function (editorContext, context) {
+	};
+	ComboTreeCellType.prototype.selectAll = function (editorContext, context) {
+	};
+	ComboTreeCellType.prototype.activateEditor = function (editorContext, cellStyle, cellRect, context) {
+
+
+	};
+	ComboTreeCellType.prototype.deactivateEditor = function (editorContext, context) {
+	};
+	ComboTreeCellType.prototype.updateEditor = function (editorContext, cellStyle, cellRect, context) {
+		var sheet = editorContext && context && context.sheet;
+		if (!sheet) {
+			return;
+		}
+		var comboBox = editorContext.comboBox;
+		if (cellStyle && comboBox) {
+			var render = sheet._render;
+			// 将 Cell 样式设置给Combo
+		}
+		if (cellRect && comboBox) {
+			var offset = $(editorContext.parentNode).position();
+
+			$(editorContext).width(140);
+            $(editorContext).height(200);
+            return {height:200,width:140};
+		}
+	};
+	ComboTreeCellType.prototype.format = function (value, format, conditionalForeColor, context) {
+		if (!value) {
+			return "";
+		}
+		var self = this, editorValueType = self._editorValueType, items = self._items;
+		if (items) {
+			var count = items.length;
+			if (editorValueType === 0 /* Text */) {
+			}
+			else if (editorValueType === 1 /* Index */) {
+				var index = parseInt(value);
+				if (0 <= index && index < count) {
+					var item = items[index];
+					if (item !== keyword_undefined && item !== keyword_null) {
+						value = (item.hasOwnProperty("text") ? item.text : item);
+					}
+				}
+			}
+			else if (editorValueType === 2 /* Value */) {
+				for (var i = 0; i < count; i++) {
+					var item = items[i];
+					if (item && item.hasOwnProperty("value") && item.value === value) {
+						value = item.text;
+						break;
+					}
+				}
+			}
+		}
+		return GC.Spread.Sheets.CellTypes.Base.prototype.format.call(this, value, format, conditionalForeColor);
+	};
+	ComboTreeCellType.prototype.parse = function (text, formatStr, context) {
+		var self = this, editorValueType = self._editorValueType, items = self._items;
+		var parseText = GC.Spread.Sheets.CellTypes.Base.prototype.parse.call(this, text, formatStr);
+		if (items) {
+			var count = items.length;
+			if (editorValueType === 0 /* Text */) {
+				return parseText;
+			}
+			else if (editorValueType === 1 /* Index */) {
+				for (var i = 0; i < count; i++) {
+					var item = items[i];
+					if ((item && item.hasOwnProperty("text") && item.text === parseText) || (item === parseText)) {
+						return i;
+					}
+				}
+			}
+			else if (editorValueType === 2 /* Value */) {
+				for (var i = 0; i < count; i++) {
+					var item = items[i];
+					if ((item && item.hasOwnProperty("text") && item.text === parseText)) {
+						return item.value;
+					}
+				}
+			}
+		}
+		return parseText;
+	};
+	ComboTreeCellType.prototype.getHitInfo = function (x, y, cellStyle, cellRect, context) {
+		if (!context) {
+			return keyword_null;
+		}
+		var sheetArea = context.sheetArea, sheet = context.sheet;
+		if ((sheetArea === keyword_null || sheetArea === keyword_undefined || sheetArea === 3 /* viewport */) && cellRect) {
+			var x2 = cellRect.x + cellRect.width;
+			var info = { x: x, y: y, row: context.row, col: context.col, cellStyle: cellStyle, cellRect: cellRect, sheetArea: sheetArea, sheet: sheet };
+			if (x2 - DefaultDropDownButtonWidth <= x && x < x2) {
+				info.isReservedLocation = true;
+			}
+			return info;
+		}
+		return keyword_null;
+	};
+	ComboTreeCellType.prototype.processMouseDown = function (hitInfo) {
+		var sheet = hitInfo.sheet, sheetArea = hitInfo.sheetArea;
+		if ((sheetArea === keyword_null || sheetArea === keyword_undefined || sheetArea === 3 /* viewport */) && hitInfo.isReservedLocation && sheet) {
+			sheet.startEdit();
+		}
+	};
+
+	$(document).ready(function () {
+		var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), {sheetCount: 2});
+		var sheet = spread.getActiveSheet();
+		
+		var items = [
+			{
+			    id:1,
+				name: "北京", open: true,
+				children: [
+					{id:11,
+						name: "海淀区",
+					},
+					{id:12,
+						name: "朝阳区",
+					}
+				]
+			},
+			{	id:2,
+				name: "上海", open: true,
+				children: [
+					{
+                        id:21,
+						name: "浦东区",
+					}
+				]
+			},
+			{	id:3,
+
+				name: "天津",
+			},
+			{	id:4,
+				name: "重庆",
+			},
+			{	id:5,
+				name: "陕西省", open: true,
+				children: [
+					{
+                        id:51,
+						name: "西安市",
+						children: [
+							{
+                                id:511,
+								name: "雁塔区",
+							},
+							{
+                                id:512,
+								name: "莲湖区",
+							}
+						]
+					},
+					{	id:52,
+						name: "宝鸡市",
+					}
+				]
+			},
+		];
+
+
+
+		var cellType = new ComboTreeCellType();
+		cellType.items(items);
+
+		sheet.setCellType(5, 1, cellType);
+		sheet.setCellType(20, 1, cellType);
+
+	});
+</script>

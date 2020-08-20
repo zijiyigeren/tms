@@ -1,0 +1,501 @@
+<div class="layui-row layui-col-space15">
+    <!-- 左侧 -->
+    <div class="layui-col-md12 autoScrollLeft">
+        <div class="layui-card">
+            <div class="layui-card-header">问题单管理</div>
+            <!-- 卡片容器 -->
+            <div class="layui-card-body">
+                <!-- 数据表格顶部控制栏 -->
+                <div class="layui-form">
+                    <div class="layui-form-item table-top-bar">
+                        <!-- 左侧 -->
+                        <div class="layui-inline">
+                            <div class="layui-inline search-item">
+                                <i class="layui-icon layui-icon-search"></i>
+                                <input type="text" name="DESCRIPTION" id="DESCRIPTION" placeholder="输入问题描述" class="layui-input">
+                            </div>
+                            <div class="layui-inline search-item">
+                                <i class="layui-icon layui-icon-search"></i>
+                                <input type="text" name="SOLUTION" id="SOLUTION" placeholder="输入解决方案" class="layui-input">
+                            </div>
+                            <div class="layui-inline formselect-item">
+                                <select id="probRank" name="probRank" xm-select="probRank" xm-select-skin="normal" xm-select-radio="">
+                                        <option value="">选择问题级别</option>
+                                    </select>
+                            </div>
+                            <div class="layui-inline formselect-item">
+                                <select id="probCategory" name="probCategory" xm-select="probCategory" xm-select-skin="normal" xm-select-radio="">
+                                            <option value="">选择问题类别</option>
+                                        </select>
+                            </div>
+                            <div class="layui-inline">
+                                <button id="btn_search_user" class="layui-btn layui-btn-sm layui-btn-normal" lay-filter="btn_search_user" lay-submit>查询</button>
+                            </div>
+                            <div class="layui-inline">
+                                <button id="btn_reset_user" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_reset_user" lay-submit>重置</button>
+                            </div>
+                        </div>
+                        <!-- 右侧 -->
+                        <div class="layui-inline layui-pull-right">
+                            <div class="layui-inline">
+                                <button id="btn_add_user" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_add_user" lay-submit>
+                                        <i class="layui-icon layui-icon-add-1"></i>新增问题单
+                                    </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 下部表格容器 -->
+                <table id="tableContent-user" lay-filter="tableContent-user"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="control-1">
+    <a class="table-control-btn" lay-event="view">查看</a>
+    <a class="table-control-btn" lay-event="edit">编辑</a>
+</script>
+
+<script>
+    // 初始化 layui
+    layui.use(['table', 'formSelects'], function() {
+        var table = layui.table,
+            form = layui.form,
+            config = layui.config,
+            admin = layui.admin,
+            formSelects = layui.formSelects;
+
+        // 渲染左侧表格
+        var renderTable = function() {
+            // 渲染表格
+            table.render({
+                elem: '#tableContent-user',
+                id: 'tableContent-user',
+                url: admin.formatUrl('/api/problem/problem/page'),
+                // 格式化后台返回的数据
+                parseData: function(res) { //res 即为原始返回的数据
+                    // 返回结果，进行渲染表格
+                    return {
+                        "code": res.respCode, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.count, //解析数据长度
+                        "data": res.data.list //解析数据列表
+                    };
+                },
+                height: 472,
+                cols: [
+                    [{
+                        type: 'checkbox'
+                    }, {
+                        type: 'numbers'
+                    }, {
+                        field: 'problemLevel',
+                        title: '问题级别'
+                    }, {
+                        field: 'problemCategory',
+                        title: '问题类别'
+                    }, {
+                        field: 'dscription',
+                        title: '问题描述',
+                    }, {
+                        field: 'happenTimeStr',
+                        title: '发起时间',
+                    }, {
+                        field: 'solvePlan',
+                        title: '解决方案',
+                    }, {
+                        field: 'actualSolveTimeStr',
+                        title: '解决时间'
+                    }, {
+                        field: 'closeUp',
+                        title: '是否关闭',
+                        minWidth: 120
+                    }, {
+                        templet: '#control-1',
+                        title: '操作',
+                        align: 'center',
+                        width: 140,
+                        unresize: true
+                    }]
+                ],
+                cellMinWidth: 70,
+                page: {
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip']
+                },
+                request: {
+                    pageName: 'pageNo',
+                    limitName: 'pageSize'
+                }
+            });
+        }
+
+        // 初始化，执行一次渲染表格树
+        renderTable();
+        // DONE: 侧边栏变化时刷新数据表格
+        // 将 table ID 存入数组
+        layui.admin.addTableCache('tableContent-user');
+
+        // 初始化问题级别搜索列表
+        admin.req('/api/sys/dictionary?dicCode=problemLevel', {
+            pageNo: 1,
+            pageSize: 10000
+        }, function(res) {
+            var arr = res.data.list,
+                elem = $('#probRank');
+            // console.log(arr);
+            for (var i in arr) {
+                // console.log(arr[i].dicTypeEOList);
+                for (var j in arr[i].dicTypeEOList)
+                    elem.append('<option value="' + arr[i].dicTypeEOList[j].dicTypeName + '">' + arr[i].dicTypeEOList[j].dicTypeName + '</option>');
+            }
+            formSelects.render('probRank');
+            formSelects.btns('probRank', []);
+        });
+        // 初始化问题类别搜索列表
+        admin.req('/api/sys/dictionary?dicCode=problemCategory', {
+            pageNo: 1,
+            pageSize: 10000
+        }, function(res) {
+            var arr = res.data.list,
+                elem = $('#probCategory');
+            // console.log(arr);
+            for (var i in arr) {
+                // console.log(arr[i].dicTypeEOList);
+                for (var j in arr[i].dicTypeEOList)
+                    elem.append('<option value="' + arr[i].dicTypeEOList[j].dicTypeName + '">' + arr[i].dicTypeEOList[j].dicTypeName + '</option>');
+            }
+            formSelects.render('probCategory');
+            formSelects.btns('probCategory', []);
+        });
+
+
+
+        // 搜索
+        form.on('submit(btn_search_user)', function(data) {
+            console.log(data.field);
+            var searchValue = data.field
+                // admin.req('/api/problem/problem/page', {
+                //         pageNo: 1,
+                //         pageSize: 10000,
+                //         problemLevel: searchValue.probRank,
+                //         problemCategory: searchValue.probCategory,
+                //         solvePlan: searchValue.SOLUTION,
+                //         dscription: searchValue.DESCRIPTION
+                //     },
+                //     function(res) {
+
+            // if (searchValue.probRank === "") {
+            //     searchValue.probRank = null;
+            // };
+            // if (searchValue.probCategory === "") {
+            //     searchValue.probCategory = null;
+            // };
+            // if (searchValue.SOLUTION === "") {
+            //     searchValue.SOLUTION = null;
+            // };
+            // if (searchValue.DESCRIPTION === "") {
+            //     searchValue.DESCRIPTION = null;
+            // };
+
+            table.reload('tableContent-user', {
+                where: {
+
+                    problemLevel: searchValue.probRank,
+                    problemCategory: searchValue.probCategory,
+                    solvePlan: searchValue.SOLUTION,
+                    dscription: searchValue.DESCRIPTION
+                }
+            });
+
+            // });
+        });
+        // 重置
+        form.on('submit(btn_reset_user)', function() {
+            $('#DESCRIPTION').val('');
+            $('#SOLUTION').val('');
+            formSelects.value('probRank', []);
+            formSelects.value('probCategory', []);
+            table.render({
+                elem: '#tableContent-user',
+                id: 'tableContent-user',
+                url: admin.formatUrl('/api/problem/problem/page'),
+                // 格式化后台返回的数据
+                parseData: function(res) { //res 即为原始返回的数据
+                    // 返回结果，进行渲染表格
+                    return {
+                        "code": res.respCode, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.count, //解析数据长度
+                        "data": res.data.list //解析数据列表
+                    };
+                },
+                height: 472,
+                cols: [
+                    [{
+                        type: 'checkbox'
+                    }, {
+                        type: 'numbers'
+                    }, {
+                        field: 'problemLevel',
+                        title: '问题级别'
+                    }, {
+                        field: 'problemCategory',
+                        title: '问题类别'
+                    }, {
+                        field: 'dscription',
+                        title: '问题描述',
+                    }, {
+                        field: 'happenTimeStr',
+                        title: '发起时间',
+                    }, {
+                        field: 'solvePlan',
+                        title: '解决方案',
+                    }, {
+                        field: 'actualSolveTimeStr',
+                        title: '解决时间'
+                    }, {
+                        field: 'closeUp',
+                        title: '是否关闭',
+                        minWidth: 120
+                    }, {
+                        templet: '#control-1',
+                        title: '操作',
+                        align: 'center',
+                        width: 140,
+                        unresize: true
+                    }]
+                ],
+                cellMinWidth: 70,
+                page: {
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip']
+                },
+                request: {
+                    pageName: 'pageNo',
+                    limitName: 'pageSize'
+                }
+            });
+        });
+
+        // 监听工具条事件
+        // 主要是编辑和删除
+        table.on('tool(tableContent-user)', function(obj) {
+            // 获取点击列的数据
+            var data = obj.data;
+            var layEvent = obj.event;
+            // 判断操作类型
+            if (layEvent === 'edit') {
+                // 编辑
+                popMenu('edit', data);
+            } else if (layEvent === 'view') {
+                // 查看
+                viewDetail(data);
+            }
+        });
+        // 新增 按钮事件
+        $('#btn_add_user').on('click', function() {
+            popMenu('add');
+        });
+
+        var test = null;
+        // 弹出框
+        function popMenu(type, data) {
+            // 判断操作事件
+            if (type === 'add') {
+                var title = '新增问题单';
+                test = 'add',
+                    data = {};
+            } else if (type === 'edit') {
+                var title = '编辑问题单：';
+                test = 'edit'
+            }
+            data.type = type;
+
+            admin.popupCenter({
+                title: title,
+                path: 'components/form/pop.html',
+                finish: function() {
+                    table.reload('tableContent-user', {
+                        where: {
+                            reload: new Date().getTime()
+                        }
+                    });
+                },
+                success: function() {
+                    setFormValue(data);
+
+                    admin.showLoading('.problemLevel-loading');
+                    admin.showLoading('.problemCategory-loading');
+
+                    // 初始化问题类别列表
+                    admin.req('/api/sys/dictionary?dicCode=problemCategory', {
+                        pageNo: 1,
+                        pageSize: 10000
+                    }, function(res) {
+                        var arr = res.data.list,
+                            formSelectArr = [];
+                        for (var i in arr)
+                            for (var j in arr[i].dicTypeEOList) {
+                                formSelectArr.push({
+                                    name: arr[i].dicTypeEOList[j].dicTypeName,
+                                    value: arr[i].dicTypeEOList[j].dicTypeName
+                                });
+                            }
+                        formSelects.data('problemCategory_pop', 'local', {
+                            arr: formSelectArr
+                        });
+                        formSelects.btns('problemCategory_pop', []);
+
+                        if (type === 'edit') {
+                            var selectArr = [];
+                            selectArr.push(data.problemCategory);
+                            layui.formSelects.value('problemCategory_pop', selectArr);
+                        }
+
+                        admin.removeLoading('.problemCategory-loading');
+                    });
+                    // 初始化问题级别列表
+                    admin.req('/api/sys/dictionary?dicCode=problemLevel', {
+                        pageNo: 1,
+                        pageSize: 10000
+                    }, function(res) {
+                        var arr = res.data.list,
+                            formSelectArr = [];
+                        for (var i in arr)
+                            for (var j in arr[i].dicTypeEOList) {
+                                formSelectArr.push({
+                                    name: arr[i].dicTypeEOList[j].dicTypeName,
+                                    value: arr[i].dicTypeEOList[j].dicTypeName
+                                });
+                            }
+                        formSelects.data('problemLevel_pop', 'local', {
+                            arr: formSelectArr
+                        });
+                        formSelects.btns('problemLevel_pop', []);
+
+                        if (type === 'edit') {
+                            var selectArr = [];
+                            selectArr.push(data.problemLevel);
+                            layui.formSelects.value('problemLevel_pop', selectArr);
+                        }
+
+                        admin.removeLoading('.problemLevel-loading');
+                    });
+
+                }
+            });
+        }
+
+        // 设置表单内容
+        function setFormValue(obj) {
+
+            var inputs = $('.layui-tpl-container').find('input'),
+                textareas = $('.layui-tpl-container').find('textarea')
+            title = $('.layui-tpl-container .layui-card-header'),
+                formNames = ['happenTime', 'planSolveTime', 'actualSolveTime', ];
+            formNames2 = ['dscription', 'solvePlan', 'leaveProblem', ];
+            obj.title && title.text(obj.title);
+            for (var i = 0; i < formNames.length; i++) {
+                if (obj[formNames[i]]) {
+                    $('.layui-tpl-container  input[name="' + formNames[i] + '"]').val(obj[formNames[i] + 'Str']);
+                } else {
+                    $('.layui-tpl-container  input[name="' + formNames[i] + '"]').val('');
+                }
+            }
+            for (var i = 0; i < formNames2.length; i++) {
+                if (obj[formNames2[i]]) {
+                    $('.layui-tpl-container  textarea[name="' + formNames2[i] + '"]').val(obj[formNames2[i]]);
+                } else {
+                    $('.layui-tpl-container  textarea[name="' + formNames2[i] + '"]').val('');
+                }
+            }
+        }
+
+        // 表单提交
+        form.on('submit(menuSave_user)', function(data) {
+            // 获取表单数据
+            var d = data.field,
+                elem = data.elem;
+
+            console.log(d);
+
+
+            if (d.problemLevel === '' || d.problemCategory === '' || (d.type === 'add')) {
+                return layer.msg('请填写必填项！', {
+                    icon: 5
+                });
+            }
+
+            $(elem).attr('disabled', true);
+
+            // 判断是编辑还是新增
+            // 设置不同的 HTTP 方法，和提示信息
+            if (test === 'add') {
+                var ajaxType = 'POST',
+                    ajaxName = '新增问题单';
+            } else if (test === 'edit') {
+                var ajaxType = 'PUT',
+                    ajaxName = '编辑问题单';
+            }
+
+            // d.probRanksstr = d.probRank ? d.probRank.split(',') : [];
+            // d.probCategorysstr = d.probCategory ? d.probCategory.split(',') : [];
+
+            // // 删除和提交信息无关的元素
+            // delete d.probRank;
+            // delete d.probCategory;
+            // 发送请求
+            admin.req('/api/problem/problem', d, function(data) {
+                $(elem).attr('disabled', false);
+                if (data.ok) {
+                    layer.msg(ajaxName + '成功！', {
+                        icon: 1
+                    });
+                    admin.finishPopupCenter();
+                } else {
+                    return layer.msg(ajaxName + '失败：' + data.message, {
+                        icon: 5
+                    });
+                }
+            }, {
+                method: ajaxType
+            });
+
+        });
+        // 取消按钮
+        form.on('submit(menuCancle_user)', function(data) {
+            admin.closePopupCenter();
+        });
+
+        // 查看
+        function viewDetail(data) {
+
+
+            admin.popupCenter({
+                title: '查看问题单信息',
+                path: 'components/form/pop2.html ',
+                finish: function() {},
+                success: function() {
+                    console.log(data.checkMan);
+
+
+                    var vmUserDetail = $('#userDetail').vm({
+                        problemLevel: data.problemLevel ? data.problemLevel : '-',
+                        problemCategory: data.problemCategory ? data.problemCategory : '-',
+                        dscription: data.dscription ? data.dscription : '-',
+                        happenTimeStr: data.happenTimeStr ? data.happenTimeStr : '-',
+                        responsibleMan: data.responsibleMan ? data.responsibleMan : '-',
+                        solvePlan: data.solvePlan ? data.solvePlan : '-',
+                        planSolveTimeStr: data.planSolveTimeStr ? data.planSolveTimeStr : '-',
+                        actualSolveTimeStr: data.actualSolveTimeStr ? data.actualSolveTimeStr : '-',
+                        leaveProblem: data.leaveProblem ? data.leaveProblem : '-',
+                        checkMan: data.checkMan ? data.checkMan : '-',
+                        closeUp: data.closeUp ? data.closeUp : '-'
+                    });
+                }
+            });
+        }
+    });
+</script>

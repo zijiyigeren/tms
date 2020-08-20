@@ -1,0 +1,220 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../css/mui.picker.all.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/icons-extra.css" />
+		<link rel="stylesheet" href="../../css/reset.css" />
+		<link rel="stylesheet" href="../../css/app.css" />
+		<link rel="stylesheet" href="../../components/list/list.css">
+		<link rel="stylesheet" href="../../components/form/form.css">
+		<link rel="stylesheet" href="../../components/scroller/scroller.css">
+		<script src="../../js/vue.js"></script>
+		<script src="../../js/common.js"></script>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content" v-cloak>
+			<div class="list-item">
+				<div class="list-head">
+					<div class="list-head-left">
+						<span class="list-blue">样件信息</span>
+					</div>
+				</div>
+				<div class="list-content">
+					<form class="form">
+						<div class="mui-input-row">
+							<label>样件名称:</label>
+							<input type="text" v-model="info.sampleName" class="mui-input-clear" placeholder="请输入..">
+						</div>
+						<div class="mui-input-row">
+							<label>型号:</label>
+							<input type="text" v-model="info.sampleType" class="mui-input-clear" placeholder="请输入..">
+						</div>
+						<div class="mui-input-row">
+							<label>种类数量:</label>
+							<input id="typeNumber" type="number" v-model="info.typeNumber" class="mui-input-clear" placeholder="请输入..">
+						</div>
+						<div class="mui-input-row">
+							<label>样件接收状态:</label>
+							<div class="select-wrapper">
+								<select class="mui-btn" v-model="info.sampleStatus" required>
+									<option value="" disabled selected>请选择</option>
+									<option v-for="opt in selects.sampleStatus" :value="opt">{{opt}}</option>
+								</select>
+								<span class="icon-arrow-down"></span>
+							</div>
+						</div>
+						<div class="mui-input-row">
+							<label>样件批次:</label>
+							<input type="text" v-model="info.code" placeholder="" readonly="readonly">
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="list-item">
+				<div class="list-head">
+					<div class="list-head-left">
+						<span class="list-blue">基本信息</span>
+					</div>
+				</div>
+				<div class="list-content">
+					<form class="form">
+						<div class="mui-input-row">
+							<label>送样公司:</label>
+							<input type="text" v-model="info.comeCompany" class="mui-input-clear" placeholder="请输入..">
+						</div>
+						<div class="mui-input-row">
+							<label>送样联系人:</label>
+							<input type="text" v-model="info.contractor" class="mui-input-clear" placeholder="请输入姓名">
+						</div>
+						<div class="mui-input-row">
+							<label>送样联系电话:</label>
+							<input type="text" v-model="info.contracttel" class="mui-input-clear" placeholder="请输入..">
+						</div>
+						<div class="mui-input-row">
+							<label>到样日期:</label>
+							<div class="input-date-wrapper">
+								<input class="input-date" type="text" v-model="info.comeDate" @tap="selectDate()" readonly>
+								<span class="icon-calendar"><span>
+							</div>
+						</div>
+						<div class="mui-input-row">
+							<label>签收人:</label>
+							<input type="text" v-model="info.recoveror" class="mui-input-clear" placeholder="">
+						</div>
+						<div class="mui-input-row">
+							<label>部门:</label>
+							<div class="select-wrapper">
+								<select class="mui-btn" v-model="info.recoverdept" required>
+									<option value="" disabled selected>请选择</option>
+									<option v-for="opt in selects.departments" :value="opt.id">{{opt.org_name}}</option>
+								</select>
+								<span class="icon-arrow-down"></span>
+							</div>
+						</div>
+						<div class="mui-input-row">
+							<label>库房编号:</label>
+							<div class="select-wrapper">
+								<select class="mui-btn" v-model="info.placeBaseCode" required>
+									<option value="" disabled selected>请选择</option>
+									<option v-for="opt in selects.placeBases" :value="opt.code">{{opt.areaCode}}</option>
+								</select>
+								<span class="icon-arrow-down"></span>
+							</div>
+						</div>
+						<div class="mui-input-row">
+							<label>检验类型:</label>
+							<div class="select-wrapper">
+								<select class="mui-btn" v-model="info.checkType" required>
+									<option value="" disabled selected>请选择</option>
+									<option v-for="opt in selects.checkType" :value="opt">{{opt}}</option>
+								</select>
+								<span class="icon-arrow-down"></span>
+							</div>
+						</div>
+						<div class="mui-button-row">
+							<button type="button" class="mui-btn mui-btn-primary" onclick="commitInfo();">
+								<img src="../../res/sampleManagement/btn-check.png" alt="image" />
+								确认
+							</button>&nbsp;&nbsp;
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/mui.picker.min.js"></script>
+		<script src="../../js/app.js"></script>
+		<script src="../../js/config.js"></script>
+		<script type="text/javascript">
+			var lastTypeNumber = ''; //记录最后一次输入的类型数量,判断是否需要更新批次号
+			var app = new Vue({
+				el:'#app',
+				data:{
+					info: { //对于下拉列表,需要先给出默认值'',以便显示'请选择'; 对于必填项,也要在这里写出,提交之前可以遍历info不为空
+						sampleName:'',
+						sampleType: '',
+						typeNumber: '',
+						sampleStatus: '',
+						code: '',
+						comeCompany: '',
+						contractor: '',
+						contracttel: '',
+						comeDate: '',
+						recoveror: '',
+						checkType: '',
+						recoverdept: '',
+						placeBaseCode: ''
+					},
+					selects: { }
+				}
+			});
+			mui.init();
+			mui.ready(function(){
+
+			})
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				base.initTitleBar(self,'零部件登记',[{icon:'../../res/common/scan.png',click: base.goScan }]);
+
+				//获取下拉列表信息
+				base.get(Config.urls.component_initComponentPart,{},function(res){
+					app.selects = res.data;
+				});
+				//监听数量,生成批次号
+				mui('#typeNumber')[0].addEventListener('blur',function(){
+					if( this.value != lastTypeNumber ){
+						lastTypeNumber = this.value;
+						if(lastTypeNumber!='')
+							base.get(Config.urls.component_findComponentCode,{ typeNumber: this.value },function(res){
+								app.info.code = res.data;
+							});
+						else app.info.code = '';
+					}
+				});
+				window.opener=plus.webview.currentWebview().opener();
+			});
+			function commitInfo(){
+				console.log(JSON.stringify(app.info))
+				for(var i in app.info){
+					if(app.info[i]==''){
+						mui.toast('请检查必填项！');
+						return;
+					}
+				}
+				base.showLoading({title:'处理中..'});
+				base.post(Config.urls.component_saveComponentPart,app.info,function(res){
+					mui.toast(res.message);
+					window.opener.reload();
+					mui.back();
+				});
+			}
+			function handleScanCode(code){
+				base.get(Config.urls.component_goReturnStore,
+					{ barcode: code },
+					function(res){
+						mui.toast(res.message);
+					}
+				)
+			}
+			// 打开日期选择器
+			var picker = null;
+			function selectDate() {
+				base.blur();
+				if (!picker) {
+					picker = new mui.DtPicker({
+						type: 'date'
+					});
+				}
+				picker.show(function(rs) {
+					app.info.comeDate = rs.text;
+				});
+			}
+		</script>
+	</body>
+</html>

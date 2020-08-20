@@ -1,0 +1,228 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../components/search/search-bar.css">
+		<link rel="stylesheet" href="../../../components/list/list.css">
+		<link rel="stylesheet" href="../../../components/form/form.css">
+		<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+		<link rel="stylesheet" href="../../../css/commonTable.css" />
+		<link rel="stylesheet" href="../../../css/commonBottomBtns.css" />
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/common.js"></script>
+		<style type="text/css">
+			.div-table{
+				border: 1px solid #3E80CB;
+				text-align: center;
+				margin: 10px;
+			}
+			.div-head{
+				background: #D5E9FF ;
+				display: flex;
+			}
+			.div-row{
+				display: flex;
+			}
+			.div-cell{
+				flex: 1.2 0 0;
+				border: 1px solid #E9E9E9;
+				border-width: 0px 1px 1px 0px;
+				padding: 10px 5px;
+				display: table-cell;
+				vertical-align: middle;
+				word-break: break-all;
+				word-wrap: break-word;
+				position:relative;
+			}
+			.div-cell>*{
+				position:absolute;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%,-50%);
+			}
+			.div-cell:last-child{
+				border-right: 0px;
+			}
+			.div-row:last-child .div-cell{
+				border-width: 0px 1px 0px 0px;
+			}
+
+			.div-cell:nth-child(2){
+				flex: 2 0 0;
+			}
+			.div-cell button{
+				background-color: #3E80CB;
+				border-color: #3E80CB;
+			}
+			.div-cell button.mui-btn-outlined{
+				background-color: white;
+				color: #548CD0;
+			}
+			.div-grey{
+				color: #999999;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">预约详情</h1>
+		</header>
+		<div id="app" class="mui-content" v-cloak>
+			<div class="list-item">
+				<div class="list-head">
+					<div class="list-head-left">
+						<span class="list-blue">基本详情</span>
+					</div>
+				</div>
+				<div class="list-content">
+					<form class="form">
+						<div class="mui-input-row">
+							<label>样件名称:</label>
+							<input type="text" :value="info.cpart.sampleName" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>样品型号:</label>
+							<input type="text" :value="info.cpart.sampleType" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>预约科室:</label>
+							<input type="text" :value="info.department.org_name" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>预约人:</label>
+							<input type="text" :value="info.member.name" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>预约时间:</label>
+							<input type="text" :value="info.scheduleTime" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>送样时间:</label>
+							<input type="text" :value="info.cpart.comeDate" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>预约个数:</label>
+							<input type="text" :value="info.collectNumber" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>备注:</label>
+							<input type="text" :value="info.remark1" readonly="readonly">
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="table-area">
+				<div id="sampleTable" class="div-table">
+					<div class="div-head">
+						<div class="div-cell">样件条形码</div>
+						<div v-if="isDistributor" class="div-cell"div>操作</div>
+					</div>
+					<div class="div-body">
+						<div class="div-row" v-for="(code,index) in codes" :id="code">
+							<div class="div-cell" v-if="code">{{code}}</div>
+							<div class="div-cell div-grey" v-else>条形码</div>
+
+							<div class="div-cell" v-if="code && isDistributor">
+								<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined" @click="scanCode(index);">重新扫码</button>
+							</div>
+							<div class="div-cell" v-if="!code && isDistributor">
+								<button type="button" class="mui-btn mui-btn-primary" @click="scanCode(index);">&emsp;扫码&emsp;</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="btns" v-if="isDistributor" class="bottom-btns">
+			<div class="bottom-btn" onclick="bindBarcode();">
+				<img src="../../../res/sampleManagement/btn-check.png" alt="image" />
+				<span>完成</span>
+			</div>
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script type="text/javascript">
+			var app = new Vue({
+				el:'#app',
+				data:{
+					codes:[],
+					info: { cpart:{}, department:{}, member:{} },
+					isDistributor: false
+				}
+			});
+			var btns = new Vue({
+				el:'#btns',
+				data:{
+					isDistributor: false
+				}
+			});
+			var id = 0;
+
+			mui.init();
+			mui.ready(function(){
+
+			});
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				id = self.orderId;//获得参数
+				base.initTitleBar(self,'预约详情')
+				base.get(Config.urls.component_findOrderInfo,{ orderId: id },
+					function(res){
+						app.info = res.data.orderInfo;
+						for(var i=0;i<app.info.collectNumber;i++){
+							app.codes.push('');
+						}
+					}
+				);
+				window.opener=plus.webview.currentWebview().opener();
+				app.isDistributor = btns.isDistributor = base.roles.isDistributor();
+			});
+
+			var currentCodeIndex = 0;
+			function scanCode(index){
+				currentCodeIndex = index;
+				base.goScan();
+			}
+			function handleScanCode(code){
+				var newCodes = [];
+				for(var i in app.codes){
+					newCodes[i] = app.codes[i];
+					if(app.codes[i]==code){
+						mui.toast('条形码不能重复！');
+						return;
+					}
+				}
+				newCodes[currentCodeIndex] = code;
+				app.codes = newCodes;
+			}
+			function bindBarcode(){
+				var codes = [];
+				for(var i in app.codes){
+					if(app.codes[i]) codes.push(app.codes[i]);
+				}
+				if(codes.length==0){
+					mui.toast('尚未扫码');
+					return;
+				}
+				base.showLoading({title:'处理中..'});
+				base.get(Config.urls.component_bindBarCodeToComponentOutDetail,
+					{ componmentOutDetailId: id, barCodes: codes.join() },
+					function(res){
+						mui.toast(res.message);
+						window.opener.reload();
+						mui.back();
+					}
+				)
+			}
+		</script>
+	</body>
+</html>

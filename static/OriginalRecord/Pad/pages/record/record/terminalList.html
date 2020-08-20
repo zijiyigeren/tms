@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link rel="stylesheet" href="../../../css/mui.min.css">
+	<link rel="stylesheet" href="../../../css/reset.css">
+	<link rel="stylesheet" href="../../../css/app.css">
+	<link rel="stylesheet" href="../../../components/search/search-bar.css">
+	<link rel="stylesheet" href="../../../components/list/list.css">
+	<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+	<link rel="stylesheet" href="../../../components/nav-btns/nav-btns.css">
+	<style>
+		* { touch-action: none; } 
+		.listCheckbox input[type=checkbox]{
+			    width: 17px;
+			    height: 17px;
+			    background-color: #fff;
+			    -webkit-appearance: none;
+			    border: 1px solid #c9c9c9;
+			    border-radius: 2px;
+			    outline: none;
+		}
+		
+		.listCheckbox input[type=checkbox]:checked{
+			border: 0;
+			background-image: url(../../../res/common/checkbox1.png);
+			background-size: 16px 16px;
+			background-repeat: no-repeat;
+			background-position: center;
+		}
+	</style>
+</head>
+<body>
+	<!-- 页面 -->
+	<div id="app" class="mui-content" v-cloak>
+		<!-- 搜索栏 -->
+		<div class="search-bar search-bar-top">
+			<div>
+				<div class="select-wrapper">
+					<select>
+						<option value="code">设备编号</option>
+						<option value="name">设备名称</option>
+						<option value="model">设备型号</option>
+					</select>
+					<span class="icon-arrow-down"></span>
+				</div>
+				<div class="search-wrapper">
+					<input type="text" placeholder="请输入关键字" @keyup.enter="onSearchBtnTap()">
+					<span class="icon-search" @tap="onSearchBtnTap()"></span>
+				</div>
+				<div class="checkbox-wrapper">
+					<span class="checkbox-label">结果中查询</span>
+					<input type="checkbox" v-model="isCheckboxChecked">
+					<span class="icon-check" v-show="!isCheckboxChecked"></span>
+					<span class="icon-check checked" v-show="isCheckboxChecked"></span>
+				</div>
+			</div>
+		</div>
+		<!-- 搜索栏结束 -->
+	
+		<!-- 滚动容器 -->
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+	
+				<!-- 设备列表 -->
+				<ul id="task-list" class="list mui-table-view-radio">
+					<li
+						class="list-item"
+						v-for="(item, index) of terminaList"
+						:key="index"
+						@click="selectTerminal(item,$event)"
+					>
+						<div class="list-head">
+							<div>
+								<span>设备编号：</span>
+								<span>{{item.code}}</span>
+							</div>
+							<div class="listCheckbox">
+								<input type="checkbox"    :ref="'checkbox'+item.code"/>
+								
+							</div>
+						</div>
+						<div class="list-content">
+							<div>
+								<ul>
+									<li>
+										<span>设备型号：</span>
+										<span>{{item.model}}</span>
+									</li>
+									<li>
+										<span>设备名称：</span>
+										<span>{{item.name}}</span>
+									</li>
+									<li>
+										<span>所属科室：</span>
+										<span>{{item.useDepartment}}</span>
+									</li>
+								</ul>
+							</div>
+							<!-- <span class="mui-icon mui-icon-arrowright"></span> -->
+						</div>
+					</li>
+				</ul>
+				<!-- 设备列表 结束 -->
+	
+			</div>
+		</div>
+		<!-- 滚动容器结束 -->
+	
+	</div>
+	<!-- 页面结束 -->
+	<script src="../../../js/mui.min.js"></script>
+	<script src="../../../js/vue.js"></script>
+	<script src="../../../js/config.js"></script>
+	<script src="../../../js/webviews.js"></script>
+	<script src="../../../js/app.js"></script>
+	<script src="../../../components/scroller/scroller.js"></script>
+	<script src="../../../components/search/search.js"></script>
+	<script type="text/javascript" src="../api/test/recordApi.js"></script>
+	<!-- <script type="text/javascript" src="../api/recordApi.js"></script> -->
+	<script src="terminalList.js"></script>
+</body>
+</html>

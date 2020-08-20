@@ -1,0 +1,514 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/mui.picker.all.css">
+		<link rel="stylesheet" href="../../../css/icons-extra.css">
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../components/form/form.css">
+		<style type="text/css">
+			[v-cloak] {
+				display: none;
+			}
+			#bcid {
+				width: 100%;
+				position: absolute;
+				background: #000000;
+				top: 45px;
+				height: calc(100% - 90px);
+			}
+
+			/* html,
+			body,
+			div {
+				height: 100%;
+				width: 100%;
+			} */
+
+			.fbt {
+				color: #0E76E1;
+				width: 100%;
+				background-color: #ffffff;
+				float: left;
+				line-height: 44px;
+				text-align: center;
+			}
+			#playBtn{
+				position: fixed;
+				width: 60px;
+				height: 60px;
+				left: 50%;
+				top: 80%;
+				z-index: 10000;
+				transform: translateX(-50%);
+				display: none;
+			}
+
+			/* 样车流转确认框样式 */
+			#confirm {
+				display: none;
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				width: 80%;
+				height: auto;
+				background: #fff;
+				transform: translateX(-50%) translateY(-50%);
+				padding: 0 10px;
+				border-radius: 4px;
+			}
+			#confirm-title {
+				margin: 10px 0;
+				padding: 5px 0;
+				border-bottom: 1px solid #e9e9e9;
+				font-size: 18px;
+				font-weight: bold;
+				color: #3e80cb;
+			}
+			#confirm-content {
+				margin: 10px 0;
+			}
+			#confirm-content select {
+				padding-left: 6px;
+			}
+			#confirm-btns {
+				margin: 10px 0;
+				display: flex;
+				justify-content: flex-end;
+			}
+			#confirm-btns .mui-btn {
+				width: auto;
+				float: none;
+				margin-left: 10px;
+			}
+			.mui-input-row label~input[readonly].date-input {
+				background: #fff;
+			}
+
+			/* 下拉框 */
+			.mui-input-row label ~ select {
+				/* padding-left: 6px; */
+				height: 40px;
+				-webkit-appearance: none !important;
+			}
+			.select-wrapper {
+				position: relative;
+				float: right;
+				width: 65%;
+				height: 40px;
+				background: #fff;
+			}
+			.select-wrapper select {
+				width: 100% !important;
+				height: 40px;
+				border: 1px solid #e3e3e3 !important;
+				border-radius: 2px;
+				padding-left: 10px !important;
+				color: #333;
+				background: transparent;
+				z-index: 1;
+			}
+			.arrow-down-icon {
+				position: absolute;
+				top: 0;
+				right: 0;
+				background-image: url(../../res/selectParkingLot/arrow-down.png);
+				background-size: 20px 20px;
+				background-repeat: no-repeat;
+				background-position: center;
+				width: 40px;
+				height: 40px;
+			}
+
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav" style="background-color: #ffffff;">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" style="color: #0E76E1;">扫码</h1>
+			<span class="mui-icon mui-icon-extra mui-icon-extra-lamp mui-spin mui-pull-right" id="turnTheLight"></span>
+		</header>
+		<div id="bcid">
+			<!-- 盛放扫描控件的div -->
+		</div>
+		<img id="playBtn" src="../../res/appr/play.png" onclick="startScanAgain();" alt="image" />
+
+		<!-- 弹出样车流转确认框 -->
+		<div id="confirm" class="form" v-cloak>
+			<div id="confirm-title">
+				确认样车流转
+			</div>
+			<div id="confirm-content">
+				<div class="mui-input-row">
+					<label>类型:</label>
+					<div class="select-wrapper">
+						<select id="type-select" class="mui-btn" v-model="type">
+							<option value="departure">出发</option>
+							<option value="arrival">到达</option>
+						</select>
+						<span class="arrow-down-icon"></span>
+					</div>
+				</div>
+				<div v-if="type === 'departure'">
+					<div class="mui-input-row">
+						<label>出发部门:</label>
+						<div class="select-wrapper">
+							<select class="mui-btn" v-model="carFlowInfo.dept">
+								<option value="" disabled>请选择</option>
+								<option v-for="(item, index) of deptOptions" :key="index" :value="item">{{item}}</option>
+							</select>
+							<span class="arrow-down-icon"></span>
+						</div>
+					</div>
+					<div class="mui-input-row">
+						<label>车辆驾驶员:</label>
+						<input type="text" v-model="carFlowInfo.people">
+					</div>
+					<div class="mui-input-row">
+						<label>科室经办人:</label>
+						<input type="text" v-model="carFlowInfo.lypeople" readonly>
+					</div>
+					<div class="mui-input-row">
+						<label>状态描述:</label>
+						<input id="status-input" v-model="carFlowInfo.lstatusdes" type="text">
+					</div>
+					<div class="mui-input-row">
+						<label>出发日期:</label>
+						<input class="date-input" type="text" readonly placeholder="请选择" @click="selectDate('departure')" v-model="carFlowInfo.startDate">
+					</div>
+				</div>
+				<div v-if="type === 'arrival'">
+					<div class="mui-input-row">
+						<label>到达部门:</label>
+						<div class="select-wrapper">
+							<select class="mui-btn" v-model="carFlowInfo.receivedept">
+								<option value="" disabled>请选择</option>
+								<option v-for="(item, index) of receivedeptOptions" :key="index" :value="item">{{item}}</option>
+							</select>
+							<span class="arrow-down-icon"></span>
+						</div>
+					</div>
+					<div class="mui-input-row">
+						<label>车辆驾驶员:</label>
+						<input type="text" v-model="carFlowInfo.inpeople">
+					</div>
+					<div class="mui-input-row">
+						<label>科室经办人:</label>
+						<input type="text" readonly v-model="carFlowInfo.hypeople">
+					</div>
+					<div class="mui-input-row">
+						<label>状态描述:</label>
+						<input id="status-input" type="text" v-model="carFlowInfo.statusdes">
+					</div>
+					<div class="mui-input-row">
+						<label>到达日期:</label>
+						<input class="date-input" type="text" readonly placeholder="请选择" v-model="carFlowInfo.endDate" @click="selectDate('arrival')">
+					</div>
+				</div>
+			</div>
+			<div id="confirm-btns">
+				<button class="mui-btn" type="button" onclick="cancelFlow()">取消</button>
+				<button class="mui-btn mui-btn-primary" type="button" onclick="confirmFlow()">流转</button>
+			</div>
+		</div>
+
+		<div class="mui-bar mui-bar-footer" style="padding: 0px;">
+			<div class="fbt mui-action-back">取　 消</div>
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/mui.picker.min.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script src="../../../js/vue.js"></script>
+		<script type="text/javascript">
+			var num = Number(window.location.search ? window.location.search.substr(1) : 1);
+			var keepScan = num<=0 ? true : false;
+			var scanBtn = document.getElementById('playBtn');
+
+			scan = null; //扫描对象
+			var ws=null,wo=null;
+
+			// 保存扫码的结果
+			var code = '';
+
+			// 日期选择器
+			var departureDatePicker = null;
+			var arrivalDatePicker = null;
+
+			// 当前用户的中文名
+			var currentUserName = '';
+
+			var app = new Vue({
+				el: '#confirm',
+				data: {
+
+					// 输入框切换
+					type: "departure",
+
+					// 要提交的信息
+					carFlowInfo: {
+
+						// 出发信息
+						dept: '', // 出发部门
+						people: '', // 出发车辆驾驶员
+						lypeople: '', // 出发科室经办人
+						lstatusdes: '', // 出发状态描述
+						startDate: '', // 出发时间
+
+						// 到达信息
+						receivedept: '', // 到达部门
+						inpeople: '', // 到达车辆驾驶员
+						hypeople: '', // 到达科室经办人
+						statusdes: '', // 到达状态描述
+						endDate: '' // 到达时间
+					},
+
+					// 当前的流转信息
+					currentCarFlowInfo: {},
+
+					// 出发和到达部门选项
+					deptOptions: [],
+					receivedeptOptions: []
+				},
+				computed: {
+				}
+			});
+
+			mui.init();
+			mui.plusReady(function() {
+				// 获取窗口对象
+				ws=plus.webview.currentWebview();
+				wo=ws.opener();
+				setTimeout(function(){
+					startRecognize();
+				},250)
+
+				// 获取当前用户的中文名
+				currentUserName = JSON.parse(plus.storage.getItem('userInfo')).sampleName;
+			});
+
+			function startRecognize() {
+				try {
+					var filter = [plus.barcode.QR, plus.barcode.EAN13, plus.barcode.EAN8, plus.barcode.CODABAR, plus.barcode.CODE128,
+						plus.barcode.RSS14, plus.barcode.CODE39
+					];
+					//自定义的扫描控件样式
+					var styles = {
+						frameColor: "#29E52C",
+						scanbarColor: "#29E52C",
+						background: ""
+					}
+					//扫描控件构造
+					scan = new plus.barcode.Barcode('bcid', filter, styles);
+					scan.onmarked = onmarked;
+					scan.onerror = onerror;
+					scan.start();
+					//打开关闭闪光灯处理
+					var flag = false;
+					document.getElementById("turnTheLight").addEventListener('tap', function() {
+						if (flag == false) {
+							scan.setFlash(true);
+							flag = true;
+						} else {
+							scan.setFlash(false);
+							flag = false;
+						}
+					});
+				} catch (e) {
+					mui.toast('初始化错误');
+				}
+			};
+
+			function onerror(e) {
+				mui.toast('识别错误');
+			};
+
+			function onmarked(type, result, file) {
+				switch(type){
+					case plus.barcode.QR:
+					type = 'QR';
+					break;
+					case plus.barcode.EAN13:
+					type = 'EAN13';
+					break;
+					case plus.barcode.EAN8:
+					type = 'EAN8';
+					break;
+					default:
+					type = '其它'+type;
+					break;
+				}
+				result = result.replace(/\r\n/g, '');
+				num--;
+
+				// if( keepScan || num>0 ){//继续扫码
+				// 	wo.evalJS("handleScanCode('"+ result +"');");
+				// 	scanBtn.style.display = 'block';
+				// 	mui.toast('点击按钮继续扫码');
+				// }else{
+				// 	setTimeout(function(){
+				// 		wo.evalJS("handleScanCode('"+ result +"');");
+				// 	},50);
+				// 	// ws.close('auto');
+				// }
+
+				// 先保存扫码结果
+				code = result;
+
+				// 关闭扫码，并打开确认框
+				findCurrentCarLoadFlow(result);
+			};
+
+			// 从相册中选择二维码图片
+			function scanPicture() {
+				plus.gallery.pick(function(path) {
+					plus.barcode.scan(path, onmarked, function(error) {
+						plus.nativeUI.alert("无法识别此图片");
+					});
+				}, function(err) {
+					//plus.nativeUI.alert("Failed: " + err.message);
+				});
+			}
+			function startScanAgain(){
+				scan.start();
+				scanBtn.style.display = 'none';
+			}
+
+			// 查找样车最新的流转信息
+			function findCurrentCarLoadFlow(barcode) {
+				base.get(Config.urls.carload_findCurrentCarLoadFlow, {
+					barcode: barcode
+				}, function(res) {
+					scan.close();
+					document.querySelector('#confirm').style.display = 'block';
+					app.deptOptions = res.data.dept.map(function(item) {
+						return item.org_name;
+					});
+					app.receivedeptOptions = res.data.dept.map(function(item) {
+						return item.org_name;
+					});
+
+					// 判断是否有flow数据
+					if (res.data.flow.length > 0) {
+						var flow = res.data.flow[0];
+						app.currentCarFlowInfo = flow;
+						app.carFlowInfo.dept = flow.dept;
+						app.carFlowInfo.people = flow.people;
+						app.carFlowInfo.lypeople = flow.lypeople ? flow.lypeople : currentUserName;
+						app.carFlowInfo.lstatusdes = flow.lstatusdes;
+						app.carFlowInfo.startDate = flow.startDate;
+						app.carFlowInfo.receivedept = flow.receivedept;
+						app.carFlowInfo.inpeople = flow.inpeople;
+						app.carFlowInfo.hypeople = flow.hypeople ? flow.hypeople : currentUserName;
+						app.carFlowInfo.statusdes = flow.statusdes;
+						app.carFlowInfo.endDate = flow.endDate;
+					} else {
+						app.currentCarFlowInfo.terminalid = res.data.terminalid;
+						app.carFlowInfo.lypeople = currentUserName;
+						app.carFlowInfo.hypeople = currentUserName;
+					}
+				}, function(error) {
+					mui.toast(error.message);
+					setTimeout(function() {
+						startScanAgain();
+					}, 3000);
+				});
+			}
+
+			// 确认流转
+			function confirmFlow() {
+				if (app.type === 'departure') {
+
+					// 检查必填项
+					if (
+						app.carFlowInfo.dept === '' ||
+						app.carFlowInfo.people === '' ||
+						app.carFlowInfo.lypeople === '' ||
+						app.carFlowInfo.lstatusdes === '' ||
+						app.carFlowInfo.startDate === ''
+					) {
+						mui.toast('请检查必填项！');
+						return;
+					}
+
+					// 覆盖要提交的值
+					app.currentCarFlowInfo.dept = app.carFlowInfo.dept;
+					app.currentCarFlowInfo.people = app.carFlowInfo.people;
+					app.currentCarFlowInfo.lypeople = app.carFlowInfo.lypeople;
+					app.currentCarFlowInfo.lstatusdes = app.carFlowInfo.lstatusdes;
+					app.currentCarFlowInfo.startDate = app.carFlowInfo.startDate;
+					saveCarLoadFlow(app.currentCarFlowInfo);
+				}
+				if (app.type === 'arrival') {
+
+					// 检查必填项
+					if (
+						app.carFlowInfo.receivedept === '' ||
+						app.carFlowInfo.inpeople === '' ||
+						app.carFlowInfo.hypeople === '' ||
+						app.carFlowInfo.statusdes === '' ||
+						app.carFlowInfo.endDate === ''
+					) {
+						mui.toast('请检查必填项！');
+						return;
+					}
+
+					// 覆盖要提交的值
+					app.currentCarFlowInfo.receivedept = app.carFlowInfo.receivedept;
+					app.currentCarFlowInfo.inpeople = app.carFlowInfo.inpeople;
+					app.currentCarFlowInfo.hypeople = app.carFlowInfo.hypeople;
+					app.currentCarFlowInfo.statusdes = app.carFlowInfo.statusdes;
+					app.currentCarFlowInfo.endDate = app.carFlowInfo.endDate;
+					saveCarLoadFlow(app.currentCarFlowInfo);
+				}
+			}
+
+			// 取消确认流转
+			function cancelFlow() {
+				document.querySelector('#confirm').style.display = 'none';
+				startRecognize();
+			}
+
+			// 打开日期选择器
+			function selectDate(type) {
+				if (type === 'departure') {
+					if (!departureDatePicker) {
+						departureDatePicker = new mui.DtPicker({
+							type: 'date'
+						});
+					}
+					departureDatePicker.show(function(rs) {
+						app.carFlowInfo.startDate = rs.text;
+					});
+				}
+				if (type === 'arrival') {
+					if (!arrivalDatePicker) {
+						arrivalDatePicker = new mui.DtPicker({
+							type: 'date'
+						});
+					}
+					arrivalDatePicker.show(function(rs) {
+						app.carFlowInfo.endDate = rs.text;
+					});
+				}
+			}
+
+			// 保存流转信息
+			function saveCarLoadFlow(data) {
+				base.post(Config.urls.carload_saveCarLoadFlow, data, function(res) {
+					mui.toast(res.message);
+					plus.webview.currentWebview().opener().reload();
+					mui.back();
+				}, function(error) {
+					mui.toast(error.message);
+				});
+			}
+		</script>
+	</body>
+</html>

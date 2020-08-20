@@ -1,0 +1,52 @@
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+
+<title>模型预览</title>
+
+<style type="text/css">
+    .center-in-center {
+        position: absolute;
+        top: 45%;
+        left: 47%;
+        -webkit-transform: translate(-50%, -50%);
+        -moz-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        -o-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/pivot.css">
+<script type="text/javascript" src="../../assets/libs/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../assets/libs/jquery-ui-1.9.2.min.js"></script>
+<script type="text/javascript" src="../../assets/pivot.js"></script>
+<script src="../../assets/echarts.js"></script>
+<script src="../../assets/walden.js"></script>
+<script src="../../assets/ec_renderers.js"></script>
+
+
+<div id="output" class="center-in-center" style="margin: 30px;"></div>
+
+
+<script>
+    var ary = sessionStorage.getItem("ary");
+    var x = sessionStorage.getItem("x");
+    var k = sessionStorage.getItem("k");
+    var renderers = $.extend($.pivotUtilities.renderers,
+        $.pivotUtilities.ec_renderers);
+
+    $.get('/api/dataset/page', {
+            Param: ary,
+            associates: k,
+            tableName: x
+        },
+        function(info) {
+            var mps = info.data.list
+            $("#output").pivotUI(mps, {
+                "renderers": renderers
+            });
+
+        });
+</script>

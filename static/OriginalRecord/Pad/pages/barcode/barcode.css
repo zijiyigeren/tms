@@ -1,0 +1,23 @@
+#bcid {
+	width: 100%;
+	position: absolute;
+	background: #000000;
+	top: 45px;
+	height: calc(100% - 90px);
+}
+
+html,
+body,
+div {
+	height: 100%;
+	width: 100%;
+}
+
+.fbt {
+	color: #0E76E1;
+	width: 100%;
+	background-color: #ffffff;
+	float: left;
+	line-height: 44px;
+	text-align: center;
+}

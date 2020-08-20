@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="spreadjs culture" content="zh-cn" />
+		<!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+		<!-- <title></title> -->
+
+		<link href="../../../res/spread/css/gc.spread.sheets.excel2016colorful.13.1.0.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+
+		<link href="./record.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<div class="spread-container">
+			<div id="app" class="infoBar">
+				<div>
+					<label style="margin-left: 5px;">任务编号：</label>
+					<label id="taskCode">{{taskContent.taskCode}}</label>
+					<label style="margin-left: 5px;">样品：</label>
+					<select id="sampleCode" v-model="recordInfo.sampleCode"  @change="onChangesampleCode">
+						<option v-for="i in sampleInfoList"  v-bind:value="i.sampleCode" >{{i.model || i.vin}}</option>
+					</select>
+					<label style="margin-left: 5px;">配置：</label>
+					<select id="configName" v-model="recordInfo.configName">
+						<option v-for="i in sampleConfigInfoList" v-bind:value="i.configName" >{{i.configName}}</option>
+					</select>
+				</div>
+				<div style="margin-left: 10px;">
+					<input type="button" value="选择设备" @click="selectTerminalClick" />
+					<input type="file" style="display:none" accept="image/gif, image/jpeg" id="imageImport" />
+				</div>
+			</div>
+			<div id="ss" class="container" style="position: absolute;top: 96px;"></div>
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script src="../../../js/common.js"></script>
+		<script type="text/javascript" src="../../../res/spread/scripts/gc.spread.sheets.all.13.1.0.min.js"></script>
+		<script type="text/javascript" src="../../../res/spread/scripts/plugins/gc.spread.excelio.13.1.0.min.js"></script>
+		<script type="text/javascript" src="../../../res/spread/scripts/resources/zh/gc.spread.sheets.resources.zh.13.1.0.min.js"></script>
+		<script type="text/javascript" src="../license.js"></script>
+		<script type="text/javascript" src="../api/test/recordApi.js"></script>
+		<!-- <script type="text/javascript" src="../api/recordApi.js"></script> -->
+		<script src="record.js"></script>
+		<script>
+		</script>
+	</body>
+</html>

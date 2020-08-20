@@ -1,0 +1,73 @@
+<style>
+    .layui-tpl-container table tr td:nth-of-type(1) {
+        text-align: right;
+    }
+</style>
+
+<div class="layui-tpl-container" id="userDetail">
+    <table class="layui-table">
+        <tbody>
+            <tr>
+                <td>问题级别</td>
+                <td>{{problemLevel}}</td>
+            </tr>
+            <tr>
+                <td>问题类别</td>
+                <td>{{problemCategory}}</td>
+            </tr>
+            <tr>
+                <td>问题描述</td>
+                <td>{{dscription}}</td>
+            </tr>
+            <tr>
+                <td>发起时间</td>
+                <td>{{happenTimeStr}}</td>
+            </tr>
+            <tr>
+                <td>负责人</td>
+                <td>{{responsibleMan}}</td>
+            </tr>
+            <tr>
+                <td>解决方案</td>
+                <td>{{solvePlan}}</td>
+            </tr>
+            <tr>
+                <td>预计解决完成时间</td>
+                <td>{{planSolveTimeStr}}</td>
+            </tr>
+            <tr>
+                <td>实际解决完成时间</td>
+                <td>{{actualSolveTimeStr}}</td>
+            </tr>
+            <tr>
+                <td>遗留问题</td>
+                <td>{{leaveProblem}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">核实人员</label>
+    <div class="layui-input-block check_man-loading">
+        <select name="check_man" xm-select="check_man" xm-select-skin="normal" xm-select-direction="down">
+                <option value="">选择核实人员</option>
+            </select>
+    </div>
+</div>
+
+
+<div class="layui-form-item">
+    <label class="layui-form-label">是否关闭</label>
+    <input type="checkbox" name="flag" lay-skin="switch" lay-text="是|否">
+
+</div>
+
+
+
+<div class="layui-form-item">
+    <label class="layui-form-label">备注</label>
+    <div class="layui-input-block">
+        <textarea name="more" placeholder="请输入备注" class="layui-textarea"></textarea>
+    </div> -->
+    <!-- </div>

@@ -1,0 +1,259 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/mui.picker.all.css">
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../css/icons-extra.css">
+		<link rel="stylesheet" href="../../../components/list/list.css">
+		<link rel="stylesheet" href="../../../components/form/form.css">
+		<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+		<link href="../../../css/commonBottomBtns.css" rel="stylesheet" />
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/common.js"></script>
+		<script src="../../../js/config.js"></script>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content" v-cloak>
+			<div class="list-item">
+				<div class="list-head">
+					<div class="list-head-left">
+						<span class="list-blue">基本详情</span>
+					</div>
+				</div>
+				<div class="list-content">
+					<form class="form" style="max-height: 250px;overflow-y: scroll;">
+						<div class="mui-input-row">
+							<label>到样日期:</label>
+							<input type="text" v-model="info.comeDate" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>送样公司:</label>
+							<input type="text" v-model="info.comeCompany" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>名称:</label>
+							<input type="text" v-model="info.sampleName" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>型号:</label>
+							<input type="text" v-model="info.sampleType" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>数量:</label>
+							<input type="number" v-model="info.typeNumber" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>在架:</label>
+							<input type="number" v-model="info.onlinenumber" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>检验类型:</label>
+							<input type="text" v-model="info.checkType" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>运单号:</label>
+							<input type="text" v-model="info.courierNumber" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>任务号:</label>
+							<input type="text" v-model="info.taskCode" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>相关报告数:</label>
+							<input type="text" v-model="info.bgcount" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>样件批次:</label>
+							<input type="text" v-model="info.code" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>送样人:</label>
+							<input type="text" v-model="info.contractor" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>联系方式:</label>
+							<input type="text" v-model="info.contracttel" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>状态:</label>
+							<input type="text" v-model="info.statusName" readonly="readonly">
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="form-title">
+				流转详情
+			</div>
+			<ul class="list">
+				<li class="list-item" v-for="i in records" :id="i.id">
+					<div class="list-head">
+						<div class="list-head-left list-blue">
+							<span>样件条形码：</span><label class="">{{i.barcode}}</label>
+						</div>
+					</div>
+					<div class="list-content" v-for="j in i.flowlist" style="margin-bottom:10px; border-bottom: 1px solid #F5F5F5;padding-bottom: 5px;color:#666666;">
+							<div class="list-content-left">
+								<ul>
+									<li>
+										<span>{{j.flowName}}：</span><span>{{j.exetime}}</span>
+									</li>
+									<li><span>相关人：</span><span>{{j.creator}}</span></li>
+								</ul>
+							</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div id="btns" v-if="isDistributor || isOfficeCenter" class="bottom-btns">
+			<div v-if="isDistributor" class="bottom-btn bottom-btn-orange" @tap="reject();">
+				<img src="../../../res/sampleManagement/btn-reject.png" alt="image"/>
+				<span>退样</span>
+			</div>
+			<div v-if="isOfficeCenter" class="bottom-btn" @tap="bookSample();">
+				<img src="../../../res/sampleManagement/btn-booking.png" alt="image" />
+				<span>预约</span>
+			</div>
+		</div>
+		<div id="bookDialog" style="display:none;">
+			<form id="bookForm" class="form" style="max-height: 250px;overflow-y: auto;">
+				<div class="mui-input-row">
+					<label>取样时间</label>
+					<div class="select-wrapper">
+						<select class="mui-btn" v-model="bookInfo.scheduleTime" required>
+							<option value="" disabled selected>请选择</option>
+							<option v-for="opt in usableTime" :value="opt">{{opt}}</option>
+						</select>
+						<span class="arrow-down-icon"></span>
+					</div>
+				</div>
+				<div class="mui-input-row">
+					<label>预约个数</label>
+					<input type="number" v-model="bookInfo.collectNumber" class="mui-input-clear" placeholder="">
+				</div>
+				<div class="mui-input-row">
+					<label>备注</label>
+					<input type="text" v-model="bookInfo.remark" class="mui-input-clear" placeholder="">
+				</div>
+			</form>
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/mui.picker.min.js"></script>
+		<script src="../../../js/tools/dialog.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var app = new Vue({
+				el:'#app',
+				data:{
+					records:[],
+					info: {  },
+					isDistributor: false,
+					isOfficeCenter: false
+				}
+			});
+			var btns = new Vue({
+				el:'#btns',
+				data:{
+					isDistributor: false,
+					isOfficeCenter: false
+				}
+			});
+			var bookForm = null;
+			var usableTime = []; //存储可预约时间,下拉列表数据
+			var id = 0;
+
+			mui.init();
+			mui.ready(function(){
+				base.get(Config.urls.component_findUsableTime,{},
+					function(res){
+						usableTime =  res.data;
+					}
+				)
+			});
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				base.initTitleBar(self,'样件信息详情');
+				// 获取当前用户权限
+				btns.isDistributor = app.isDistributor = base.roles.isDistributor();
+				btns.isOfficeCenter = app.isOfficeCenter = base.roles.isOfficeCenter();
+
+
+				id = self.sampleId;//获得参数
+				base.get(Config.urls.component_findComponentPart,{ cpartId: id },
+					function(res){
+						app.info = res.data.componentPart;
+						base.showLoading({title:'获取流转详情'});
+						base.get(Config.urls.component_findComponentPartFlow,{ cpartId: id },
+							function(res){
+								app.records = res.data;
+							}
+						);
+					}
+				);
+			});
+
+			function reject(){
+				base.blur();
+				mui.openWindow({
+					url: 'sampleReject.html',
+					id: 'sampleReject',
+					waiting:{
+						autoShow:false
+					},
+					extras:{ sampleId: id, info: app.info }
+				})
+			}
+			function bookSample(){
+				Dialog.open({
+					id: "#bookDialog" ,
+					title: '预约',
+					onConfirm: function(values){ 	//点击确定按钮时调用,values是所有带有name属性的input的值: value = values[name]
+						for(var i in bookForm.bookInfo){
+							if(bookForm.bookInfo[i]==''){
+								mui.toast('请检查必填项');
+								return false;
+							}
+						}
+						base.showLoading();
+						base.get(Config.urls.component_saveComponentOutDetail,bookForm.bookInfo,function(res){
+							mui.toast(res.message);
+							//Dialog.close("#bookDialog");
+							//mui.back();
+							var win = plus.webview.currentWebview();
+							win.opener().reload();
+							setTimeout(function(){
+								if(win) win.close();
+							},200);
+							base.blur();
+							mui.openWindow({
+								url:'../bookList/bookList.html',
+								id:'bookList.html',
+								waiting:{
+									autoShow:false
+								}
+							});
+							return;
+						});
+						return false; //返回false,对话框不关闭; 返回true或没有return,对话框关闭.
+					},
+					onLoad: function(doms){			//可选，对话框弹出后调用,可对input dom进行操作: dom = doms[name]
+						bookForm = new Vue({
+							el:'#bookForm',
+							data:{
+								bookInfo: { cpartid: id ,scheduleTime:'',collectNumber:'', remark:'' },
+								usableTime: usableTime
+							}
+						});
+					}
+				})
+			}
+		</script>
+	</body>
+</html>

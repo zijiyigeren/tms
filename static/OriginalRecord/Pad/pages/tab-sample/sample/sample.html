@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link rel="shortcut icon" href="../../res/gif/1.gif" />
+	<link rel="stylesheet" href="../../../css/mui.min.css">
+	<link rel="stylesheet" href="../../../css/reset.css">
+	<link rel="stylesheet" href="../../../css/app.css">
+	<link rel="stylesheet" href="../../../components/search/search-bar.css">
+	<link rel="stylesheet" href="../../../components/list/list.css">
+	<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+	<link rel="stylesheet" href="../../../components/nav-btns/nav-btns.css">
+</head>
+<body>
+
+	<!-- 页面 -->
+	<div id="app" v-cloak>
+
+		<!-- 滚动容器 -->
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+
+				<!-- 顶部按钮 -->
+				<ul class="nav-btns">
+					<li v-if="item.show" class="nav-btns-item" v-for="(item, index) of navBtns" :key="index" @tap="onNavBtnTap(item)" >
+						<img class="item-icon" :src="item.icon" width="36px" height="36px" alt="image" />
+						<span class="item-title">{{item.title}}</span>
+					</li>
+				</ul>
+				<!-- 顶部按钮结束 -->
+
+				<!-- 搜索栏 -->
+				<form class="search-bar" action="javascript:void(0);">
+					<div>
+						<div class="select-wrapper">
+							<select>
+								<option value="sampleName">样品名称</option>
+								<option value="sampleType">样品型号</option>
+								<option value="comeCompany">送检单位</option>
+							</select>
+							<span class="icon-arrow-down"></span>
+						</div>
+						<div class="search-wrapper">
+							<input type="text" placeholder="请输入关键字" @keyup.enter="onSearchBtnTap()">
+							<span class="icon-search" @tap="onSearchBtnTap()"></span>
+						</div>
+						<div class="checkbox-wrapper">
+							<span class="checkbox-label">结果中查询</span>
+							<input type="checkbox" v-model="isCheckboxChecked">
+							<span class="icon-check" v-show="!isCheckboxChecked"></span>
+							<span class="icon-check checked" v-show="isCheckboxChecked"></span>
+						</div>
+					</div>
+				</form>
+				<!-- 搜索栏结束 -->
+
+				<!-- 样车列表 -->
+				<ul class="list">
+					<li class="list-item" v-for="i in sampleList" :id="i.id" @tap="goDetail(i.id)">
+						<div class="list-head">
+							<div class="list-head-left">
+								<span class="list-black">样品名称：</span><label class="list-blue">{{i.sampleName}}</label>
+							</div>
+							<div class="list-head-right">
+								<span class="list-black">状态：</span><label class="list-green">{{i.statusName}}</label>
+							</div>
+						</div>
+						<div class="list-content">
+							<div>
+								<ul>
+									<li><span>型号：</span><span>{{i.sampleType}}</span></li>
+									<li><span>送检单位：</span><span>{{i.comeCompany}}</span></li>
+									<li><span>在架个数：</span><span>{{i.onlinenumber}}</span></li>
+									<li><span>总个数：</span><span>{{i.typeNumber}}</span></li>
+								</ul>
+							</div>
+							<span class="mui-icon mui-icon-arrowright"></span>
+						</div>
+					</li>
+				</ul>
+				<!-- 样车列表结束 -->
+
+			</div>
+		</div>
+		<!-- 滚动容器结束 -->
+
+	</div>
+	<!-- 页面结束 -->
+
+	<script src="../../../js/mui.min.js"></script>
+	<script src="../../../js/vue.js"></script>
+	<script src="../../../js/config.js"></script>
+	<script src="../../../js/webviews.js"></script>
+	<script src="../../../js/app.js"></script>
+	<script src="../../../components/scroller/scroller.js"></script>
+	<script src="../../../components/search/search.js"></script>
+	<script src="sample.js"></script>
+</body>
+</html>

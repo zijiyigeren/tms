@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="spreadjs culture" content="zh-cn" />
+
+    
+	<link href="https://cdn.bootcss.com/jqueryui/1.11.0/jquery-ui.css" rel="stylesheet">
+    <link href="https://demo.grapecity.com.cn/SpreadJS/cdn/v10/Spread.Sheets.Evaluation.10.3.3/css/gc.spread.sheets.excel2013white.10.3.3.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="https://demo.grapecity.com.cn/SpreadJS/cdn/v10/Spread.Sheets.Evaluation.10.3.3/scripts/gc.spread.sheets.all.10.3.3.min.js"></script>
+    <!--<script src="https://cdn.grapecity.com.cn/spreadjs/scripts/jquery-1.8.2.min.js"></script>
+	
+	<script src="https://cdn.grapecity.com.cn/spreadjs/scripts/jquery-ui.min.js"></script>
+	-->
+	<script src="https://cdn.bootcss.com/jquery/1.8.2/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/jqueryui/1.11.0/jquery-ui.js"></script>
+    
+</head>
+<body>
+<div id='ss' style='width:100%; height:370px;'></div>
+<script>
+    function DatePickerCellType() {
+    }
+    DatePickerCellType.prototype = new GC.Spread.Sheets.CellTypes.Base();
+    DatePickerCellType.prototype.createEditorElement = function () {
+        //Create input presenter.
+        var input = document.createElement("input");
+        return input;
+    };
+    DatePickerCellType.prototype.activateEditor = function (editorContext, cellStyle, cellRect) {
+        //Initialize input editor.
+        if (editorContext) {
+            $editor = $(editorContext);
+            GC.Spread.Sheets.CellTypes.Base.prototype.activateEditor.apply(this, arguments);
+            $editor.datepicker();
+            $editor.css("position", "absolute");
+            $editor.attr("gcUIElement", "gcEditingInput");
+            $(".ui-datepicker").attr("gcUIElement", "gcEditingInput");
+        }
+    };
+    DatePickerCellType.prototype.deactivateEditor = function (editorContext) {
+        //Remove input editor when end editor status.
+        if (editorContext) {
+            var element = editorContext;
+            $(element).datepicker("hide");
+            $(element).datepicker("destroy");
+        }
+        GC.Spread.Sheets.CellTypes.Base.prototype.deactivateEditor.apply(this, arguments)
+    };
+    DatePickerCellType.prototype.setEditorValue = function (editor, value) {
+        //Sync value from Cell value to editor value.
+        $(editor).datepicker("setDate", value);
+    };
+    DatePickerCellType.prototype.getEditorValue = function (editor) {
+        //Sync value from editor value to cell value.
+        return $(editor).datepicker("getDate");
+    };
+    DatePickerCellType.prototype.updateEditor = function (editorContext, cellStyle, cellRect) {
+        if (editorContext) {
+            $editor = $(editorContext);
+            $editor.css("width", cellRect.width - 1);
+            $editor.css("height", cellRect.height - 3);
+        }
+    };
+
+    $(document).ready(function () {
+        var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"), { sheetCount: 1 });
+        var sheet = spread.getActiveSheet();
+        sheet.suspendPaint();
+        sheet.setValue(0, 1, "DatePicker", GC.Spread.Sheets.SheetArea.colHeader);
+        var range = sheet.getRange(-1, 1, -1 ,1);
+        range.cellType(new DatePickerCellType());
+        range.width(100);
+        range.formatter("yyyy年MM月dd日");
+        sheet.resumePaint();
+    });
+</script>
+</body>
+</html>

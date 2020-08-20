@@ -1,0 +1,49 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>上传文件</title>
+</head>
+<script>
+    function uploadA() {
+        var form = document.getElementById('upload'),
+            formData = new FormData(form);
+
+        $.ajax({
+            url: "/api/detail/detail/upload",
+            type: "post",
+            data: formData,
+            processData: false,
+            contentType: false,
+
+            success: function(res) {
+                if (res.respCode === '0') {
+
+                    var detailId;
+
+                    sessionStorage.setItem("detailId", res.data.id);
+
+
+                } else {
+                    alert("上传失败");
+                }
+
+
+
+            }
+
+
+        })
+
+    }
+</script>
+
+<form id="upload" enctype="multipart/form-data" method="post">
+    <input type="file" name="file" />
+    <input type="button" value="提交" onclick="uploadA();" />
+
+
+</form>
+
+
+</html>

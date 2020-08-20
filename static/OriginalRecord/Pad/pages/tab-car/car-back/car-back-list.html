@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/icons-extra.css">
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../components/search/search-bar.css">
+		<link rel="stylesheet" href="../../../components/list/list.css">
+		<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/common.js"></script>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content" v-cloak>
+			<div class="search-bar search-bar-top">
+				<div>
+					<div class="select-wrapper">
+						<select>
+							<option value="vin">VIN码</option>
+							<option value="model">车型</option>
+						</select>
+						<span class="icon-arrow-down"></span>
+					</div>
+					<div class="search-wrapper">
+						<input type="text" placeholder="请输入关键字" @keyup.enter="Search.action()">
+						<span class="icon-search" @tap="Search.action()"></span>
+					</div>
+					<div class="mui-checkbox mui-checkbox-square">
+						<label>结果中查询</label>
+						<input name="searchInResult" type="checkbox" >
+					</div>
+				</div>
+			</div>
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul class="list">
+						<li class="list-item" v-for="i in records" :id="i.id" @tap="goDetail(i.id)">
+							<div class="list-head">
+								<div class="list-head-left">
+									<span>退样</span>
+								</div>
+							</div>
+							<div class="list-content">
+								<div class="list-content-left">
+									<ul>
+										<li><span>车型：</span><label>{{i.model}}</label></li>
+										<li><span>VIN码：</span><labe>{{i.vin}}</label></li>
+									</ul>
+								</div>
+								<span class="mui-icon mui-icon-arrowright"></span>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script src="../../../components/scroller/scroller.js"></script>
+		<script src="../../../components/search/search.js"></script>
+		<script type="text/javascript">
+			var records = [];
+			var app = new Vue({
+				el:'#app',
+				data:{
+					records:records
+				},
+				computed:{
+					computedRecords: function() {
+						return this.records.map(function(item) {
+							if (typeof item.bookDate === 'string') {
+								item.bookDate = item.bookDate.replace('_', ' ').replace(/([0-9]{2})([0-9]{2})$/, '$1:$2');
+							} else {
+								item.bookDate = '';
+							}
+							return item;
+						});
+					}
+				}
+			});
+			// 自身webview
+			var self = null;
+			// 滚动组件
+			var scroller = null;
+			mui.init();
+			mui.plusReady(function(){
+				self = plus.webview.currentWebview();
+				base.initTitleBar(self,'样车退样管理');
+
+				// 初始化滚动组件
+				scroller = new Scroller({
+					elem: '.mui-scroll-wrapper',
+					onPullup: function() {
+
+						Search.nextPage(function(res, isEnd) {
+							app.records = app.records.concat(res.data.list);
+							scroller.end(isEnd);
+						});
+					},
+				});
+				// 初始化搜索组件
+				Search.init({
+					elem: {
+						select: '.select-wrapper:nth-child(1) > select',
+						input: '.search-bar .search-wrapper > input',
+						checkbox: '.search-bar .mui-checkbox > input',
+					},
+					url: Config.urls.carload_findCarloadBack,
+					search: true,
+					success:function(res, isEnd){
+						app.records = res.data.list;
+						scroller.end(isEnd);
+					}
+				})
+			});
+			function goDetail(id){
+				base.blur();
+				mui.openWindow({
+					url: 'car-back-info.html',
+					id: 'car-back-info',
+					extras:{
+						carloadId: id
+					}
+				})
+			}
+			//刷新结果,给详情页取消退样成功之后用的
+			function refreshResult(){
+				Search.reload();
+			}
+		</script>
+	</body>
+</html>

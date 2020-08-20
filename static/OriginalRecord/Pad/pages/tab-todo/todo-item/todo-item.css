@@ -1,0 +1,48 @@
+/* 滚动容器 */
+.mui-scroll-wrapper {
+	top: 44px;
+	bottom: 0;
+}
+
+/* 表单 */
+/* .form {
+	margin: 10px;
+	padding: 0 10px;
+	border: 1px solid #eee;
+	background: #fff;
+}
+.form .form-head {
+	padding: 12px 0;
+	border-bottom: 1px solid #eee;
+	font-size: 16px;
+	font-weight: bold;
+	color: #3e80cb;
+}
+.form .form-content {
+	overflow: hidden;
+} */
+
+
+/* 下载报告按钮 */
+.report {
+	width: 65%;
+	height: 40px;
+	margin: 0;
+	padding: 0;
+	line-height: 1.1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.mui-spinner {
+	margin-right: 10px;
+}
+.icon-report {
+	width: 20px;
+	height: 20px;
+	margin-right: 10px;
+	background-image: url(../../../res/task/report.png);
+	background-size: 20px 20px;
+	background-repeat: no-repeat;
+	background-position: center;
+}

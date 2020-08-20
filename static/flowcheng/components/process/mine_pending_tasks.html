@@ -1,0 +1,364 @@
+<!--
+File   : mine_pending_tasks.html
+Created: Monday September 3rd 2018 8:30:51 am
+Author : yuchunyu97
+License: MIT License
+
+Copyright (c) 2018 yuchunyu97
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-----
+Last Modified: Friday November 2nd 2018 9:22:13 am
+Modified By  : yuchunyu97 at <yuchunyu97@gmail.com>
+-----
+Description: 我的流程 - 待办任务
+-----
+HISTORY:
+-->
+
+<link rel="stylesheet" href="../../assets/css/pending_tasks.css">
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    .layui-row, .layui-col-md12, .p-main, .layui-card-body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    .layui-col-space15 {
+        margin: 0 !important;
+    }
+    .layui-col-md12, .layui-card-body {
+        padding: 0 !important;
+    }
+    .layui-card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .layui-table-view {
+        flex: 1 !important;
+        overflow: hidden;
+        margin: 0 !important;
+        display: flex;
+        flex-direction: column;
+        border: none !important;
+    }
+    .layui-table-view .layui-table-box{
+        flex: 1 !important;
+        overflow-y: auto !important;
+    }
+    .layui-table-view .layui-table-box .layui-table-header{
+        border-top: 1px solid #e6e6e6;
+        border-left: 1px solid #e6e6e6;
+        border-right: 1px solid #e6e6e6;
+    }
+    .layui-table-view .layui-table-box .layui-table-body {
+        overflow: hidden !important;
+    }
+    .layui-table-view .layui-table-box .layui-table-body  .layui-table{
+        border-left: 1px solid #e6e6e6;
+        border-right: 1px solid #e6e6e6;
+    }
+    .layui-table-view .layui-table-page{
+        padding: 0 !important;
+        border: none !important;
+        margin-top: 20px !important;
+        margin-bottom: 2px !important;
+        height: auto !important;
+    }
+    .layui-laypage-em, .layui-laypage-curr em {
+        background-color: #fff !important;
+        color: #409EFF !important;
+    }
+    .table-top-bar {
+        margin-bottom: 20px !important;
+        height: auto !important;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .layui-inline {
+        margin: 0 !important;
+    }
+    .layui-form-item:after {
+        content: '' !important;
+        display: none !important;
+        height: auto !important;
+    }
+    .layui-pull-right {
+        height: 30px !important;
+    }
+    .layui-pull-right .layui-btn-sm {
+        line-height: 25px !important;
+    }
+    .layui-btn-normal {
+        height: 30px !important;
+        background: linear-gradient(90deg, rgba(96, 157, 248, 1), rgba(84, 183, 235, 1)) !important;
+        padding: 0 20px !important;
+        margin: 0 !important;
+    }
+    .layui-btn-sm.layui-btn-primary {
+        height: 30px !important;
+        background: #fff !important;
+        padding: 0 20px !important;
+        margin: 0 !important;
+    }
+    #btn_search {
+        margin: 0 10px !important;
+    }
+    .table-control-btn {
+        margin-right: 10px !important;
+        color: #409EFF !important;
+    }
+    .table-control-btn-danger {
+        margin: 0 !important;
+        color: red !important;
+    }
+    .layui-layer-page {
+        position:absolute !important; 
+        top:0 !important; 
+        right:0 !important; 
+        bottom:0 !important; 
+        left:0 !important; 
+        margin:auto !important;
+    }
+    .new_flow_cheng {
+        padding: 20px 20px 0 0 !important ;
+    }
+    .layui-tab-content {
+        padding: 0 !important ;
+    }
+    .adc-form-design-helper{
+        padding:20px !important ;
+    }
+    .layui-card-header {
+        padding: 0 !important;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #e6e6e6 !important;
+    }
+</style>
+<div class="layui-row layui-col-space15">
+    <!-- 单列普通表格 -->
+    <div class="layui-col-md12">
+        <div class="layui-card p-main">
+            <!-- <div class="layui-card-header">待办事项（等待自己处理的任务）</div> -->
+            <!-- 卡片容器 -->
+            <div class="layui-card-body">
+                <!-- 数据表格顶部控制栏 -->
+                <div class="layui-form">
+                    <div class="layui-form-item table-top-bar">
+                        <!-- 左侧 -->
+                        <div class="layui-inline">
+                            <div class="layui-inline search-item">
+                                <input type="text" name="taskName" id="taskName" placeholder="输入任务名称" class="layui-input">
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn layui-btn-sm layui-btn-normal" lay-filter="btn_search_todo"
+                                    lay-submit>查询</button>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_reset_todo"
+                                    lay-submit>重置</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 下部表格容器 -->
+                <table id="tableContent-pendingTask" lay-filter="tableContent-pendingTask"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+<link rel="stylesheet" href="../../module/formSelects/formSelects-v4.css"/>
+<link rel="stylesheet" href="../../module/treeSelect/treeSelect.css">
+<!-- jQuery 1.x 版本兼容 IE8 -->
+<script type="text/javascript" src="../../assets/libs/jquery-1.12.4.min.js"></script>
+
+<!-- Q.js 轻量路由框架 -->
+<script type="text/javascript" src="../../assets/libs/q.js"></script>
+<!-- jQuery 轻量级 MVVM 框架 -->
+<script type="text/javascript" src="../../assets/libs/pandyle.min.js"></script>
+<!-- 表格操作列 -->
+<script type="text/html" id="controlTplPending">
+    <a class="table-control-btn" lay-event="handle">处理任务</a>
+</script>
+
+<script>
+    window.UEDITOR_HOME_URL = '../../assets/libs/ueditor_v1.4.3/';
+    //console.log(layui.config)
+    layui.config({
+        base: '../../module/'
+    }).extend({
+        formSelects: 'formSelects/formSelects-v4',
+        treetable: 'treetable-lay/treetable',
+        treeSelect: 'treeSelect/treeSelect',
+    }).use(['index'], function () {
+        var index = layui.index,
+            admin = layui.admin;
+
+        // 入口文件，统一处理 Ajax 请求
+        // 增加 loading
+        // http://api.jquery.com/jquery.ajax/
+        var reqCount = 0;
+        $.ajaxSetup({
+            headers: {
+                "Authorization": 'Basic JWTJWTJWTJWTJWTJWTJWTJWTJWTJWTJWTJWT'
+            },
+            beforeSend: function (jqXHR, settings) {
+                reqCount++;
+                if (reqCount > 0) admin.showLoading();
+            },
+            complete: function (jqXHR, textStatus) {
+                reqCount--;
+                if (reqCount === 0) admin.removeLoading();
+            }
+        });
+
+        // 初始化
+        index.init(function () {
+            $('.layui-layout-admin').css('visibility', 'visible');
+        });
+    });
+    // 初始化 layui
+    layui.use(['table', 'form'], function () {
+        var table = layui.table,
+            form = layui.form,
+            config = layui.config,
+            admin = layui.admin,
+            userInfo = typeof layui.config.getAccount === "function" ? config.getAccount() :'';
+        // 渲染表格
+        var renderTable = function () {
+            // 渲染表格
+            table.render({
+                elem: '#tableContent-pendingTask',
+                id: 'tableContent-pendingTask',
+                url: admin.formatUrl('/api/activiti-task/runtime'),
+                // 格式化后台返回的数据
+                parseData: function (res) { //res 即为原始返回的数据
+                    // 返回结果，进行渲染表格
+                    console.log(res , 'res');
+                    
+                    return {
+                        "code": res.respCode, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.count, //解析数据长度
+                        "data": res.data.list //解析数据列表
+                    };
+                },
+                height: 472,
+                cols: [
+                    [{
+                        type: 'numbers'
+                    }, {
+                        field: 'name',
+                        title: '任务名称'
+                    }, {
+                        field: 'assigneeName',
+                        title: '受理人'
+                    }, {
+                        field: 'createTimeStr',
+                        title: '任务创建时间',
+                    }, {
+                        field: 'id',
+                        align: 'center',
+                        title: '操作',
+                        width: 120,
+                        templet: '#controlTplPending',
+                        unresize: true
+                    }]
+                ],
+                cellMinWidth: 120,
+                page: {
+                    layout: ['count', 'limit', 'prev', 'page', 'next', 'skip']
+                },
+                request: {
+                    pageName: 'pageNo',
+                    limitName: 'pageSize'
+                },
+                where: {
+                    assignee: JSON.parse(localStorage.getItem("userInfo")).id
+                },
+                text: {
+                    none: '当前无待办事项'
+                }
+            });
+        }
+        // 初始化，执行一次渲染表格
+        renderTable();
+        // DONE: 侧边栏变化时刷新数据表格
+        // 将 table ID 存入数组
+        layui.admin.addTableCache('tableContent-pendingTask');
+
+        // 搜索
+        form.on('submit(btn_search_todo)', function (data) {
+            var searchValue = data.field.taskName;
+            table.reload('tableContent-pendingTask', {
+                where: {
+                    taskName: searchValue,
+                    reload: new Date().getTime()
+                }
+            });
+        });
+        // 重置
+        form.on('submit(btn_reset_todo)', function () {
+            $('#taskName').val('');
+            table.reload('tableContent-pendingTask', {
+                where: {
+                    taskName: '',
+                    reload: new Date().getTime()
+                }
+            });
+        });
+
+        // 监听工具条事件
+        // 编辑、发布、启动、删除功能
+        table.on('tool(tableContent-pendingTask)', function (obj) {
+            // 获取点击列的数据
+            var data = obj.data;
+            var layEvent = obj.event;
+            // 判断操作类型
+            if (layEvent === 'handle') {
+                let htmlPath = JSON.parse(data.formKey);
+                if(htmlPath && typeof(htmlPath) == "object") {
+                    window.parent.postMessage({data: htmlPath},'*');
+                } else {
+                    admin.popupCenter({
+                        title: '处理任务：' + data.name,
+                        path: '../tpl/process_pending_tpl_handle.html',
+                        area: ['90%', '90%'],
+                        resize: false,
+                        finish: function () {
+                            table.reload('tableContent-pendingTask');
+                        },
+                        success: function () {
+                            process_pending_tpl_handle(data);
+                        }
+                    });
+                }
+            }
+        });
+
+    });
+</script>

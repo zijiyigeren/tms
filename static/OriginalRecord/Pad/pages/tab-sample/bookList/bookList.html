@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../css/mui.min.css">
+		<link rel="stylesheet" href="../../../css/icons-extra.css" />
+		<link rel="stylesheet" href="../../../css/reset.css">
+		<link rel="stylesheet" href="../../../css/app.css">
+		<link rel="stylesheet" href="../../../components/search/search-bar.css">
+		<link rel="stylesheet" href="../../../components/list/list.css">
+		<link rel="stylesheet" href="../../../components/scroller/scroller.css">
+		<script src="../../../js/vue.js"></script>
+		<script src="../../../js/common.js"></script>
+	</head>
+
+	<body>
+		<div id="app" v-cloak class="mui-content">
+			<div class="search-bar search-bar-top">
+				<div>
+					<div class="select-wrapper">
+						<select>
+							<option value="sampleName">样品名称</option>
+							<option value="sampleType">样品型号</option>
+							<option value="comeCompany">送检单位</option>
+						</select>
+						<span class="icon-arrow-down"></span>
+					</div>
+					<div class="search-wrapper">
+						<input type="text" placeholder="请输入关键字" @keyup.enter="Search.action()">
+						<span class="icon-search" @tap="Search.action()"></span>
+					</div>
+					<div class="mui-checkbox mui-checkbox-square">
+						<label>结果中查询</label>
+						<input name="searchInResult" type="checkbox" >
+					</div>
+				</div>
+			</div>
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul class="list">
+						<li class="list-item" v-for="i in records" :id="i.id" @tap="goDetail(i.id)">
+							<div class="list-head">
+								<div class="list-head-left">
+									<span class="list-black">样品名称：</span><label class="list-blue">{{i.cpart.sampleName}}</label>
+								</div>
+								<div class="list-head-right">
+									<span class="list-black">预约个数：</span><label>{{i.collectNumber}}</label>
+								</div>
+							</div>
+							<div class="list-content">
+								<div class="list-content-left">
+									<ul>
+										<li><span>型号：</span><label>{{i.cpart.sampleType}}</label></li>
+										<li><span>预约人：</span><labe>{{i.member?i.member.name:""}}</label></li>
+										<li><span>部门：</span><label>{{i.department?i.department.org_name:""}}</label></li>
+										<li><span>时间：</span><label>{{i.scheduleTime}}</label></li>
+									</ul>
+								</div>
+								<span class="mui-icon mui-icon-arrowright"></span>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script src="../../../js/app.js"></script>
+		<script src="../../../components/scroller/scroller.js"></script>
+		<script src="../../../components/search/search.js"></script>
+		<script type="text/javascript">
+			var app = new Vue({
+				el:'#app',
+				data:{
+					records:[]
+				}
+			});
+			// 自身webview
+			var self = null;
+			// 滚动组件
+			var scroller = null;
+			mui.init();
+			mui.ready(function(){
+				mui.plusReady(function(){
+					self = plus.webview.currentWebview();
+					base.initTitleBar(self,'预约列表');
+
+					// 初始化滚动组件
+					scroller = new Scroller({
+						elem: '.mui-scroll-wrapper',
+						onPullup: function() {
+
+							Search.nextPage(function(res, isEnd) {
+								app.records = app.records.concat(res.data.list);
+								scroller.end(isEnd);
+							});
+						},
+					});
+					// 初始化搜索组件
+					Search.init({
+						elem: {
+							select: '.select-wrapper:nth-child(1) > select',
+							input: '.search-bar .search-wrapper > input',
+							checkbox: '.search-bar .mui-checkbox > input',
+						},
+						url: Config.urls.component_findComponentOutDetails,
+						search: true,
+						success:function(res, isEnd){
+							app.records = res;
+							scroller.end(isEnd);
+						}
+					})
+				});
+
+			})
+			function goDetail(id){
+				base.blur();
+				mui.openWindow({
+					url: 'bookList_detail.html',
+					id: 'bookList_detail.html',
+					extras:{
+						orderId: id
+					},
+					waiting:{
+						autoShow:false
+					}
+				})
+			}
+		</script>
+	</body>
+</html>

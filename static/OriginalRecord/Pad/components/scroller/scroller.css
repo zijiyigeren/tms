@@ -1,0 +1,22 @@
+.loading-status-wrapper {
+	display: flex;
+	height: 25px;
+	margin-bottom: 5px;
+	justify-content: center;
+	align-items: center;
+}
+.loading-status {
+	display: none;
+	color: #777;
+	font-size: 15px;
+	font-weight: bold;
+}
+.loading-status.active {
+	display: inline-block;
+}
+
+/* 滚动容器的默认位置，个别页面需要覆盖这个属性 */
+.mui-scroll-wrapper {
+	top: 44px;
+	bottom: 0;
+}

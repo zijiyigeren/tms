@@ -1,0 +1,732 @@
+<!--
+File   : role.html
+Created: Monday September 10th 2018 8:16:29 am
+Author : yuchunyu97
+License: MIT License
+
+Copyright (c) 2018 yuchunyu97
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-----
+Last Modified: Wednesday October 24th 2018 9:06:46 am
+Modified By  : yuchunyu97 at <yuchunyu97@gmail.com>
+-----
+Description: 系统管理 - 角色管理
+-----
+HISTORY:
+-->
+
+<style>
+    @media screen and (max-width: 750px) {
+        #tableContent-dataOperate {
+            margin-top: 0;
+        }
+    }
+
+    .rightZZ {
+        margin: 10px 0;
+    }
+    .rightZZ table {
+        height: 430px;
+        overflow: auto;
+        margin-bottom: 25px !important;
+        table-layout:fixed;
+        width: 100%;
+    }
+    .rightZZ .layui-table tbody tr:hover {
+        background-color: transparent !important;
+    }
+    .rightZZ .layui-table td {
+        /* vertical-align: initial !important; */
+        width: 50%;
+        padding: 5px 5px 5px 15px;
+    }
+    .rightZZ .rightZZ-container{
+        width: 100%;
+        height: 369px;
+        overflow: auto;
+        box-sizing: border-box;
+    }
+    .rightZZ-detail{
+        margin-bottom: 5px;
+    }
+
+    .ztree * {
+        font-size: 14px !important;
+        font-family: "Helvetica Neue", Helvetica, "PingFang SC", Tahoma, Arial, sans-serif !important;
+    }
+    #treeRoleMenu {
+        margin-left: -10px;
+    }
+
+</style>
+
+<!-- zTree 样式 -->
+<link rel="stylesheet" href="../../assets/libs/zTree/css/metroStyle/metroStyle.css">
+
+<div class="layui-row layui-col-space15">
+    <!-- 左侧显示菜单表格树的容器 -->
+    <div class="layui-col-md12 autoScrollLeft">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <button id="btn_return" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_return" lay-submit>返回</button>
+                <span id="btn_return_span"></span>
+            </div>
+            <!-- 卡片容器 -->
+            <div class="layui-card-body">
+                <!-- 数据表格顶部控制栏 -->
+                <div class="layui-form">
+                    <div class="layui-form-item table-top-bar">
+                        <!-- 左侧 -->
+                        <div class="layui-inline">
+                            <div class="layui-inline search-item">
+                                <i class="layui-icon layui-icon-search"></i>
+                                <input type="text" name="inp_search" id="inp_search" placeholder="请输入分类名称" class="layui-input">
+                            </div>
+                            <div class="layui-inline">
+                                <button id="btn_search_role" class="layui-btn layui-btn-sm layui-btn-normal" lay-filter="btn_search_role"
+                                        lay-submit>查询</button>
+                            </div>
+                            <div class="layui-inline">
+                                <button id="btn_reset_role" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_reset_role"
+                                        lay-submit>重置</button>
+                            </div>
+                        </div>
+                        <!-- 右侧 -->
+                        <div class="layui-inline layui-pull-right">
+                            <div class="layui-inline">
+                                <button id="btn_add_role" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_add_role"
+                                        lay-submit>
+                                    <i class="layui-icon layui-icon-add-1"></i>新增
+                                </button>
+                                <button id="btn_batch_delete" class="layui-btn layui-btn-sm layui-btn-danger" lay-filter="btn_batch_delete"
+                                        lay-submit>
+                                    <i class="layui-icon layui-icon-delete"></i>批量删除
+                                </button>
+                                <button id="btn_empty_data" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_empty_data"
+                                        lay-submit>
+                                    <i class="layui-icon layui-icon-add-1"></i>清空数据
+                                </button>
+                                <button id="btn_export_sample" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_export_sample"
+                                        lay-submit>
+                                    <i class="layui-icon layui-icon-add-1"></i>导出样表
+                                </button>
+                                <button id="btn_from_csv" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_from_csv"
+                                        lay-submit>
+                                    <i class="layui-icon layui-icon-add-1"></i>从CSV导入
+                                </button>
+                                <button id="btn_from_db" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_from_db"
+                                        lay-submit>
+                                    <i class="layui-icon layui-icon-add-1"></i>从数据库导入
+                                </button>
+                                <button id="btn_export" class="layui-btn layui-btn-sm layui-btn-primary" lay-filter="btn_export"
+                                        lay-submit>
+                                    <i class="layui-icon layui-icon-add-1"></i>导出
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 下部表格容器 -->
+                <table id="tableContent-dataOperate" lay-filter="tableContent-dataOperate"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="control-1">
+    <a class="table-control-btn" lay-event="edit">编辑</a>
+</script>
+<script type="text/html" id="control-2">
+    <a class="table-control-btn table-control-btn-danger" lay-event="del">移除</a>
+</script>
+
+<!-- zTree js 文件 -->
+<script src="../../assets/libs/zTree/js/jquery.ztree.all.min.js"></script>
+<!-- 菜单处理辅助类，处理和菜单相关的问题 -->
+<script src="../../assets/js/MenuAuthHelper.js"></script>
+
+<script>
+    // 初始化 layui
+    layui.use(['table'], function () {
+        var table = layui.table,
+            form = layui.form,
+            config = layui.config,
+            admin = layui.admin,
+            // zTree
+            zTreeObj,
+            // MENU 权限控制辅助类实例
+            MENU;
+
+        var myParam = getQueryString(window.location.href);
+        $("#btn_return_span").text(myParam.tableNameZH + '(' + myParam.tableName + ')')
+        var cols;
+        // 用于新增修改页面动态
+        var data_tpl;
+        admin.req('/api/table/' + myParam.ids,
+            {},
+            function (data) {
+                if (data.ok) {
+                    cols = '[{"type": "checkbox"},{"type": "numbers"},{"field":"_id","hide": true}';
+                    var fList = data.data.fieldEOList;
+                    data_tpl = fList;
+                    for ( var i = 0; i < fList.length; i++ ) {
+                        cols += ',{"field":"' + fList[i].fieldName + '","title":"' + fList[i].fieldNameZH + '"}';
+                    }
+                    cols += ',{"templet": "#control-1", "title": "操作", "align": "center", "width": 210, "unresize": true}]';
+                    renderTable();
+                } else {
+
+                }
+            },
+            {method: 'GET'}
+        );
+
+        // 渲染左侧表格
+        var renderTable = function () {
+            // 渲染表格
+            table.render({
+                elem: '#tableContent-dataOperate',
+                id: 'tableContent-dataOperate',
+                url: admin.formatUrl('/api/dataManage/page?tableId=' + myParam.ids),
+                // 格式化后台返回的数据
+                parseData: function (res) { //res 即为原始返回的数据
+                    // 返回结果，进行渲染表格
+                    return {
+                        "code": res.respCode, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.count, //解析数据长度
+                        "data": res.data.list //解析数据列表
+                    };
+                },
+                height: 472,
+                cols: [JSON.parse(cols)],
+                cellMinWidth: 120,
+                page: {
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip']
+                },
+                request: {
+                    pageName: 'pageNo',
+                    limitName: 'pageSize'
+                }
+            });
+        }
+
+        // 初始化，执行一次渲染表格树
+        //renderTable();
+        // DONE: 侧边栏变化时刷新数据表格
+        // 将 table ID 存入数组
+        layui.admin.addTableCache('tableContent-dataOperate');
+
+        // 监听工具条事件
+        // 主要是编辑、删除和配置角色菜单
+        table.on('tool(tableContent-dataOperate)', function (obj) {
+            // 获取点击列的数据
+            var data = obj.data;
+            var layEvent = obj.event;
+            // 判断操作类型
+            if (layEvent === 'edit') {
+                // 编辑角色信息
+                popMenu('edit', data);
+            }
+        });
+
+        // 角色管理：新增和修改请求的封装
+        function submitAdd(d, ajaxType, success, error) {
+            var ajaxName = ajaxType.toUpperCase() === 'POST' ? '新增' : '修改';
+            // 发送请求
+            admin.req('/api/dataManage/' + myParam.ids + '/saveData', d, function (data) {
+                if (data.ok) {
+                    layer.msg(ajaxName + '成功！', {
+                        icon: 1
+                    });
+                    success(data);
+                } else {
+                    layer.msg(ajaxName + '失败：' + data.message, {
+                        icon: 5
+                    });
+                    error(data);
+                }
+            }, {
+                method: ajaxType
+            });
+        }
+
+        // 修改分类模板
+        function submitUpdate(d, ajaxType, success, error) {
+            var ajaxName = ajaxType.toUpperCase() === 'POST' ? '新增' : '修改';
+            // 发送请求
+            admin.req('/api/dataManage/' + myParam.ids + '/editData', d, function (data) {
+                if (data.ok) {
+                    layer.msg(ajaxName + '成功！', {
+                        icon: 1
+                    });
+                    success(data);
+                } else {
+                    layer.msg(ajaxName + '失败：' + data.message, {
+                        icon: 5
+                    });
+                    error(data);
+                }
+            }, {
+                method: ajaxType
+            });
+        }
+
+        // 搜索
+        form.on('submit(btn_search_role)', function (data) {
+            var searchValue = data.field.inp_search;
+            table.reload('tableContent-dataOperate', {
+                where: {
+                    name: searchValue,
+                    reload: new Date().getTime()
+                }
+            });
+        });
+        // 重置
+        form.on('submit(btn_reset_role)', function () {
+            $('#inp_search').val('');
+            table.reload('tableContent-dataOperate', {
+                where: {
+                    name: '',
+                    reload: new Date().getTime()
+                }
+            });
+        });
+        // 新增
+        form.on('submit(btn_add_role)', function () {
+            popMenu('add');
+        });
+        // 导出
+        form.on('submit(btn_export)', function () {
+            var userId;
+            $.ajax({
+                type   : 'GET',
+                url    : '/api/dataManage/confirm/' + myParam.ids,
+                async: false,
+                success:function(msg) {
+                    userId = msg.data.userId;
+                    window.location.href = '/api/dataManage/' + myParam.ids + '/export/' + userId;
+                }
+            })
+        });
+        // 导出样表
+        form.on('submit(btn_export_sample)', function () {
+            window.location.href = '/api/dataManage/' + myParam.ids + '/down';
+        });
+        // 新增角色用户
+        form.on('submit(btn_add_role_user)', function () {
+            popMenuAddUser();
+        });
+        // 批量删除
+        form.on('submit(btn_batch_delete)', function () {
+            var checkStatus = table.checkStatus('tableContent-dataOperate');
+            if (checkStatus.data.length === 0) {
+                return layer.msg('请选择要移除', {
+                    icon: 0
+                });
+            }
+            var delArr = [];
+            for (var i = 0; i < checkStatus.data.length; i++) {
+                delArr.push(checkStatus.data[i]._id);
+            }
+            layer.confirm('是否确认删除？', {
+                icon: 3,
+                title: '提示'
+            }, function () {
+                admin.req('/api/dataManage/' + delArr.join(',') + '?tableID=' + myParam.ids,
+                    {},
+                    function (data) {
+                        if (data.ok) {
+                            layer.msg('删除成功！', {
+                                icon: 1
+                            });
+                            table.reload('tableContent-dataOperate', {
+                                where: {
+                                    reload: new Date().getTime()
+                                }
+                            });
+                        } else {
+                            return layer.msg('删除失败失败：' + data.message, {
+                                icon: 5
+                            });
+                        }
+                    }, {
+                        method: 'delete'
+                    });
+            });
+        });
+
+        // 关闭右侧菜单 点击事件
+        $('.layui-card-close').on('click', function () {
+            hideRightMenu(true);
+        });
+        // 取消按钮
+        form.on('submit(menuCancle-role)', function () {
+            hideRightMenu(true);
+        });
+        // 弹出框取消按钮
+        form.on('submit(popmenuCancle)', function () {
+            admin.closePopupCenter();
+        });
+
+        // 保存新增/编辑的角色信息
+        form.on('submit(menuSave-role)', function (data) {
+            var field = data.field;
+            if (field.type === 'add') {
+                // var addFiled = { "name": field.name, "remark": field.remark };
+                // 拼ajax请求json
+                var addField = '{';
+                for ( var i = 0; i < data_tpl.length; i++ ) {
+                    var fieldName = data_tpl[i].fieldName;
+                    addField += '"' + fieldName + '": "' + field[fieldName] + '"';
+                    if (i != data_tpl.length-1) {
+                        addField += ",";
+                    }
+                }
+                addField += '}';
+                submitAdd(JSON.parse(addField), 'POST', function () {
+                    admin.finishPopupCenter();
+                });
+            } else if (field.type === 'edit') {
+                // 拼ajax请求json
+                var updateField = '{"_id":"' + $("#_id").val() + '",';
+                for ( var i = 0; i < data_tpl.length; i++ ) {
+                    var fieldName = data_tpl[i].fieldName;
+                    updateField += '"' + fieldName + '": "' + field[fieldName] + '"';
+                    if (i != data_tpl.length-1) {
+                        updateField += ",";
+                    }
+                }
+                updateField += '}';
+                submitUpdate(JSON.parse(updateField), 'PUT', function () {
+                    admin.finishPopupCenter();
+                });
+            }
+        });
+
+        // 查询菜单
+        form.on('submit(role_search_btn)', function (data) {
+            var search = data.field.role_search;
+            admin.req('/api/sys/menu/listMenuByName', {
+                menuName: search
+            }, function (data) {
+                var flag = false;
+                zTreeObj.expandAll(false);
+                setTimeout(function () {
+                    if (data.data && data.data.length && data.data.length > 0) {
+                        for (var i = 0; i < data.data.length; i++) {
+                            var id = data.data[i].id;
+                            var node = zTreeObj.getNodeByParam("id", id, null);
+                            zTreeObj.expandNode(node, true);
+                            flag = true;
+                        }
+                    } else {
+                        layer.msg('未查询到相关数据', {
+                            icon: 5
+                        });
+                    }
+                    if (!flag) {
+                        layer.msg('未查询到相关数据', {
+                            icon: 5
+                        });
+                    }
+                }, 200);
+
+            });
+        });
+
+        // 绑定 全选/重置 按钮事件
+        $('#ztree-all').on('click', function () {
+            zTreeObj && zTreeObj.checkAllNodes(true);
+        });
+        $('#ztree-reset').on('click', function () {
+            zTreeObj && zTreeObj.checkAllNodes(false);
+        });
+        $('#ztree-spread').on('click', function () {
+            if ($('#ztree-spread').text() === '全部展开') {
+                $('#ztree-spread').text('全部折叠');
+                zTreeObj && zTreeObj.expandAll(true);
+            } else {
+                $('#ztree-spread').text('全部展开');
+                zTreeObj && zTreeObj.expandAll(false);
+            }
+        });
+
+        // 展示右侧表单菜单
+        function showRightMenu(type, data) {
+            // 判断当前右侧是否有展开菜单
+            var aSR = $('div[class*=autoScrollRight]');
+            for (var i = 0; i < aSR.length; i++) {
+                if (aSR[i].className.indexOf('layui-hide') < 0) {
+                    hideRightMenu();
+                    break;
+                }
+            }
+        }
+        // 隐藏右侧表单菜单
+        function hideRightMenu(reRender) {
+            // 将表单内的数据清空
+            setFormValue({
+                title: '角色详情'
+            });
+            // 隐藏右侧菜单
+            $('.autoScrollRight-menu').addClass('layui-hide');
+            $('.autoScrollRight-user').addClass('layui-hide');
+            $('.autoScrollLeft').removeClass('layui-col-md7');
+            $('.autoScrollLeft').addClass('layui-col-md12');
+            // 清空权限控制信息
+            $('#rightZZ-detail').empty();
+            if (reRender) {
+                setTimeout(function () {
+                    admin.resize();
+                }, 300);
+            }
+        }
+
+        // 设置表单内容
+        function setFormValue(obj) {
+            var inputs = $('.p-form').find('input'),
+                title = $('.p-form .layui-card-header'),
+                formNames = ['id', 'name', 'remark', 'type'];
+
+            obj.title && title.text(obj.title);
+            for (var i = 0; i < formNames.length; i++) {
+                if (obj[formNames[i]]) {
+                    $('.p-form  input[name="' + formNames[i] + '"]').val(obj[formNames[i]]);
+                } else {
+                    $('.p-form  input[name="' + formNames[i] + '"]').val('');
+                }
+            }
+        }
+
+        // 弹出框
+        function popMenu(type, data) {
+            // 判断操作事件
+            if (type === 'add') {
+                var title = '新增';
+                data = {};
+            } else if (type === 'edit') {
+                var title = '编辑';
+            }
+            data.type = type;
+            $('#type').val(data.type);
+            admin.popupCenter({
+                title: title,
+                path: 'components/tpl/dataManage_dataOperate_tpl_add_edit.html',
+                finish: function () {
+                    table.reload('tableContent-dataOperate');
+                },
+                success: function () {
+                    if (type === 'add') {
+                        $('input[name="type"]').val(data.type);
+                        for ( var i = 0; i < data_tpl.length; i++ ) {
+                            $('#dynamicInput').append('<div class="layui-form-item">')
+                                .append('<label class="layui-form-label">' + data_tpl[i].fieldNameZH + '</label>')
+                                .append('<div class="layui-input-block"><input type="text" name="' + data_tpl[i].fieldName + '" placeholder="请输入' + data_tpl[i].fieldNameZH + '" class="layui-input">')
+                                .append('</div>');
+                        }
+                    } else if (type === 'edit') {
+                        $('input[name="type"]').val(data.type);
+                        $('input[name="_id"]').val(data._id);
+                        for ( var i = 0; i < data_tpl.length; i++ ) {
+                            var fieldName = data_tpl[i].fieldName;
+                            var fieldNameZH = data_tpl[i].fieldNameZH;
+                            $('#dynamicInput').append('<div class="layui-form-item">')
+                                .append('<label class="layui-form-label">' + fieldNameZH + '</label>')
+                                .append('<div class="layui-input-block"><input type="text" name="' + fieldName + '" placeholder="请输入' + fieldNameZH + '" class="layui-input">')
+                                .append('</div>');
+                            $('input[name="' + fieldName + '"]').val(data[fieldName]);
+                        }
+                    }
+                }
+            });
+        }
+
+        function popMenuAddUser() {
+            var _roleid = $('#roleid').val(),
+                _rolename = $('#rolename').val();
+            admin.req('/api/member/sys/user', {
+                pageNo: 1,
+                pageSize: 10000
+            }, function (res) {
+                console.log(res, 'res');
+                
+                var raw_user = res.data.list;
+                admin.req('/api/member/sys/user', {
+                    pageNo: 1,
+                    pageSize: 10000,
+                    roleName: _rolename
+                }, function (res1) {
+                    console.log(res1, 'res1');
+                    
+                    var role_user = res1.data.list,
+                        role_user_ids = {},
+                        new_user = [];
+                    // 从所有用户中除去角色已有用户
+                    for (var i = 0; i < role_user.length; i++) {
+                        role_user_ids[role_user[i].usid] = role_user[i].usid;
+                    }
+                    for (var i = 0; i < raw_user.length; i++) {
+                        if (raw_user[i].usid in role_user_ids) {
+                            continue;
+                        }
+                        new_user.push(raw_user[i]);
+                    }
+
+                    // 弹出框
+                    admin.popupCenter({
+                        title: '新增用户',
+                        path: 'components/tpl/system_role_tpl_add_user.html',
+                        finish: function () {
+                            table.reload('tableContent-user', {
+                                where: {
+                                    reload: new Date().getTime()
+                                }
+                            });
+                        },
+                        success: function () {
+                            table.render({
+                                elem: '#tableContent-adduser',
+                                id: 'tableContent-adduser',
+                                data: new_user,
+                                height: 277,
+                                cols: [
+                                    [{
+                                        type: 'checkbox'
+                                    }, {
+                                        type: 'numbers'
+                                    }, {
+                                        field: 'usname',
+                                        title: '用户名'
+                                    }, {
+                                        field: 'account',
+                                        title: '账号'
+                                    }]
+                                ],
+                                cellMinWidth: 90,
+                                page: {
+                                    layout: ['limit', 'count', 'prev',
+                                        'page', 'next'
+                                    ]
+                                }
+                            });
+                        }
+                    });
+
+                });
+            });
+        }
+        // 保存
+        form.on('submit(menuSave_users)', function () {
+            var checkStatus = table.checkStatus('tableContent-adduser');
+            if (checkStatus.data.length === 0) {
+                return layer.msg('请选择要添加的用户', {
+                    icon: 0
+                });
+            }
+
+            var addArr = [];
+            for (var i = 0; i < checkStatus.data.length; i++) {
+                addArr.push(checkStatus.data[i].usid);
+            }
+
+            admin.req('/api/sys/user/saveUserRole/' + addArr.join(',') + '/' + $('#roleid').val(), {},
+                function (data) {
+                    if (data.ok) {
+                        layer.msg('新增用户成功！', {
+                            icon: 1
+                        });
+                        admin.finishPopupCenter();
+                    } else {
+                        layer.msg('新增用户失败：' + data.message, {
+                            icon: 5
+                        });
+                    }
+                }, {
+                    method: 'POST'
+                });
+        });
+
+        form.on('submit(btn_return)', function () {
+            window.location.href = './#!ADC_dataManage_dataManage_html';
+        });
+
+        // 搜索
+        form.on('submit(btn_search_adduser)', function (data) {
+            var searchValue = data.field;
+            var _roleid = $('#roleid').val(),
+                _rolename = $('#rolename').val();
+            admin.req('/api/member/sys/user', {
+                pageNo: 1,
+                pageSize: 10000,
+                usName: searchValue.usName
+            }, function (res) {
+                console.log(res, 'res');
+                
+                var raw_user = res.data.list;
+                admin.req('/api/member/sys/user', {
+                    pageNo: 1,
+                    pageSize: 10000,
+                    roleName: _rolename
+                }, function (res1) {
+                    console.log(res1, 'res1');
+                    
+                    var role_user = res1.data.list,
+                        role_user_ids = {},
+                        new_user = [];
+                    // 从所有用户中除去角色已有用户
+                    for (var i = 0; i < role_user.length; i++) {
+                        role_user_ids[role_user[i].usid] = role_user[i].usid;
+                    }
+                    for (var i = 0; i < raw_user.length; i++) {
+                        if (raw_user[i].usid in role_user_ids) {
+                            continue;
+                        }
+                        new_user.push(raw_user[i]);
+                    }
+
+                    table.reload('tableContent-adduser', {
+                        data: new_user
+                    });
+
+                });
+            });
+
+        });
+
+    });
+
+    // 从url获取参数的方法
+    function getQueryString(url) {
+        if(url) {
+            url=url.substr(url.indexOf("?")+1); //字符串截取，比我之前的split()方法效率高
+        }
+        var result = {}, //创建一个对象，用于存name，和value
+            queryString =url || location.search.substring(1), //location.search设置或返回从问号 (?) 开始的 URL（查询部分）。
+            re = /([^&=]+)=([^&]*)/g, //正则，具体不会用
+            m;
+        while (m = re.exec(queryString)) { //exec()正则表达式的匹配，具体不会用
+            result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]); //使用 decodeURIComponent() 对编码后的 URI 进行解码
+        }
+        return result;
+    }
+
+</script>

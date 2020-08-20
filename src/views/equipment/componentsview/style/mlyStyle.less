@@ -1,0 +1,278 @@
+p {
+    padding: 0;
+    margin: 0;
+}
+
+input[type=checkbox] {
+    outline: none;
+}
+
+.text-ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.t-table {
+    width:100%;
+    text-align: center;
+    background: #FFFFFF;
+    //table-layout: fixed;
+  border-collapse:collapse;
+    th {
+        background-color: rgb(243, 246, 253);
+        color: #606266;
+        height: 45px;
+    }
+
+    td {
+      cursor: default;
+    }
+
+    th, td {
+        border: 1px #DCDFE6 solid;
+        padding: 0;
+      border-collapse:collapse;
+
+        button[class*='el-button--text'] {
+            padding: 0;
+        }
+    }
+
+    .trClass {
+
+        &:nth-of-type(odd) {// 奇数
+            background: rgb(250,250,250);
+        }
+
+        &:nth-of-type(even) {// 偶数
+
+        }
+    }
+
+    .t-table--th--div {
+        width: 100%;
+        height: 100%;
+        display: flex;
+
+
+        .jdxm--class {
+            flex: 1;
+            position: relative;
+        }
+
+        .zt--class {
+            width: 125px;
+            position: relative;
+            border-left: 1px #DCDFE6 solid;
+        }
+
+        .jdxm--class, .zt--class {
+            i {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-style: normal;
+            }
+        }
+    }
+
+    .t-table--td--div {
+        //height: 50px;
+        display: flex;
+        border-bottom: 1px #DCDFE6 solid;
+
+        &:last-child {
+            border: none;
+        }
+
+        .jdxm--class, .zt--class {
+            position: relative;
+
+            i {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-style: normal;
+            }
+        }
+
+        .jdxm--class {
+            flex: 1;
+        }
+
+        .zt--class {
+            width: 125px;
+            border-left: 1px #DCDFE6 solid;
+        }
+
+    }
+
+}
+.m-inputClass {
+  outline: none;
+  padding: 0 10px;
+  border: 1px solid #DCDFE6;
+  border-radius: 3px;
+  height: 30px;
+}
+.m-errorInputClass{
+  border: 1px solid red;
+}
+/deep/ .m-dialog{
+  .el-dialog__body{
+    padding-bottom: 0;
+    .m-input{
+      outline:none;
+      padding: 0 10px;
+      border: 1px solid #DCDFE6;
+      border-radius: 3px;
+      width: 100%;
+      flex: 1;
+      margin-right: 10px;
+      height: 30px;
+    }
+  }
+}
+
+textarea {
+    padding-left: 8px;
+    outline: none;
+    resize: none;
+    height: 130px;
+    width: 100%;
+    border: 1px #DCDFE6 solid;
+    border-radius: 5px;
+}
+
+.testProjec-component {
+    input[type=file] {
+        display: none;
+    }
+}
+
+//.showK {
+//    display: flex;
+//
+//    .showK-span {
+//        flex: 1;
+//        overflow: hidden;
+//        text-overflow: ellipsis;
+//        white-space: nowrap;
+//    }
+//}
+
+// 设备信息-表单
+/deep/ .information_form {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+
+    //.showK {
+    //    .showK-span {
+    //        text-indent: 20px;
+    //    }
+    //}
+
+    .information_form_title, .information_form_title2 {
+        padding: 10px 0;
+        margin: 0;
+        width: 100%;
+    }
+
+    .information_form_title2 {
+        color: red;
+    }
+
+    .information_item {
+        width: 100%;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .el-form-item {
+        width: 50%;
+        margin: 0;
+        padding-bottom: 20px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+
+        .el-form-item__label {
+            white-space: nowrap;
+        }
+
+        .el-form-item__content {
+            flex: 1;
+            //padding-right: 80px;
+            //overflow: hidden;
+
+
+            .el-select, .el-input {
+                width: 100% !important;
+            }
+        }
+    }
+
+    .form_item_half {
+        .el-form-item__content {
+            display: flex;
+
+            .el-select, .el-input {
+                width: 50% !important;
+            }
+
+            .el-select {
+                margin-right: 10px;
+
+                .el-input {
+                    width: 100% !important;
+                }
+            }
+        }
+    }
+}
+
+/deep/ .dialog_device {
+    overflow: hidden;
+
+    .el-dialog {
+        margin: 0 !important;
+        padding: 0 !important;
+        position: absolute;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+
+        .el-dialog__body {
+            flex: 1 !important;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .el-dialog__footer {
+        }
+    }
+}
+
+/deep/ .jjjjj-table {
+    .cell {
+        padding: 0;
+    }
+}
+
+/deep/ .jjjjj-tr {
+    td {
+        padding: 0;
+    }
+
+    .jjjjj-tr-special {
+
+    }
+}

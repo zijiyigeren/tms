@@ -1,0 +1,71 @@
+/* 全局列表样式 */
+.list {
+	overflow: hidden;
+}
+.list-item {
+	margin: 10px;
+	padding: 0 10px;
+	border: 1px solid #eee;
+	border-radius: 2px;
+	background: #fff;
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+/* 列表头部 */
+.list-item .list-head {
+	display: flex;
+	padding: 12px 0;
+	border-bottom: 1px solid #eee;
+	justify-content: space-between;
+	align-items: center;
+	color: #3e80cb;
+	font-size: 16px;
+	font-weight: bold;
+}
+.list-item .list-head > div:first-of-type {
+	flex: 1;
+}
+.list-item .list-head-left{
+	flex:1;
+}
+.list-item .list-head-right{
+	float:right;
+}
+
+/* 列表内容 */
+.list-item .list-content {
+	display: flex;
+	padding: 5px 0;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 15px;
+}
+.list-item .list-content > div {
+	flex: 1;
+}
+.list-item .list-content li {
+	line-height: 25px;
+	vertical-align: center;
+}
+.list-item .list-content li span:nth-child(1) {
+	color: #999;
+}
+.list-item .list-content li span:nth-child(2) {
+	color: #666;
+}
+
+/* 列表右箭头 */
+.mui-icon.mui-icon-arrowright {
+	margin-left: 10px;
+	color: #aaa;
+}
+.list-item .list-green{
+	color:#389A6B;
+}
+.list-item .list-blue{
+	color:#3E80CB;
+}
+.list-item .list-black{
+	color:#666666;
+}

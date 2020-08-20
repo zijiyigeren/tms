@@ -1,0 +1,37 @@
+/* 底部栏 */
+.tab-bar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	height: 51px;
+	border-top: 1px solid #eee;
+	background: #fff;
+}
+.tab-bar .tab-item {
+	display: flex;
+	flex: 1;
+	height: 100%;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	color: #7f7f7f;
+}
+.tab-bar .tab-item.active {
+	color: #3e80cb;
+	font-weight: bold;
+}
+.tab-bar .tab-item .tab-icon {
+	-webkit-filter: grayscale(1);
+	filter: grayscale(1);
+	opacity: .6;
+}
+.tab-bar .tab-item.active .tab-icon {
+	-webkit-filter: none;
+	filter: none;
+	opacity: 1;
+}
+.tab-bar .tab-item .tab-label {
+	font-size: 12px;
+}

@@ -1,0 +1,306 @@
+html,body{
+	margin: 0;
+	padding: 0;
+	width: 100%;height: 100%;
+}
+header{
+	background: #FFAA00;
+}
+.mui-content{
+	width: 100%;height: 100%;
+	background: #F5F5F5;
+}
+ul,ol,li{
+	margin: 0;
+	padding: 0;
+}
+ul li,ol li{
+	list-style: none;
+}
+img,a,label,span,label,p{
+	display: inline-block;
+}
+input,select,textarea,button{
+	margin: 0;padding: 0;
+}
+
+[v-cloak]{
+	display: none;
+}
+header{
+	background: #3E80CB;
+}
+header.mui-bar-nav{
+	background: #3E80CB;
+	color: white;
+}
+.mui-bar .mui-title{
+	color: white;
+}
+.mui-bar a{
+	color: white;
+}
+nav.mui-bar-tab{
+	background: white;
+	-webkit-box-shadow: 0 0 1px rgba(0,0,0,0);
+  box-shadow: 0 0 1px rgba(0,0,0,0);
+}
+/*nav span.mui-icon{
+	display: inline;
+	width: 24px;height: 24px;
+}*/
+nav span.mui-icon>img{
+	width: 24px;height: 24px;
+}
+nav span.mui-tab-label{
+	color: #7F7F7F;
+}
+.mui-tab-item{
+	width: 100%;
+	text-align: center;
+	font-size: 12px;
+}
+.mui-tab-item>.tab-icon{
+	width: 24px;height: 24px;
+	display:block;
+	margin: 0 auto;
+	filter: grayscale(100%);
+	opacity: 0.6;
+}
+
+.mui-tab-item.mui-active>.tab-icon{
+	filter:none;
+	opacity: 1;
+}
+
+/* 下拉加载滚动容器 */
+.mui-scroll-wrapper {
+	top: 44px;
+}
+
+/* 顶部标题栏的样式调整 */
+.mui-pull-right{
+	margin-left: 5px!important;
+}
+/* 搜索条的样式 */
+.search-bar{
+	font-size: 0px;
+	padding:8px;
+	height:50px;
+	display: flex;
+	background: white;
+	margin-top:10px;
+	z-index:5000;
+}
+.search-bar-top{
+	position:fixed;
+	top:44px;
+	z-index:5000;
+	margin-top:0px;
+}
+.search-bar-top+div{
+	/* padding-top:50px!important; */
+	/* margin-top:0px!important; */
+}
+.search-bar>*{
+	display: inline-block;
+	/* height:100%!important; */
+	vertical-align: middle;
+}
+/* 下拉框 */
+.search-bar select{
+	width:6.5em;
+	line-height: 34px;
+	padding-left: 8px;
+	color:#545454;
+	/* -webkit-appearance:menulist!important; */
+	/* border-radius: 3px 0px 0px 3px;
+	border: 1px solid rgb(211,211,211)!important;
+	border-right: none!important; */
+}
+.search-bar input[type=checkbox]{
+	top:6px;
+	right:5px;
+}
+/* 搜索输入框 */
+.search-bar .input-wrapper .mui-input{
+	border:none;
+	font-size: 14px;
+	-webkit-user-select: auto;
+	width: 100%;
+	height: 32px;
+	vertical-align: top;
+	flex: 1;
+}
+/* 搜索按钮图标 */
+.search-bar .mui-icon{
+	line-height: 32px;
+	color: #3676CD;
+	transform: translateX(8px);
+	position: absolute;
+	right: 15px;
+	top: 0px;
+}
+.search-bar button{
+	border-radius: 1px 3px 3px 1px;
+}
+.search-bar .mui-checkbox{
+	font-size: 14px;
+	line-height: 34px;
+	width:110px;
+	padding-left: 5px;
+}
+.search-bar .mui-checkbox label{
+	padding-right: 30px;
+}
+.search-bar .mui-checkbox input:before{
+	font-size:22px;
+}
+.search-bar+.mui-scroll-wrapper{
+	padding-top: 50px;
+}
+/* 定义方形的mui 复选框 */
+.mui-checkbox-square input{
+	margin: 5px auto 5px auto;
+	height: 20px!important;
+}
+.mui-checkbox-square input[type=checkbox]:before{
+    content: '\e413'!important;
+	font-size: 20px;
+}
+.mui-checkbox-square input[type=checkbox]:checked:before{
+	content: '\e443'!important;
+}
+
+/* 弹出窗口的样式优化 */
+div.mui-popup-input[name=commonDialog] .mui-input-group{
+	margin:0;
+}
+div.mui-popup-input[name=commonDialog] .mui-input-row label{
+	padding: 10px 5px!important;
+}
+div.mui-popup-input[name=commonDialog] .mui-input-row:after {
+	left: 8px;
+	right: 8px;
+}
+div.mui-popup-input[name=commonDialog] input{
+	margin-top: 6px;
+}
+/* 对标题栏个别图标的优化,显示大一些 */
+header .mui-icon-refreshempty{
+	font-size: 35px;
+    margin-top: -5px;
+}
+
+/* 筛选车位 */
+#parking-lot-filter {
+	position: fixed;
+	top: 44px;
+	left: 0;
+	right: 0;
+	height: 119px;
+	padding: 10px;
+	padding-bottom: 9px;
+	overflow: hidden;
+}
+.select-wrapper {
+	position: relative;
+	height: 45px;
+	margin-bottom: 10px;
+	background: #fff;
+}
+.select-wrapper:last-child {
+	margin-bottom: 0;
+}
+.select-wrapper select {
+	position: absolute;
+	z-index: 3;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	background: transparent;
+	color: transparent;
+}
+.select-wrapper .select-display {
+	position: absolute;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 15px;
+}
+.select-wrapper .icon-arrow-down {
+	position: absolute;
+	z-index: 2;
+	top: 0;
+	right: 0;
+	width: 45px;
+	height: 45px;
+	background-image: url(../../../res/common/arrow-down.png);
+	background-size: 20px 20px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+/* 滚动容器位置 */
+.mui-scroll-wrapper {
+	top: 163px;
+}
+
+/* 车位列表 */
+.parking-lots-wrapper {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+#parking-lots {
+	width: 100%;
+	list-style: none;
+	display: flex;
+	flex-wrap: wrap;
+}
+.parking-lot-wrapper {
+	width: 25%;
+	height: 2.083rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: #eee;
+	border: 1px solid #e5e5e5;
+}
+.parking-lot-id {
+	color: #ffea00;
+	font-size: 12px;
+}
+.parking-lot-icon {
+	width: .5625rem;
+	height: .5625rem;
+}
+.parking-lot-name {
+	font-size: 10px;
+}
+.parking-lot-index {
+	width: 100%;
+	display: inline-block;
+	text-align: center;
+	color: #999;
+	font-size: 12px;
+}
+.parking-lot-wrapper.occupied {
+	background: #3e80cb;
+	color: white;
+}
+.parking-lot-wrapper.occupied .parking-lot-icon {
+	color: white;
+}
+.parking-lot-wrapper.occupied .parking-lot-index {
+	color: white;
+}
+
+.mui-pull-loading {
+	margin-right: 0;
+}

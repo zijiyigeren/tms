@@ -1,0 +1,224 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>页面名称</title>
+		<link rel="shortcut icon" href="../../res/gif/1.gif" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/icons-extra.css">
+		<link rel="stylesheet" href="../../css/reset.css">
+		<link rel="stylesheet" href="../../css/app.css">
+		<link rel="stylesheet" href="../../components/search/search-bar.css">
+		<link rel="stylesheet" href="../../components/list/list.css">
+		<link rel="stylesheet" href="../../components/form/form.css">
+		<link rel="stylesheet" href="../../css/commonTable.css" />
+		<link rel="stylesheet" href="../../css/commonBottomBtns.css" />
+		<style>
+			.scrollDiv{
+				position:absolute;
+				left:10px;
+				right:10px;
+				top:100px;
+				bottom:5px;
+				overflow: auto;
+			}
+			table{
+				text-align: center;
+				border: 1px solid #3E80CB;
+			}
+			table tr.code-green{
+				background: rgba(1,255,149,0.1);
+				/* color: darkgrey; */
+			}
+			table tr.code-disabled{
+				color: darkgrey;
+			}
+		</style>
+		<script src="../../js/vue.js"></script>
+		<script src="../../js/common.js"></script>
+	</head>
+	<body>
+		<div id="app" class="mui-content" v-cloak>
+			<div class="search-bar search-bar-top">
+				<div>
+					<div class="select-wrapper">
+						<select>
+							<option value="sampleName">样件名称</option>
+							<option value="barcode">样件编码</option>
+						</select>
+						<span class="icon-arrow-down"></span>
+					</div>
+					<div class="search-wrapper">
+						<input type="text" placeholder="请输入关键字" @keyup.enter="Search.action()">
+						<span class="icon-search" @tap="Search.action()"></span>
+					</div>
+					<div class="mui-checkbox mui-checkbox-square">
+						<label>结果中查询</label>
+						<input name="searchInResult" type="checkbox" >
+					</div>
+				</div>
+			</div>
+			<div class="table-area">
+				<table id="sampleTable">
+					<thead>
+						<th class="th-checkbox">
+							<div class="mui-checkbox mui-checkbox-square">
+								<input name="searchInResult" type="checkbox">
+							</div>
+						</th>
+						<th class="th-number">序号</th>
+						<th>样件名称</th><th style="text-align: center;">样件编码</th>
+					</thead>
+					<tbody>
+						<tr v-for="(i,index) in records" :id="i.id" v-bind:class="{ 'code-green': i.OUTSTATUS=='2', 'code-disabled': (( i.OUTSTATUS=='2' && isOfficeCenter ) || ( i.OUTSTATUS!='2' && isDistributor )) }">
+							<td>
+								<div class="mui-checkbox mui-checkbox-square">
+									<input name="searchInResult"  v-model="i.checked" type="checkbox" v-bind:disabled="( i.OUTSTATUS=='2' && isOfficeCenter ) || ( i.OUTSTATUS!='2' && isDistributor ) ">
+								</div>
+							</td>
+							<td class="th-number">{{index+1}}</td><td>{{i.SAMPLENAME}}</td><td>{{i.BARCODE}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div id="btns" v-if=" isDistributor || isOfficeCenter " class="bottom-btns">
+			<div v-if="isOfficeCenter" class="bottom-btn bottom-btn-orange" onclick="applyReturn();">
+				<img src="../../res/sampleManagement/btn-check.png" alt="image" />
+				<span>申请还样</span>
+			</div>
+			<div v-if="isDistributor" class="bottom-btn" onclick="confirmReturn();">
+				<img src="../../res/sampleManagement/btn-check.png" alt="image" />
+				<span>确认还样</span>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/config.js"></script>
+		<script src="../../js/app.js"></script>
+		<script src="../../js/tools/dialog.js"></script>
+		<script src="../../components/search/search.js"></script>
+		<script src="../../js/tools/table.js"></script>
+		<script type="text/javascript">
+			var app = new Vue({
+				el:'#app',
+				data:{
+					records:[],
+					isDistributor: false,
+					isOfficeCenter: false
+				}
+			});
+			var btns = new Vue({
+				el:'#btns',
+				data:{
+					isDistributor: false,
+					isOfficeCenter: false
+				}
+			});
+			var self = null;
+			mui.init();
+			mui.plusReady(function(){
+				self = plus.webview.currentWebview();
+				base.initTitleBar(self,'样件流转管理',[{icon:'../../res/common/scan.png',click: scanCode }]);
+				Search.init({
+					elem: {
+						select: '.select-wrapper:nth-child(1) > select',
+						input: '.search-bar .search-wrapper > input',
+						checkbox: '.search-bar .mui-checkbox > input',
+					},
+					url: Config.urls.component_findComponentPartPlaceCirculation,
+					search: true,
+					success:function(res, isEnd){
+						app.records = res.data;
+						Table.render({id:'#sampleTable',data:app.records });
+					}
+				})
+
+			});
+			mui.plusReady(function(){
+				btns.isDistributor = app.isDistributor = base.roles.isDistributor();
+				btns.isOfficeCenter = app.isOfficeCenter = base.roles.isOfficeCenter();
+			})
+			function setTop(code){
+				var res = false;
+				for(var i in app.records){
+					var rec = app.records[i];
+					var disabled = ( rec.OUTSTATUS=='2' && app.isOfficeCenter ) || ( rec.OUTSTATUS!='2' && app.isDistributor );
+					if( rec.BARCODE==code && !disabled ){//置顶
+						rec.checked = true;
+						app.records.splice(i,1);
+						app.records.unshift(rec);
+						res = true;
+						break;
+					}else if( rec.BARCODE==code && disabled ){
+						mui.toast('该条码不可选中');
+						res = true;
+						break;
+					}
+				}
+				if(!res) mui.toast('该条码不在列表内');
+			}
+			function scanCode(){
+				base.goScan();
+			}
+			function handleScanCode(code){
+				setTop(code);
+			}
+			function applyReturn(){
+				var res = Table.getSelected('#sampleTable');
+				var codes = [];
+				for( var i in res ){
+					codes.push(res[i].data.BARCODE);
+
+				}
+				console.log(codes.join())
+				if(codes.length==0){
+					mui.toast('未选择样件');
+					return;
+				}else{
+					Dialog.confirm({
+						title:'确认申请还样？',
+						onConfirm: function(){
+							base.showLoading({title:'处理中..'});
+							base.get(Config.urls.component_goApplyReturnStore,
+								{ barcode: codes.join() },
+								function(res){
+									mui.toast(res.message);
+									Search.reload();
+								}
+							)
+						}
+					})
+				}
+			}
+			function confirmReturn(){
+				var res = Table.getSelected('#sampleTable');
+				var codes = [];
+				for( var i in res ){
+					codes.push(res[i].data.BARCODE);
+
+				}
+				console.log(codes.join())
+				if(codes.length==0){
+					mui.toast('未选择样件');
+					return;
+				}else{
+					Dialog.confirm({
+						title:'确认还样？',
+						onConfirm: function(){
+							base.showLoading({title:'处理中..'});
+							base.get(Config.urls.component_goConfirmReturnStore,
+								{ barcode: codes.join() },
+								function(res){
+									mui.toast(res.message);
+									self.opener().reload();
+									Search.reload();
+								}
+							)
+						}
+					})
+				}
+			}
+		</script>
+	</body>
+</html>

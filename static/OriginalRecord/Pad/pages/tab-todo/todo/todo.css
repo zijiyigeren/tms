@@ -1,0 +1,68 @@
+/* 顶部tab栏 */
+.tab-bar {
+	position: absolute;
+	top: 44px;
+	left: 0;
+	right: 0;
+	z-index: 10;
+	display: flex;
+	height: 45px;
+}
+
+/* tab栏按钮 */
+.tab-bar .tab-item {
+	position: relative;
+	flex: 1;
+	height: 100%;
+	border-top: 2px solid #fff;
+	border-bottom: 2px solid #fff;
+	background: #fff;
+	color: #999;
+	text-align: center;
+}
+
+/* tab栏按钮激活状态 */
+.tab-bar .tab-item.active {
+	border-bottom: 2px solid #3e80cb;
+	color: #3e80cb;
+	font-weight: bold;
+}
+
+/* 标签 */
+.tab-label {
+	display: inline-block;
+	height: 41px;
+	line-height: 41px;
+	text-align: center;
+	vertical-align: center;
+	font-size: 15px;
+}
+
+/* 数字标识 */
+.tab-badge {
+	position: absolute;
+	display: inline-flex;
+	min-width: 16px;
+	height: 16px;
+	margin-top: 12px;
+	margin-left: 2px;
+	padding: 0 4px;
+	border-radius: 8px;
+	font-size: 12px;
+	font-weight: normal;
+	justify-content: center;
+	align-items: center;
+	background: #3e80cb;
+	color: #fff;
+}
+
+/* 搜索栏位置 */
+.search-bar-with-year {
+	top: 89px;
+}
+
+/* 滚动容器 */
+.mui-scroll-wrapper {
+	top: 179px;
+	bottom: 0;
+}

@@ -1,0 +1,120 @@
+/* 搜索栏 */
+.search-bar-with-year {
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 90px;
+	padding: 0 15px;
+	border-bottom: 1px solid #eee;
+	overflow: hidden;
+	background: #fff;
+}
+.search-bar-with-year > div {
+	display: flex;
+	height: 50%;
+	justify-content: space-between;
+	align-items: center;
+}
+
+/* 选择框 */
+.search-bar-with-year .select-wrapper {
+	position: relative;
+	width: 100px;
+	height: 32px;
+	background: #fff;
+}
+.search-bar-with-year .select-wrapper select {
+	position: absolute;
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0 0 0 5px;
+	border: 0;
+	outline: none;
+	background: transparent;
+	font-size: 14px;
+	line-height: 1;
+}
+.search-bar-with-year .select-wrapper .icon-arrow-down {
+	position: absolute;
+	top: 6px;
+	right: 0;
+	width: 20px;
+	height: 20px;
+	background-image: url(../../res/common/arrow-down.png);
+	background-size: 20px 20px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+/* 搜索框 */
+.search-bar-with-year .search-wrapper {
+	display: flex;
+	flex: 1;
+	height: 32px;
+	border: 1px solid #3e80cb;
+	border-radius: 16px;
+	overflow: hidden;
+}
+.search-bar-with-year .search-wrapper input[type=text] {
+	width: 100%;
+	height: 30px;
+	padding: 0 10px;
+	border: 0;
+	outline: none;
+	font-size: 14px;
+	line-height: 30px;
+}
+.search-bar-with-year .search-wrapper input[type=text]::-webkit-input-placeholder {
+	color: #999;
+}
+.search-bar-with-year .search-wrapper .icon-search {
+	display: flex;
+	width: 40px;
+	height: 30px;
+	background-image: url(../../res/common/search.png);
+	background-size: 20px 20px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+/* 复选框 */
+.search-bar-with-year .checkbox-wrapper {
+	position: relative;
+	display: flex;
+	margin-left: 5px;
+	height: 32px;
+	align-items: center;
+}
+.search-bar-with-year .checkbox-wrapper .checkbox-label {
+	height: 32px;
+	line-height: 32px;
+	font-size: 14px;
+}
+.search-bar-with-year .checkbox-wrapper input[type=checkbox] {
+	-webkit-appearance: none;
+	position: absolute;
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	outline: none;
+	background: transparent;
+}
+.search-bar-with-year .checkbox-wrapper .icon-check {
+	width: 16px;
+	height: 16px;
+	margin-left: 5px;
+	border: 1px solid #ccc;
+	border-radius: 1px;
+	overflow: hidden;
+}
+.search-bar-with-year .checkbox-wrapper .icon-check.checked {
+	border: 0;
+	background-image: url(../../res/common/checkbox1.png);
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
